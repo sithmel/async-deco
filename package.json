@@ -18,7 +18,7 @@
     "decorator",
     "circuit breaker"
   ],
-  "repository": "git@github.com:sithmel/callback-decorator.git",
+  "repository": "git@github.com:sithmel/callback-decorators.git",
   "author": "Maurizio Lupo <maurizio.lupo@gmail.com>",
   "license": "MIT",
   "devDependencies": {
