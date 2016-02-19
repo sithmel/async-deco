@@ -1,9 +1,14 @@
 
 
-function retryDecorator(times, error, logger) {
+function retryDecorator(times, interval, error, logger) {
   var condition;
   times = times || Infinity;
   error = error || Error;
+  interval = interval || 0;
+  var intervalFunc = typeof interval === 'function' ? 
+    interval :
+    function () { return interval; };
+
   logger = logger || function () {};
   if (error === Error || Error.isPrototypeOf(error)) {
     condition = function (err, dep) { return err instanceof error; };
@@ -19,8 +24,14 @@ function retryDecorator(times, error, logger) {
       var cb = args[args.length - 1];
 
       var retry = function () {
-        counter++;
-        func.apply(context, args);
+        if (intervalFunc(counter++) > 0) {
+          setTimeout(function () {
+            func.apply(context, args);
+          }, interval);
+        }
+        else {
+          func.apply(context, args);
+        }
       };
 
       args[args.length - 1] = function (err, dep) {

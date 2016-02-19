@@ -14,9 +14,9 @@ describe('retry decorator', function () {
       log.push({type: type, obj: obj});
     };
 
-    retryTenTimes = retryDecorator(10, undefined, logger);
-    retryTwiceOnNull = retryDecorator(2, function (err, dep) {return dep === null;});
-    retryTwiceOnTypeError = retryDecorator(2, TypeError);
+    retryTenTimes = retryDecorator(10, undefined, undefined, logger);
+    retryTwiceOnNull = retryDecorator(2, undefined, function (err, dep) {return dep === null;});
+    retryTwiceOnTypeError = retryDecorator(2, undefined, TypeError);
     retryForever = retryDecorator();
   });
 

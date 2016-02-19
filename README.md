@@ -17,6 +17,8 @@ Callbackify
 -----------
 Convert a synchronous/promise based function to a plain callback.
 ```js
+var callbackify = require('callback-decorators/src/callbackify-decorator');
+
 var func = callbackify(function (a, b){
   return a + b;
 });
@@ -29,6 +31,8 @@ Memoize
 -------
 It allows to remember the last results
 ```js
+var memoizeDecorator = require('callback-decorators/src/memoize-decorator');
+
 var simpleMemoize = memoizeDecorator(getKey, logger);
 simpleMemoize(function (..., cb) { .... });
 ```
@@ -40,6 +44,8 @@ Fallback
 --------
 If a function fails, calls another one
 ```js
+var fallbackDecorator = require('callback-decorators/src/fallback-decorator');
+
 var fallback = fallbackDecorator(function (err, a, b, c, func) {
   func(undefined, 'giving up');
 }, Error, logger);
@@ -54,6 +60,8 @@ Log
 ---
 Logs when a function start, end and fail
 ```js
+ar logDecorator = require('callback-decorators/src/log-decorator');
+
 var addLogs = logDecorator(logger);
 addLogs(function (..., cb) { .... });
 ```
@@ -62,6 +70,8 @@ Timeout
 -------
 If a function takes to much, returns a timeout exception
 ```js
+var timeoutDecorator = require('callback-decorators/src/timeout-decorator');
+
 var timeout20 = timeout(20, logger);
 timeout20(function (..., cb) { .... });
 ```
@@ -74,11 +84,14 @@ Retry
 -----
 If a function fails it retry
 ```js
-var retryTenTimes = retryDecorator(10, Error, logger);
+var retryDecorator = require('callback-decorators/src/retry-decorator');
+
+var retryTenTimes = retryDecorator(10, 0, Error, logger);
 retryTenTimes(function (..., cb) { .... });
 ```
 You can initialise the decorator with 3 arguments:
 * number of retries
+* interval for trying again (number of a function based on the number of times)
 * error instance for deciding to retry, or function taking error and result (if it returns true it'll trigger the retry)
 * logger function
 
@@ -86,6 +99,8 @@ Compose
 -------
 It can combine more than one decorators.
 ```js
+var compose = require('callback-decorators/src/compose');
+
 var decorator = compose(
   retryDecorator(10, Error, logger),
   timeoutDecorator(20, logger));

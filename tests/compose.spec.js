@@ -29,7 +29,7 @@ describe('compose', function () {
         fallbackDecorator(function (err, a, b, c, func) {
           func(err, 'no value');
         }, Error, logger),
-        retryDecorator(2, Error, logger),
+        retryDecorator(2, undefined, Error, logger),
         timeoutDecorator(20, logger));
     });
 
