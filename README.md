@@ -35,6 +35,20 @@ logDecorator(logger)(function (a, b, c) {
 
 Requiring the library
 =====================
+You can either:
+```js
+var memoizeDecorator = require('callback-decorators/callback/memoize');
+```
+or
+```js
+var memoizeDecorator = require('callback-decorators').callback.memoize;
+```
+or
+```js
+var callbackDecorators = require('callback-decorators');
+var memoizeDecorator = callbackDecorators.callback.memoize;
+```
+I stringly advice to use the first way, especially for using it in the browser. It allows to import only the functions you are actually using.
 
 
 About the logger
@@ -47,6 +61,7 @@ It is called for certain event and it is useful to logging what is happening.
 
 Decorators
 ==========
+The examples are related to the callback version. Just import the promise version in case of decorating promise based functions.
 
 Memoize
 -------
