@@ -72,7 +72,7 @@ If a function takes to much, returns a timeout exception
 ```js
 var timeoutDecorator = require('callback-decorators/src/timeout-decorator');
 
-var timeout20 = timeout(20, logger);
+var timeout20 = timeoutDecorator(20, logger);
 timeout20(function (..., cb) { .... });
 ```
 This will wait 20 ms before returning a TimeoutError.
