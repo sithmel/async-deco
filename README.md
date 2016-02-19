@@ -1,9 +1,41 @@
 Callback decorators
 ===================
-This is a collection of function decorators designed to work with functions using callbacks.
-The callback must follow the node convention: error, value.
-Most of them are designed to make a function call more robust and reliable.
+This is a collection of function decorators designed to work with functions using callbacks or promises.
+In case of callback, it must follow the node convention: the first argument should be an error instance error, the second should the the output of the function.
+Most of them are designed to make an asynchronous function call more robust and reliable.
 They can be combined together using the "compose" function (included).
+
+Callback and promises
+=====================
+Every decorator is available in two different flavour: 
+* callback based:
+```js
+var logDecorator = require('callback-decorators/callback/log');
+```
+This should be applied to functions with the node callback convention:
+```js
+logDecorator(logger)(function (a, b, c, next) {
+  ...
+  next(undefined, result); // or next(error);
+});
+```
+* and promise based:
+```js
+var logDecorator = require('callback-decorators/promise/log');
+```
+This should be used for function returning promises:
+```js
+logDecorator(logger)(function (a, b, c) {
+  return new Promise(function (resolve, reject) {
+    ...
+    resolve(result); // or reject(error);    
+  });
+});
+```
+
+Requiring the library
+=====================
+
 
 About the logger
 ----------------
@@ -13,25 +45,14 @@ function (type, obj)
 ```
 It is called for certain event and it is useful to logging what is happening.
 
-Callbackify
------------
-Convert a synchronous/promise based function to a plain callback.
-```js
-var callbackify = require('callback-decorators/src/callbackify-decorator');
-
-var func = callbackify(function (a, b){
-  return a + b;
-});
-func(4, 6, function (err, result){
-  ... // result === 10 here
-})
-```
+Decorators
+==========
 
 Memoize
 -------
 It allows to remember the last results
 ```js
-var memoizeDecorator = require('callback-decorators/src/memoize-decorator');
+var memoizeDecorator = require('callback-decorators/callback/memoize');
 
 var simpleMemoize = memoizeDecorator(getKey, logger);
 simpleMemoize(function (..., cb) { .... });
@@ -44,7 +65,7 @@ Fallback
 --------
 If a function fails, calls another one
 ```js
-var fallbackDecorator = require('callback-decorators/src/fallback-decorator');
+var fallbackDecorator = require('callback-decorators/callback/fallback');
 
 var fallback = fallbackDecorator(function (err, a, b, c, func) {
   func(undefined, 'giving up');
@@ -60,7 +81,7 @@ Log
 ---
 Logs when a function start, end and fail
 ```js
-ar logDecorator = require('callback-decorators/src/log-decorator');
+ar logDecorator = require('callback-decorators/callback/log');
 
 var addLogs = logDecorator(logger);
 addLogs(function (..., cb) { .... });
@@ -70,9 +91,9 @@ Timeout
 -------
 If a function takes to much, returns a timeout exception
 ```js
-var timeoutDecorator = require('callback-decorators/src/timeout-decorator');
+var timeoutDecorator = require('callback-decorators/callback/timeout');
 
-var timeout20 = timeout(20, logger);
+var timeout20 = timeoutDecorator(20, logger);
 timeout20(function (..., cb) { .... });
 ```
 This will wait 20 ms before returning a TimeoutError.
@@ -84,7 +105,7 @@ Retry
 -----
 If a function fails it retry
 ```js
-var retryDecorator = require('callback-decorators/src/retry-decorator');
+var retryDecorator = require('callback-decorators/callback/retry');
 
 var retryTenTimes = retryDecorator(10, 0, Error, logger);
 retryTenTimes(function (..., cb) { .... });
@@ -95,11 +116,28 @@ You can initialise the decorator with 3 arguments:
 * error instance for deciding to retry, or function taking error and result (if it returns true it'll trigger the retry)
 * logger function
 
+Utilities
+=========
+
+Callbackify
+-----------
+Convert a synchronous/promise based function to a plain callback.
+```js
+var callbackify = require('callback-decorators/utils/callbackify');
+
+var func = callbackify(function (a, b){
+  return a + b;
+});
+func(4, 6, function (err, result){
+  ... // result === 10 here
+})
+```
+
 Compose
 -------
 It can combine more than one decorators.
 ```js
-var compose = require('callback-decorators/src/compose');
+var compose = require('callback-decorators/utils/compose');
 
 var decorator = compose(
   retryDecorator(10, Error, logger),

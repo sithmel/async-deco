@@ -1,8 +1,8 @@
 var assert = require('chai').assert;
-var timeout = require('../src/timeout-decorator');
-var TimeoutError = require('../src/timeout-error');
+var timeout = require('../../callback/timeout');
+var TimeoutError = require('../../errors/timeout-error');
 
-describe('timeout', function () {
+describe('timeout (callback)', function () {
   var timeout20;
   var log;
 

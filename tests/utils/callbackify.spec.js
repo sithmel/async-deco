@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var callbackify = require('../src/callbackify-decorator');
+var callbackify = require('../../utils/callbackify');
 
 describe('callbackify', function () {
   it('must convert simple function', function (done) {

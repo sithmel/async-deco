@@ -1,5 +1,5 @@
-function logDecorator(logger) {
-  return function (func) {
+function logDecorator(wrapper, logger) {
+  return wrapper(function (func) {
     return function () {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
@@ -21,7 +21,7 @@ function logDecorator(logger) {
       logger('start');
       func.apply(context, args);
     };
-  };
+  });
 }
 
 module.exports = logDecorator;

@@ -1,8 +1,8 @@
-function memoizeDecorator(getKey, logger) {
+function memoizeDecorator(wrapper, getKey, logger) {
   var cache = {};
   logger = logger || function () {};
   getKey = getKey || function () { return '_default'; };
-  return function (func) {
+  return wrapper(function (func) {
     return function () {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
@@ -22,7 +22,7 @@ function memoizeDecorator(getKey, logger) {
         func.apply(context, args);
       }
     };
-  };
+  });
 }
 
 module.exports = memoizeDecorator;

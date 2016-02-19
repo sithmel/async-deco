@@ -1,8 +1,8 @@
-var TimeoutError = require('./timeout-error');
+var TimeoutError = require('../errors/timeout-error');
 
-function timeout(ms, logger) {
+function timeout(wrapper, ms, logger) {
   logger = logger || function () {};
-  return function (func) {
+  return wrapper(function (func) {
     return function () {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
@@ -32,7 +32,7 @@ function timeout(ms, logger) {
 
       func.apply(context, args);
     };
-  };
+  });
 }
 
 module.exports = timeout;

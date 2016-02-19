@@ -1,7 +1,7 @@
 var assert = require('chai').assert;
-var fallbackDecorator = require('../src/fallback-decorator');
+var fallbackDecorator = require('../../promise/fallback');
 
-describe('fallback-decorator', function () {
+describe('fallback (promise)', function () {
   var fallback;
   var log;
 
@@ -17,10 +17,12 @@ describe('fallback-decorator', function () {
   });
 
   it('must pass', function (done) {
-    var f = fallback(function (a, b, c, next) {
-      next(undefined, a + b + c);
+    var f = fallback(function (a, b, c) {
+      return new Promise(function (resolve, reject) {
+        resolve(a + b + c);
+      });
     });
-    f(1, 2, 3, function (err, dep) {
+    f(1, 2, 3).then(function (dep) {
       assert.equal(dep, 6);
       assert.equal(log.length, 0);
       done();
@@ -28,8 +30,10 @@ describe('fallback-decorator', function () {
   });
 
   it('must fallback', function (done) {
-    var f = fallback(function (a, b, c, next) {
-      next(new Error('error!'));
+    var f = fallback(function (a, b, c) {
+      return new Promise(function (resolve, reject) {
+        reject(new Error('error!'));
+      });
     });
     f(1, 2, 3, function (err, dep) {
       assert.equal(dep, 'giving up');

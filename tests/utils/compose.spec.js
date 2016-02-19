@@ -1,9 +1,9 @@
 var assert = require('chai').assert;
-var compose = require('../src/compose');
-var callbackify = require('../src/callbackify-decorator');
-var fallbackDecorator = require('../src/fallback-decorator');
-var timeoutDecorator = require('../src/timeout-decorator');
-var retryDecorator = require('../src/retry-decorator');
+var compose = require('../../utils/compose');
+var callbackify = require('../../utils/callbackify');
+var fallbackDecorator = require('../../callback/fallback');
+var timeoutDecorator = require('../../callback/timeout');
+var retryDecorator = require('../../callback/retry');
 
 
 describe('compose', function () {
@@ -27,7 +27,7 @@ describe('compose', function () {
 
       decorator = compose(
         fallbackDecorator(function (err, a, b, c, func) {
-          func(err, 'no value');
+          func(null, 'no value');
         }, Error, logger),
         retryDecorator(2, undefined, Error, logger),
         timeoutDecorator(20, logger));

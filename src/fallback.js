@@ -1,4 +1,4 @@
-function fallbackDecorator(fallbackFunction, error, logger) {
+function fallbackDecorator(wrapper, fallbackFunction, error, logger) {
   var condition;
   error = error || Error;
   logger = logger || function () {};
@@ -8,7 +8,7 @@ function fallbackDecorator(fallbackFunction, error, logger) {
   else {
     condition = error;
   }
-  return function (func) {
+  return wrapper(function (func) {
     return function () {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
@@ -26,7 +26,7 @@ function fallbackDecorator(fallbackFunction, error, logger) {
 
       func.apply(context, args);
     };
-  };
+  });
 }
 
 module.exports = fallbackDecorator;

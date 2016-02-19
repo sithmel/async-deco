@@ -1,6 +1,6 @@
 
 
-function retryDecorator(times, interval, error, logger) {
+function retryDecorator(wrapper, times, interval, error, logger) {
   var condition;
   times = times || Infinity;
   error = error || Error;
@@ -16,7 +16,7 @@ function retryDecorator(times, interval, error, logger) {
   else {
     condition = error;
   }
-  return function (func) {
+  return wrapper(function (func) {
     return function () {
       var counter = 0;
       var context = this;
@@ -47,7 +47,7 @@ function retryDecorator(times, interval, error, logger) {
       };
       retry();
     };
-  };
+  });
 }
 
 module.exports = retryDecorator;

@@ -1,7 +1,7 @@
 var assert = require('chai').assert;
-var retryDecorator = require('../src/retry-decorator');
+var retryDecorator = require('../../promise/retry');
 
-describe('retry decorator', function () {
+describe('retry (promise)', function () {
   var retryTenTimes;
   var retryTwiceOnNull;
   var retryTwiceOnTypeError;
@@ -22,12 +22,14 @@ describe('retry decorator', function () {
 
   it('must pass simple function', function (done) {
     var c = 0;
-    var func = retryTenTimes(function (cb) {
-      c++;
-      cb(null, 'done');
+    var func = retryTenTimes(function () {
+      return new Promise(function (resolve, reject) {
+        c++;
+        resolve('done');
+      });
     });
 
-    func(function (err, res) {
+    func().then(function (res) {
       assert.equal(res, 'done');
       assert.equal(c, 1);
       assert.equal(log.length, 0);
@@ -37,12 +39,14 @@ describe('retry decorator', function () {
 
   it('must throw always', function (done) {
     var c = 0;
-    var func = retryTenTimes(function (cb) {
-      c++;
-      cb(new Error('error'));
+    var func = retryTenTimes(function () {
+      return new Promise(function (resolve, reject) {
+        c++;
+        reject(new Error('error'));
+      });
     });
 
-    func(function (err, res) {
+    func().catch(function (err, res) {
       assert.isUndefined(res);
       assert.instanceOf(err, Error);
       assert.equal(c, 10);
@@ -55,15 +59,17 @@ describe('retry decorator', function () {
 
   it('must throw and then success', function (done) {
     var c = 0;
-    var func = retryTenTimes(function (cb) {
-      c++;
-      if (c === 5) {
-        return cb(null, 'done');
-      }
-      cb(new Error('error'));
+    var func = retryTenTimes(function () {
+      return new Promise(function (resolve, reject) {
+        c++;
+        if (c === 5) {
+          return resolve('done');
+        }
+        reject(new Error('error'));
+      });
     });
 
-    func(function (err, res) {
+    func().then(function (res) {
       assert.equal(res, 'done');
       assert.equal(c, 5);
       done();
@@ -72,12 +78,14 @@ describe('retry decorator', function () {
 
   it('must work on custom condition', function (done) {
     var c = 0;
-    var func = retryTwiceOnNull(function (cb) {
-      c++;
-      cb(null, c === 0 ? null : 'done');
+    var func = retryTwiceOnNull(function () {
+      return new Promise(function (resolve, reject) {
+        c++;
+        resolve(c === 0 ? null : 'done');
+      });
     });
 
-    func(function (err, res) {
+    func().then(function (res) {
       assert.equal(res, 'done');
       assert.equal(c, 1);
       done();
@@ -86,12 +94,19 @@ describe('retry decorator', function () {
 
   it('must work on custom error', function (done) {
     var c = 0;
-    var func = retryTwiceOnTypeError(function (cb) {
-      c++;
-      cb(c === 0 ? new TypeError('error') : null, 'done');
+    var func = retryTwiceOnTypeError(function () {
+      return new Promise(function (resolve, reject) {
+        c++;
+        if (c === 0) {
+          reject(new TypeError('error'));
+        }
+        else {
+          resolve('done');
+        }
+      });
     });
 
-    func(function (err, res) {
+    func().then(function (res) {
       assert.equal(res, 'done');
       assert.equal(c, 1);
       done();
@@ -100,12 +115,19 @@ describe('retry decorator', function () {
 
   it('must retry forever', function (done) {
     var c = 0;
-    var func = retryForever(function (cb) {
+    var func = retryForever(function () {
       c++;
-      cb(c < 100 ? new Error('error') : null, 'done');
+      return new Promise(function (resolve, reject) {
+        if (c < 100) {
+          reject(new Error('error'));
+        }
+        else {
+          resolve('done');
+        }
+      });
     });
 
-    func(function (err, res) {
+    func().then(function (res) {
       assert.equal(res, 'done');
       assert.equal(c, 100);
       done();
