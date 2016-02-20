@@ -1,6 +1,6 @@
 {
   "name": "callback-decorators",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A collection of decorators you can use to wrap functions (callback or promise based) to make them more robust",
   "main": "index.js",
   "scripts": {
