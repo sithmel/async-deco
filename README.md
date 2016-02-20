@@ -76,6 +76,20 @@ It takes 2 arguments:
 * an optional getKey function: when it runs against the original arguments it returns the key used for the caching
 * a logger function (logs "cachehit")
 
+Cache
+-----
+It is a more sophisticated version of the memoize decorator. It can be used to for caching in a db/file etc (You may have to write your own cache object).
+memoize-cache is an in-memory reference implementation (https://github.com/sithmel/memoize-cache).
+```js
+var cacheDecorator = require('callback-decorators/callback/cache');
+
+var cached = cacheDecorator(cache, logger);
+cached(function (..., cb) { .... });
+```
+It takes 2 arguments:
+* a cache object. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
+* a logger function (logs "cachehit")
+
 Fallback
 --------
 If a function fails, calls another one
