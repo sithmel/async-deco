@@ -15,6 +15,20 @@ describe('compose', function () {
     assert.equal(f(3), 19);
   });
 
+  it('must ignore undefined', function () {
+    var square = function (n) { return n*n; };
+    var add10  = function (n) { return n + 10; };
+    var f = compose(add10, undefined, square);
+    assert.equal(f(3), 19);
+  });
+
+  it('can take an array as argument', function () {
+    var square = function (n) { return n*n; };
+    var add10  = function (n) { return n + 10; };
+    var f = compose([add10, undefined, square]);
+    assert.equal(f(3), 19);
+  });
+
   describe('complex functions', function () {
     var decorator;
     var log;

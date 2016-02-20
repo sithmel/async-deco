@@ -7,7 +7,7 @@ They can be combined together using the "compose" function (included).
 
 Callback and promises
 =====================
-Every decorator is available in two different flavours: 
+Every decorator is available in two different flavours:
 * callback based:
 ```js
 var logDecorator = require('callback-decorators/callback/log');
@@ -150,7 +150,7 @@ func(4, 6, function (err, result){
 
 Compose
 -------
-It can combine more than one decorators.
+It can combine more than one decorators. You can pass either an array or using multiple arguments. "undefined" functions are ignored.
 ```js
 var compose = require('callback-decorators/utils/compose');
 
