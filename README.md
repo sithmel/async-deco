@@ -1,13 +1,13 @@
 Callback decorators
 ===================
-This is a collection of function decorators designed to work with functions using callbacks or promises.
-In case of callback, it must follow the node convention: the first argument should be an error instance error, the second should the the output of the function.
+This is a collection of function decorators designed to work with functions using a callback or returning a promise.
+In case of callback, it must follow the node convention: the callback should be the last argument and its arguments should be, an error instance and the output of the function.
 Most of them are designed to make an asynchronous function call more robust and reliable.
 They can be combined together using the "compose" function (included).
 
 Callback and promises
 =====================
-Every decorator is available in two different flavour: 
+Every decorator is available in two different flavours: 
 * callback based:
 ```js
 var logDecorator = require('callback-decorators/callback/log');
@@ -48,16 +48,16 @@ or
 var callbackDecorators = require('callback-decorators');
 var memoizeDecorator = callbackDecorators.callback.memoize;
 ```
-I stringly advice to use the first way, especially for using it in the browser. It allows to import only the functions you are actually using.
-
+I strongly advice to use the first method, especially when using browserify. It allows to import only the functions you are actually using.
 
 About the logger
 ----------------
-Many decorators can have a logger. It is a function with this signature:
+You can pass a logger to the decorators. It is a function with this signature:
 ```js
 function (type, obj)
 ```
-It is called for certain event and it is useful to logging what is happening.
+* Type is the type of event to log
+* obj contains useful informations, depending on the type
 
 Decorators
 ==========
@@ -74,7 +74,7 @@ simpleMemoize(function (..., cb) { .... });
 ```
 It takes 2 arguments:
 * an optional getKey function: when it runs against the original arguments it returns the key used for the caching
-* logger function
+* a logger function (logs "cachehit")
 
 Fallback
 --------
@@ -90,7 +90,7 @@ fallback(function (..., cb) { .... });
 It takes 3 arguments:
 * fallback function. It takes the err, and the original arguments.
 * error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback)
-* logger function
+* logger function (logs "fallback")
 
 Log
 ---
@@ -114,11 +114,11 @@ timeout20(function (..., cb) { .... });
 This will wait 20 ms before returning a TimeoutError.
 It takes 2 arguments:
 * time in ms
-* a logger function
+* a logger function (logs "timeout")
 
 Retry
 -----
-If a function fails it retry
+If a function fails it retry it again
 ```js
 var retryDecorator = require('callback-decorators/callback/retry');
 
@@ -129,7 +129,7 @@ You can initialise the decorator with 3 arguments:
 * number of retries
 * interval for trying again (number of a function based on the number of times)
 * error instance for deciding to retry, or function taking error and result (if it returns true it'll trigger the retry)
-* logger function
+* logger function (logs "retry")
 
 Utilities
 =========
