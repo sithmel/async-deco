@@ -1,4 +1,4 @@
-function fallbackDecorator(wrapper, fallbackFunction, error, logger) {
+function fallbackCacheDecorator(wrapper, cache, error, logger) {
   var condition;
   error = error || Error;
   logger = logger || function () {};
@@ -8,6 +8,7 @@ function fallbackDecorator(wrapper, fallbackFunction, error, logger) {
   else {
     condition = error;
   }
+
   return wrapper(function (func) {
     return function () {
       var context = this;
@@ -16,11 +17,20 @@ function fallbackDecorator(wrapper, fallbackFunction, error, logger) {
 
       args[args.length - 1] = function (err, dep) {
         if (condition(err, dep)) {
-          logger('fallback', {actualResult: {err: err, res: dep}});
-          fallbackFunction.apply(context, [err].concat(args.slice(0, -1), cb));
+          cache.query(args, function (e, cacheQuery) {
+            if (!e && cacheQuery.cached === true) {
+              logger('fallback-cachehit', {key: cacheQuery.key, result: cacheQuery.hit, actualResult: {err: err, res: dep}});
+              cb(undefined, cacheQuery.hit);
+            }
+            else {
+              cb(err, dep);
+            }
+          });
         }
         else {
-          cb(err, dep);
+          cache.push(args, dep, function () {
+            cb(err, dep);
+          });
         }
       };
 
@@ -29,4 +39,4 @@ function fallbackDecorator(wrapper, fallbackFunction, error, logger) {
   });
 }
 
-module.exports = fallbackDecorator;
+module.exports = fallbackCacheDecorator;

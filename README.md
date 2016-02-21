@@ -106,6 +106,20 @@ It takes 3 arguments:
 * error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback)
 * logger function (logs "fallback")
 
+Fallback cache
+--------------
+If a function fails, it tries to use a previous cached result
+```js
+var fallbackCacheDecorator = require('callback-decorators/callback/fallback-cache');
+
+var fallback = fallbackCacheDecorator(cache, Error, logger);
+fallback(function (..., cb) { .... });
+```
+It takes 3 arguments:
+* a cache object. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
+* error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback)
+* logger function (logs "fallback-cache")
+
 Log
 ---
 Logs when a function start, end and fail

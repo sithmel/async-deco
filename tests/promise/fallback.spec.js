@@ -35,9 +35,9 @@ describe('fallback (promise)', function () {
         reject(new Error('error!'));
       });
     });
-    f(1, 2, 3, function (err, dep) {
+    f(1, 2, 3).then(function (dep) {
       assert.equal(dep, 'giving up');
-      assert.deepEqual(log[0], {type: 'fallback', obj: {}});
+      assert.deepEqual(log[0], {type: 'fallback', obj: { actualResult: {err: new Error('error!'), res: undefined}}});
       done();
     });
   });

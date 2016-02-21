@@ -5,6 +5,7 @@ var fallbackDecorator = require('../../callback/fallback');
 var timeoutDecorator = require('../../callback/timeout');
 var retryDecorator = require('../../callback/retry');
 var promiseTranslator = require('../../src/promise-translator');
+var TimeoutError = require('../../errors/timeout-error');
 
 describe('compose promises', function () {
   var decorator;
@@ -49,11 +50,12 @@ describe('compose promises', function () {
 
     f(1, 2, 3).then(function (dep) {
       assert.equal(dep, 'no value');
-      assert.deepEqual(log,
-        [ { type: 'timeout', obj: { ms: 20 } },
-          { type: 'retry', obj: { times: 1 } },
-          { type: 'timeout', obj: { ms: 20 } },
-          { type: 'fallback', obj: {} } ]);
+      assert.deepEqual(log[0], { type: 'timeout', obj: { ms: 20 }});
+      assert.deepEqual(log[1], { type: 'retry', obj: { times: 1 }});
+      assert.deepEqual(log[2], { type: 'timeout', obj: { ms: 20 }});
+      assert.equal(log[3].type, 'fallback');
+      assert.isUndefined(log[3].obj.actualResult.res);
+      assert.instanceOf(log[3].obj.actualResult.err, TimeoutError);
       done();
     });
   });
@@ -66,7 +68,7 @@ describe('compose promises', function () {
       return new Promise(function (resolve, reject) {
         setTimeout(function () {
           resolve(a + b + c);
-        }, 30/counter);        
+        }, 30/counter);
       });
     });
 

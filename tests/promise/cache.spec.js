@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 var Cache = require('memoize-cache');
 var cacheDecorator = require('../../promise/cache');
 
-describe('cache (callback)', function () {
+describe('cache (promise)', function () {
   var cached;
   var log;
 
