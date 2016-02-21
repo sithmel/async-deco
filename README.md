@@ -1,5 +1,8 @@
 Callback decorators
 ===================
+
+**This package has been replaced by async-deco**
+
 This is a collection of function decorators designed to work with functions using a callback or returning a promise.
 In case of callback, it must follow the node convention: the callback should be the last argument and its arguments should be, an error instance and the output of the function.
 Most of them are designed to make an asynchronous function call more robust and reliable.
