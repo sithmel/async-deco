@@ -176,6 +176,20 @@ func(4, 6, function (err, result){
 })
 ```
 
+Promisify
+---------
+Convert a callback based function to a function returning a promise. (It uses https://www.npmjs.com/package/es6-promisify)
+```js
+var promisify = require('async-deco/utils/promisify');
+
+var func = promisify(function (a, b, next){
+  return next(undefined, a + b);
+});
+func(4, 6).then(function (result){
+  ... // result === 10 here
+})
+```
+
 Compose
 -------
 It can combine more than one decorators. You can pass either an array or using multiple arguments. "undefined" functions are ignored.
