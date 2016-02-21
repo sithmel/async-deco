@@ -1,8 +1,5 @@
-Callback decorators
-===================
-
-**This package has been replaced by async-deco**
-
+async-deco
+==========
 This is a collection of function decorators designed to work with functions using a callback or returning a promise.
 In case of callback, it must follow the node convention: the callback should be the last argument and its arguments should be, an error instance and the output of the function.
 Most of them are designed to make an asynchronous function call more robust and reliable.
@@ -13,7 +10,7 @@ Callback and promises
 Every decorator is available in two different flavours:
 * callback based:
 ```js
-var logDecorator = require('callback-decorators/callback/log');
+var logDecorator = require('async-deco/callback/log');
 ```
 This should be applied to functions with the node callback convention:
 ```js
@@ -24,7 +21,7 @@ logDecorator(logger)(function (a, b, c, next) {
 ```
 * and promise based:
 ```js
-var logDecorator = require('callback-decorators/promise/log');
+var logDecorator = require('async-deco/promise/log');
 ```
 This should be used for function returning promises:
 ```js
@@ -40,15 +37,15 @@ Requiring the library
 =====================
 You can either:
 ```js
-var memoizeDecorator = require('callback-decorators/callback/memoize');
+var memoizeDecorator = require('async-deco/callback/memoize');
 ```
 or
 ```js
-var memoizeDecorator = require('callback-decorators').callback.memoize;
+var memoizeDecorator = require('async-deco').callback.memoize;
 ```
 or
 ```js
-var callbackDecorators = require('callback-decorators');
+var callbackDecorators = require('async-deco');
 var memoizeDecorator = callbackDecorators.callback.memoize;
 ```
 I strongly advice to use the first method, especially when using browserify. It allows to import only the functions you are actually using.
@@ -70,7 +67,7 @@ Memoize
 -------
 It allows to remember the last results
 ```js
-var memoizeDecorator = require('callback-decorators/callback/memoize');
+var memoizeDecorator = require('async-deco/callback/memoize');
 
 var simpleMemoize = memoizeDecorator(getKey, logger);
 simpleMemoize(function (..., cb) { .... });
@@ -84,7 +81,7 @@ Cache
 It is a more sophisticated version of the memoize decorator. It can be used to for caching in a db/file etc (You may have to write your own cache object).
 memoize-cache is an in-memory reference implementation (https://github.com/sithmel/memoize-cache).
 ```js
-var cacheDecorator = require('callback-decorators/callback/cache');
+var cacheDecorator = require('async-deco/callback/cache');
 
 var cached = cacheDecorator(cache, logger);
 cached(function (..., cb) { .... });
@@ -97,7 +94,7 @@ Fallback
 --------
 If a function fails, calls another one
 ```js
-var fallbackDecorator = require('callback-decorators/callback/fallback');
+var fallbackDecorator = require('async-deco/callback/fallback');
 
 var fallback = fallbackDecorator(function (err, a, b, c, func) {
   func(undefined, 'giving up');
@@ -113,7 +110,7 @@ Fallback cache
 --------------
 If a function fails, it tries to use a previous cached result
 ```js
-var fallbackCacheDecorator = require('callback-decorators/callback/fallback-cache');
+var fallbackCacheDecorator = require('async-deco/callback/fallback-cache');
 
 var fallback = fallbackCacheDecorator(cache, Error, logger);
 fallback(function (..., cb) { .... });
@@ -127,7 +124,7 @@ Log
 ---
 Logs when a function start, end and fail
 ```js
-ar logDecorator = require('callback-decorators/callback/log');
+ar logDecorator = require('async-deco/callback/log');
 
 var addLogs = logDecorator(logger);
 addLogs(function (..., cb) { .... });
@@ -137,7 +134,7 @@ Timeout
 -------
 If a function takes to much, returns a timeout exception
 ```js
-var timeoutDecorator = require('callback-decorators/callback/timeout');
+var timeoutDecorator = require('async-deco/callback/timeout');
 
 var timeout20 = timeoutDecorator(20, logger);
 timeout20(function (..., cb) { .... });
@@ -151,7 +148,7 @@ Retry
 -----
 If a function fails it retry it again
 ```js
-var retryDecorator = require('callback-decorators/callback/retry');
+var retryDecorator = require('async-deco/callback/retry');
 
 var retryTenTimes = retryDecorator(10, 0, Error, logger);
 retryTenTimes(function (..., cb) { .... });
@@ -169,7 +166,7 @@ Callbackify
 -----------
 Convert a synchronous/promise based function to a plain callback.
 ```js
-var callbackify = require('callback-decorators/utils/callbackify');
+var callbackify = require('async-deco/utils/callbackify');
 
 var func = callbackify(function (a, b){
   return a + b;
@@ -183,7 +180,7 @@ Compose
 -------
 It can combine more than one decorators. You can pass either an array or using multiple arguments. "undefined" functions are ignored.
 ```js
-var compose = require('callback-decorators/utils/compose');
+var compose = require('async-deco/utils/compose');
 
 var decorator = compose(
   retryDecorator(10, Error, logger),
