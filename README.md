@@ -1,5 +1,7 @@
 async-deco
 ==========
+[![Build Status](https://travis-ci.org/sithmel/diogenes.svg?branch=master)](https://travis-ci.org/sithmel/diogenes)
+
 This is a collection of function decorators designed to work with functions using a callback or returning a promise.
 In case of callbacks, it must follow the [node convention](https://docs.nodejitsu.com/articles/errors/what-are-the-error-conventions): the callback should be the last argument and its arguments should be, an error instance and the output of the function.
 Most of them are designed to make an asynchronous function call more robust and reliable.
@@ -73,8 +75,8 @@ var simpleMemoize = memoizeDecorator(getKey, logger);
 simpleMemoize(function (..., cb) { .... });
 ```
 It takes 2 arguments:
-* an optional getKey function: when it runs against the original arguments it returns the key used for the caching
-* a logger function (logs "cachehit")
+* a getKey function [optional]: when it runs against the original arguments it returns the key used for the caching. If it is missing the function memoize the first result and returns always the same.
+* a logger function (logs "cachehit") [optional]
 
 Cache
 -----
@@ -87,8 +89,8 @@ var cached = cacheDecorator(cache, logger);
 cached(function (..., cb) { .... });
 ```
 It takes 2 arguments:
-* a cache object. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
-* a logger function (logs "cachehit")
+* a cache object [mandatory]. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
+* a logger function (logs "cachehit") [optional]
 
 Fallback
 --------
@@ -102,9 +104,9 @@ var fallback = fallbackDecorator(function (err, a, b, c, func) {
 fallback(function (..., cb) { .... });
 ```
 It takes 3 arguments:
-* fallback function. It takes the err, and the original arguments.
-* error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback)
-* logger function (logs "fallback")
+* fallback function [mandatory]. It takes the err, and the original arguments.
+* error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback) [optional, it falls back on any error by default]
+* logger function (logs "fallback") [optional]
 
 Fallback value
 --------------
@@ -116,9 +118,9 @@ var fallback = fallbackValueDecorator('giving up', Error, logger);
 fallback(function (..., cb) { .... });
 ```
 It takes 3 arguments:
-* fallback value.
-* error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback)
-* logger function (logs "fallback")
+* fallback value [mandatory]
+* error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback) [optional, it falls back on any error by default]
+* logger function (logs "fallback") [optional]
 
 Fallback cache
 --------------
@@ -130,9 +132,9 @@ var fallback = fallbackCacheDecorator(cache, Error, logger);
 fallback(function (..., cb) { .... });
 ```
 It takes 3 arguments:
-* a cache object. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
-* error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback)
-* logger function (logs "fallback-cache")
+* a cache object [mandatory]. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
+* error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback) [optional, it falls back on any error by default]
+* logger function (logs "fallback-cache") [optional]
 
 Log
 ---
@@ -155,8 +157,8 @@ timeout20(function (..., cb) { .... });
 ```
 This will wait 20 ms before returning a TimeoutError.
 It takes 2 arguments:
-* time in ms
-* a logger function (logs "timeout")
+* time in ms [mandatory]
+* a logger function (logs "timeout") [optional]
 
 Retry
 -----
@@ -168,10 +170,10 @@ var retryTenTimes = retryDecorator(10, 0, Error, logger);
 retryTenTimes(function (..., cb) { .... });
 ```
 You can initialise the decorator with 3 arguments:
-* number of retries
-* interval for trying again (number of a function based on the number of times)
-* error instance for deciding to retry, or function taking error and result (if it returns true it'll trigger the retry)
-* logger function (logs "retry")
+* number of retries [optional, it defaults to Infinity]
+* interval for trying again (number of a function based on the number of times) [optional, it defaults to 0]
+* error instance for deciding to retry, or function taking error and result (if it returns true it'll trigger the retry) [optional, it falls back on any error by default]
+* logger function (logs "retry") [optional]
 
 Limit
 -----
@@ -183,8 +185,8 @@ var limitToTwo = limitDecorator(2, logger);
 limitToTwo(function (..., cb) { .... });
 ```
 You can initialise the decorator with 2 arguments:
-* number of parallel execution
-* logger function (logs "limit" when a function gets queued)
+* number of parallel execution [mandatory]
+* logger function (logs "limit" when a function gets queued) [optional]
 
 Utilities
 =========
