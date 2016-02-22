@@ -1,7 +1,7 @@
 async-deco
 ==========
 This is a collection of function decorators designed to work with functions using a callback or returning a promise.
-In case of callback, it must follow the node convention: the callback should be the last argument and its arguments should be, an error instance and the output of the function.
+In case of callbacks, it must follow the [node convention](https://docs.nodejitsu.com/articles/errors/what-are-the-error-conventions): the callback should be the last argument and its arguments should be, an error instance and the output of the function.
 Most of them are designed to make an asynchronous function call more robust and reliable.
 They can be combined together using the "compose" function (included).
 
@@ -106,6 +106,20 @@ It takes 3 arguments:
 * error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback)
 * logger function (logs "fallback")
 
+Fallback value
+--------------
+If a function fails, returns a value
+```js
+var fallbackValueDecorator = require('async-deco/callback/fallback-value');
+
+var fallback = fallbackValueDecorator('giving up', Error, logger);
+fallback(function (..., cb) { .... });
+```
+It takes 3 arguments:
+* fallback value.
+* error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback)
+* logger function (logs "fallback")
+
 Fallback cache
 --------------
 If a function fails, it tries to use a previous cached result
@@ -146,7 +160,7 @@ It takes 2 arguments:
 
 Retry
 -----
-If a function fails it retry it again
+If a function fails, it retry running it again
 ```js
 var retryDecorator = require('async-deco/callback/retry');
 
@@ -158,6 +172,19 @@ You can initialise the decorator with 3 arguments:
 * interval for trying again (number of a function based on the number of times)
 * error instance for deciding to retry, or function taking error and result (if it returns true it'll trigger the retry)
 * logger function (logs "retry")
+
+Limit
+-----
+Limit the parallel execution of a function.
+```js
+var limitDecorator = require('async-deco/callback/limit');
+
+var limitToTwo = limitDecorator(2, logger);
+limitToTwo(function (..., cb) { .... });
+```
+You can initialise the decorator with 2 arguments:
+* number of parallel execution
+* logger function (logs "limit" when a function gets queued)
 
 Utilities
 =========
