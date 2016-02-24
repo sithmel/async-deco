@@ -2,14 +2,16 @@ var assert = require('chai').assert;
 var timeout = require('../../callback/timeout');
 var TimeoutError = require('../../errors/timeout-error');
 
-describe('timeout (callback)', function () {
+describe('timeout (promise)', function () {
   var timeout20;
   var log;
 
   beforeEach(function () {
     log = [];
-    var logger = function (type, obj) {
-      log.push({type: type, obj: obj});
+    var logger = function () {
+      return function (type, obj) {
+        log.push({type: type, obj: obj});
+      };
     };
 
     timeout20 = timeout(20, logger);

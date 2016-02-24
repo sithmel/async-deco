@@ -1,10 +1,13 @@
-function cacheDecorator(wrapper, cache, logger) {
-  logger = logger || function () {};
+var noopLogger = require('./noop-logger');
+
+function cacheDecorator(wrapper, cache, getlogger) {
+  getlogger = getlogger || noopLogger;
 
   return wrapper(function (func) {
     return function () {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
+      var logger = getlogger.apply(context, args);
       var cb = args[args.length - 1];
 
       args[args.length - 1] = function (err, dep) {

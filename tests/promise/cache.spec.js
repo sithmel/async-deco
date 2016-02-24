@@ -8,9 +8,12 @@ describe('cache (promise)', function () {
 
   beforeEach(function () {
     log = [];
-    var logger = function (type, obj) {
-      log.push({type: type, obj: obj});
+    var logger = function () {
+      return function (type, obj) {
+        log.push({type: type, obj: obj});
+      };
     };
+
     var cache = new Cache({key: function (a, b, c) {
       return a + b + c;
     }});

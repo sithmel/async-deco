@@ -10,8 +10,10 @@ describe('retry (promise)', function () {
 
   beforeEach(function () {
     log = [];
-    var logger = function (type, obj) {
-      log.push({type: type, obj: obj});
+    var logger = function () {
+      return function (type, obj) {
+        log.push({type: type, obj: obj});
+      };
     };
 
     retryTenTimes = retryDecorator(10, undefined, undefined, logger);

@@ -1,37 +1,57 @@
 require('setimmediate');
+var noopLogger = require('./noop-logger');
 
-function limitDecorator(wrapper, max, logger) {
-  var executionNumber = 0;
-  var queue = [];
-  logger = logger || function () {};
-
-  function runQueue() {
-    if (executionNumber >= max) {
-      logger('limit', { number: executionNumber });
-      return;
-    }
-    var f = queue.shift();
-    if (f) {
-      executionNumber++;
-      f();
-    }
-  }
+function limitDecorator(wrapper, max, getKey, getlogger) {
+  getKey = getKey || function () { return '_default'; };
+  getlogger = getlogger || noopLogger;
 
   return wrapper(function (func) {
+    var executionNumbers = {};
+    var queues = {};
+
     return function () {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
+      var logger = getlogger.apply(context, args);
       var cb = args[args.length - 1];
+      var cacheKey = getKey.apply(context, args).toString();
+
+      function runQueues() {
+        // should run ALL the queues
+        var cacheKey, f;
+        for (cacheKey in executionNumbers) {
+          if (executionNumbers[cacheKey] >= max) {
+            logger('limit', { number: executionNumbers[cacheKey], key: cacheKey });
+            continue;
+          }
+          f = queues[cacheKey].shift();
+          if (f) {
+            executionNumbers[cacheKey]++;
+            setImmediate(f);
+          }
+        }
+      }
+
+
+      if (!(cacheKey in executionNumbers)) {
+        executionNumbers[cacheKey] = 0;
+        queues[cacheKey] = [];
+      }
+
       args[args.length - 1] = function (err, dep) {
-        executionNumber--;
-        setImmediate(runQueue);
+        executionNumbers[cacheKey]--;
+        runQueues();
+        if (executionNumbers[cacheKey] === 0) {
+          delete executionNumbers[cacheKey];
+          delete queues[cacheKey];
+        }
         cb(err, dep);
       };
 
-      queue.push(function () {
+      queues[cacheKey].push(function () {
         func.apply(context, args);
       });
-      setImmediate(runQueue);
+      runQueues();
     };
   });
 }

@@ -2,10 +2,10 @@ async-deco
 ==========
 [![Build Status](https://travis-ci.org/sithmel/diogenes.svg?branch=master)](https://travis-ci.org/sithmel/diogenes)
 
-This is a collection of function decorators designed to work with functions using a callback or returning a promise.
-In case of callbacks, it must follow the [node convention](https://docs.nodejitsu.com/articles/errors/what-are-the-error-conventions): the callback should be the last argument and its arguments should be, an error instance and the output of the function.
-Most of them are designed to make an asynchronous function call more robust and reliable.
+This is a collection of function decorators. It allows to timeout, retry, throttle, limit and much more!
 They can be combined together using the "compose" function (included).
+
+All decorators are designed to work with functions using a callback or returning a promise. In case of callbacks, it must follow the [node convention](https://docs.nodejitsu.com/articles/errors/what-are-the-error-conventions): the callback should be the last argument and its arguments should be, an error instance and the output of the function.
 
 Callback and promises
 =====================
@@ -54,12 +54,21 @@ I strongly advice to use the first method, especially when using browserify. It 
 
 About the logger
 ----------------
-You can pass a logger to the decorators. It is a function with this signature:
+You can pass a logger to the decorators. This function is called with the same arguments of the original function and should return a function with this signature:
 ```js
 function (type, obj)
 ```
 * Type is the type of event to log
 * obj contains useful informations, depending on the type
+
+So for example, assuming that the first argument of the decorated function is a name:
+```js
+var logger = function (name) {
+  return function (type, obj) {
+    console.log(name + ': ' + type);
+  };
+};
+```
 
 Decorators
 ==========
@@ -187,6 +196,35 @@ limitToTwo(function (..., cb) { .... });
 You can initialise the decorator with 2 arguments:
 * number of parallel execution [mandatory]
 * logger function (logs "limit" when a function gets queued) [optional]
+
+Throttle
+--------
+It throttles or debounces the execution of a function. The callbacks returns normally with the result. Internally it uses the "getKey" function to group the callbacks into queues. It then executes the debounced (or throttled) function. When it returns a value it will run all the callbacks of the same queue.
+```js
+var debounceDecorator = require('async-deco/callback/debounce');
+
+var debounce = debounceDecorator(100, 'debounce', undefined, undefined, getLogger);
+debounce(function (..., cb) { .... });
+```
+The arguments:
+* delay [optional, default 0] the delay before the execution of the function (for debounce) or the number of milliseconds to throttle invocations to.
+* timingFunctionName [optional, default "throttle"] it can be the string "throttle" or "debounce"
+* options [optional] see below
+* getKey
+* logger function (logs "deduping" whenever is calling more than one callback with the same results)
+
+The options change meaning if they are related to the "throttle" or the "debounce":
+
+For the debounce:
+* leading [default false] (boolean): Specify invoking on the leading edge of the timeout.
+* maxWait (number): The maximum time func is allowed to be delayed before it’s invoked.
+* trailing [default true] (boolean): Specify invoking on the trailing edge of the timeout.
+
+For the throttle:
+* leading [default true] (boolean): Specify invoking on the leading edge of the timeout.
+* trailing [default true] (boolean): Specify invoking on the trailing edge of the timeout.
+
+For better understanding of throttle/debounce I suggest to read the "lodash" documentation and this article: https://css-tricks.com/the-difference-between-throttling-and-debouncing/.
 
 Utilities
 =========

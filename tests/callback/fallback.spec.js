@@ -7,8 +7,10 @@ describe('fallback (callback)', function () {
 
   beforeEach(function () {
     log = [];
-    var logger = function (type, obj) {
-      log.push({type: type, obj: obj});
+    var logger = function () {
+      return function (type, obj) {
+        log.push({type: type, obj: obj});
+      };
     };
 
     fallback = fallbackDecorator(function (err, a, b, c, func) {

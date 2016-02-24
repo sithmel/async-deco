@@ -7,8 +7,10 @@ describe('fallback-value (callback)', function () {
 
   beforeEach(function () {
     log = [];
-    var logger = function (type, obj) {
-      log.push({type: type, obj: obj});
+    var logger = function () {
+      return function (type, obj) {
+        log.push({type: type, obj: obj});
+      };
     };
 
     fallback = fallbackDecorator('giving up', undefined, logger);

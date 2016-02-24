@@ -1,7 +1,9 @@
-function fallbackValueDecorator(wrapper, fallbackValue, error, logger) {
+var noopLogger = require('./noop-logger');
+
+function fallbackValueDecorator(wrapper, fallbackValue, error, getlogger) {
   var condition;
   error = error || Error;
-  logger = logger || function () {};
+  getlogger = getlogger || noopLogger;
   if (error === Error || Error.isPrototypeOf(error)) {
     condition = function (err, dep) { return err instanceof error; };
   }
@@ -12,6 +14,7 @@ function fallbackValueDecorator(wrapper, fallbackValue, error, logger) {
     return function () {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
+      var logger = getlogger.apply(context, args);
       var cb = args[args.length - 1];
 
       args[args.length - 1] = function (err, dep) {

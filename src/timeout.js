@@ -1,11 +1,14 @@
 var TimeoutError = require('../errors/timeout-error');
+var noopLogger = require('./noop-logger');
 
-function timeout(wrapper, ms, logger) {
-  logger = logger || function () {};
+function timeout(wrapper, ms, getlogger) {
+  getlogger = getlogger || noopLogger;
+
   return wrapper(function (func) {
     return function () {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
+      var logger = getlogger.apply(context, args);
       var cb = args[args.length - 1];
 
       var timedout = false;

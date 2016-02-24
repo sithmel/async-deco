@@ -12,18 +12,20 @@ function timePassedFrom() {
 }
 
 describe('limit (callback)', function () {
-  var limiter;
+  var limitToOne, limitToTwo, limitToThree;
   var log;
 
   beforeEach(function () {
     log = [];
-    var logger = function (type, obj) {
-      log.push({type: type, obj: obj});
+    var logger = function () {
+      return function (type, obj) {
+        log.push({type: type, obj: obj});
+      };
     };
 
-    limitToOne = limitDecorator(1, logger);
-    limitToTwo = limitDecorator(2, logger);
-    limitToThree = limitDecorator(3, logger);
+    limitToOne = limitDecorator(1, undefined, logger);
+    limitToTwo = limitDecorator(2, undefined, logger);
+    limitToThree = limitDecorator(3, undefined, logger);
   });
 
   it('must limit to one function call', function (done) {
