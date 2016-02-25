@@ -43,7 +43,7 @@ describe('compose', function () {
       };
 
       decorator = compose(
-        fallbackDecorator(function (err, a, b, c, func) {
+        fallbackDecorator(function (a, b, c, func) {
           func(null, 'no value');
         }, Error, logger),
         retryDecorator(2, undefined, Error, logger),

@@ -20,7 +20,7 @@ describe('compose promises', function () {
     };
 
     decorator = compose(
-      promiseTranslator(fallbackDecorator(function (err, a, b, c, func) {
+      promiseTranslator(fallbackDecorator(function (a, b, c, func) {
         func(null, 'no value');
       }, Error, logger)),
       promiseTranslator(retryDecorator(2, undefined, Error, logger)),

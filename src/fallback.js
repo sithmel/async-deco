@@ -20,7 +20,7 @@ function fallbackDecorator(wrapper, fallbackFunction, error, getlogger) {
       args[args.length - 1] = function (err, dep) {
         if (condition(err, dep)) {
           logger('fallback', {actualResult: {err: err, res: dep}});
-          fallbackFunction.apply(context, [err].concat(args.slice(0, -1), cb));
+          fallbackFunction.apply(context, args.slice(0, -1).concat(cb));
         }
         else {
           cb(err, dep);

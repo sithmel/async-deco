@@ -13,7 +13,7 @@ describe('fallback (promise)', function () {
       };
     };
 
-    fallback = fallbackDecorator(function (err, a, b, c, func) {
+    fallback = fallbackDecorator(function (a, b, c, func) {
       func(undefined, 'giving up');
     }, undefined, logger);
   });
