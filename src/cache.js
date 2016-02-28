@@ -20,7 +20,6 @@ function cacheDecorator(wrapper, cache, getlogger) {
           cb(err, dep);
         }
       };
-
       cache.query(args, function (err, cacheQuery) {
         if (!err && cacheQuery.cached === true) {
           logger('cachehit', {key: cacheQuery.key, result: cacheQuery.hit});

@@ -25,13 +25,12 @@
     "chai": "^1.10.0",
     "eslint": "^1.10.3",
     "husky": "^0.10.2",
-    "memoize-cache": "0.0.1",
+    "memoize-cache": "0.0.2",
     "mocha": "^2.1.0",
     "npm-release": "^1.0.0"
   },
   "dependencies": {
     "es6-promisify": "^3.0.0",
-    "lodash": "^4.5.1",
     "require-all": "^2.0.0",
     "setimmediate": "^1.0.4"
   }

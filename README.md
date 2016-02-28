@@ -201,16 +201,16 @@ You can initialise the decorator with 2 arguments:
 
 Dedupe
 ------
-It throttles the execution of the function. After collecting the output it dispatches it to all callbacks.
+It executes the original function, while is waiting for the output it doesn't call the function anymore but instead it collects the callbacks.
+After getting the result, it dispatches the same to all callbacks.
 It may use the "getKey" function to group the callbacks into queues.
 ```js
 var dedupeDecorator = require('async-deco/callback/dedupe');
 
-var dedupe = dedupeDecorator(100, getKey, getLogger);
+var dedupe = dedupeDecorator(getKey, getLogger);
 var myfunc = dedupe(function (..., cb) { .... });
 ```
 The arguments:
-* delay [optional, default 0] the number of milliseconds to throttle invocations to.
 * getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue.
 * logger function (logs "deduping" whenever is calling more than one callback with the same results)
 
@@ -263,20 +263,18 @@ You should consider the last function is the one happen first!
 Examples and use cases
 ======================
 
-Smart memoize
--------------
-Using memoize on an asynchronous function has a conceptual flaw. Let's say for example I have a function with 100ms latency. I call this function every 10 ms. I memoize for 100ms.
+Smart memoize/cache
+-------------------
+Using memoize(or cache) on an asynchronous function has a conceptual flaw. Let's say for example I have a function with 100ms latency. I call this function every 10 ms:
 ```
 executed            ⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇          
           ------------------------------
 requested ⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆
 ```
-What happen is that while I am still waiting for the first result (to memoize) I regularly execute other 9 functions.
+What happen is that while I am still waiting for the first result (to cache) I regularly execute other 9 functions.
 What if I compose memoize with dedupe?
 ```js
-var decorator = compose(
-  memoizeDecorator(),
-  dedupeDecorator(100));
+var decorator = compose(dedupeDecorator(), memoizeDecorator());
 
 var newfunc = decorator(function (..., cb) { .... });
 ```

@@ -13,8 +13,8 @@ describe('dedupe (callback)', function () {
       };
     };
 
-    dedupe = dedupeDecorator(50, undefined, logger);
-    dedupeKey = dedupeDecorator(50, function (n) { return n % 2 === 0 ? 'even' : 'odd'; }, logger);
+    dedupe = dedupeDecorator(undefined, logger);
+    dedupeKey = dedupeDecorator(function (n) { return n % 2 === 0 ? 'even' : 'odd'; }, logger);
   });
 
   it('must dedupe function calls', function (done) {
