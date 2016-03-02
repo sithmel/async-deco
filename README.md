@@ -102,6 +102,23 @@ It takes 2 arguments:
 * a cache object [mandatory]. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
 * a logger function (logs "cachehit") [optional]
 
+Proxy
+-----
+It executes a "guard" function before the original one. If it returns an error it will use this error as the return value of the original function. 
+It is useful if you want to run a function only if it passes some condition (access control).
+```js
+var proxyDecorator = require('async-deco/callback/proxy');
+
+var proxy = cacheDecorator(function (..., cb) {
+  // calls cb(errorInstance) if the access is denied
+  // calls cb() if I can procede calling the function
+}, logger);
+var myfunc = proxy(function (..., cb) { .... });
+```
+It takes 2 arguments:
+* a guard function [mandatory]. It takes the same arguments of the original function. If it returns an error (using the callback) the original function won't be called.
+* a logger function (logs "access denied") [optional]
+
 Fallback
 --------
 If a function fails, calls another one
