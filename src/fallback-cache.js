@@ -31,9 +31,8 @@ function fallbackCacheDecorator(wrapper, cache, error, getlogger) {
           });
         }
         else {
-          cache.push(args, dep, function () {
-            cb(err, dep);
-          });
+          cache.push(args, dep);
+          cb(undefined, dep);
         }
       };
 

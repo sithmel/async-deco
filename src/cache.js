@@ -12,13 +12,9 @@ function cacheDecorator(wrapper, cache, getlogger) {
 
       args[args.length - 1] = function (err, dep) {
         if (!err) {
-          cache.push(args, dep, function () {
-            cb(err, dep);
-          });
+          cache.push(args, dep);
         }
-        else {
-          cb(err, dep);
-        }
+        cb(undefined, dep);
       };
       cache.query(args, function (err, cacheQuery) {
         if (!err && cacheQuery.cached === true) {
