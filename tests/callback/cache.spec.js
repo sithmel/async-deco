@@ -31,7 +31,7 @@ describe('cache (callback)', function () {
       f(3, 2, 1, function (err, dep) {
         assert.equal(dep, 6);
         assert.deepEqual(log, [
-          {type: 'cachehit', obj: {key: '6', result: 6}},
+          {type: 'cachehit', obj: {key: '1679091c5a880faf6fb5e6087eb1b2dc', result: 6}},
         ]);
         done();
       });
