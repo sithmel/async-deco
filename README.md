@@ -90,8 +90,7 @@ It takes 2 arguments:
 
 Cache
 -----
-It is a more sophisticated version of the memoize decorator. It can be used for caching in a db/file etc (You may have to write your own cache object).
-memoize-cache is an in-memory reference implementation (https://github.com/sithmel/memoize-cache).
+It is a more sophisticated version of the memoize decorator. It can be used for caching in a db/file etc using memoize-cache (https://github.com/sithmel/memoize-cache).
 ```js
 var cacheDecorator = require('async-deco/callback/cache');
 
@@ -104,7 +103,7 @@ It takes 2 arguments:
 
 Proxy
 -----
-It executes a "guard" function before the original one. If it returns an error it will use this error as the return value of the original function. 
+It executes a "guard" function before the original one. If it returns an error it will use this error as the return value of the original function.
 It is useful if you want to run a function only if it passes some condition (access control).
 ```js
 var proxyDecorator = require('async-deco/callback/proxy');
