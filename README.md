@@ -1,6 +1,6 @@
 async-deco
 ==========
-[![Build Status](https://travis-ci.org/sithmel/diogenes.svg?branch=master)](https://travis-ci.org/sithmel/diogenes)
+[![Build Status](https://travis-ci.org/sithmel/async-deco.svg?branch=master)](https://travis-ci.org/sithmel/async-deco)
 
 async-deco is a collection of decorators. It allows to add features such as timeout, retry, dedupe, limit and much more!
 They can be combined together using the "compose" function (included).
