@@ -77,7 +77,12 @@ describe('compose', function () {
         assert.equal(dep, 'no value');
         assert.deepEqual(log[0], { type: 'start', obj: undefined });
         assert.deepEqual(log[1], { type: 'timeout', obj: { ms: 20 }});
-        assert.deepEqual(log[2], { type: 'retry', obj: { times: 1 }});
+
+        assert.equal(log[2].type, 'retry');
+        assert.equal(log[2].obj.times, 1);
+        assert.isUndefined(log[2].obj.actualResult.res);
+        assert.instanceOf(log[2].obj.actualResult.err, TimeoutError);
+
         assert.deepEqual(log[3], { type: 'timeout', obj: { ms: 20 }});
         assert.equal(log[4].type, 'fallback');
         assert.isUndefined(log[4].obj.actualResult.res);
@@ -99,11 +104,14 @@ describe('compose', function () {
 
       f(1, 2, 3, function (err, dep) {
         assert.equal(dep, 6);
-        assert.deepEqual(log,
-          [ { type: 'start', obj: undefined },
-            { type: 'timeout', obj: { ms: 20 } },
-            { type: 'retry', obj: { times: 1 } },
-            { type: 'end', obj: { result: 6 } }]);
+
+        assert.deepEqual(log[0], { type: 'start', obj: undefined });
+        assert.deepEqual(log[1], { type: 'timeout', obj: { ms: 20 }});
+        assert.equal(log[2].type, 'retry');
+        assert.equal(log[2].obj.times, 1);
+        assert.isUndefined(log[2].obj.actualResult.res);
+        assert.instanceOf(log[2].obj.actualResult.err, TimeoutError);
+        assert.deepEqual(log[3], { type: 'end', obj: { result: 6 } });
         done();
       });
     });
