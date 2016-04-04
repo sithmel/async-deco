@@ -16,7 +16,7 @@ var logDecorator = require('async-deco/callback/log');
 ```
 This should be applied to functions with the node callback convention:
 ```js
-var decoratedFunction = logDecorator(logger)(function (a, b, c, next) {
+var decoratedFunction = logDecorator(logger, 'myfunction')(function (a, b, c, next) {
   ...
   next(undefined, result); // or next(error);
 });
@@ -27,7 +27,7 @@ var logDecorator = require('async-deco/promise/log');
 ```
 This should be used for function returning promises:
 ```js
-var decoratedFunction = logDecorator(logger)(function (a, b, c) {
+var decoratedFunction = logDecorator(logger, 'myfunction')(function (a, b, c) {
   return new Promise(function (resolve, reject) {
     ...
     resolve(result); // or reject(error);    
@@ -53,27 +53,59 @@ var memoizeDecorator = callbackDecorators.callback.memoize;
 ```
 I strongly advice to use the first method, especially when using browserify. It allows to import only the functions you are actually using.
 
-About the logger
-----------------
-You can pass a logger to any decorators. This function is called with the same arguments of the original function and should return a function with this signature:
-```js
-function (type, obj)
-```
-* Type is the type of event to log
-* obj contains useful informations, depending on the type of the decorator
-
-So for example, assuming that the first argument of the decorated function is a name:
-```js
-var logger = function (name) {
-  return function (type, obj) {
-    console.log(name + ': ' + type);
-  };
-};
-```
-
 Decorators
 ==========
 The examples are related to the callback version. Just import the promise version in case of decorating promise based functions.
+
+Log
+---
+It logs when a function start, end and fail. It also enable the logging for the whole chain of decorators (if combined together).
+```js
+var logDecorator = require('async-deco/callback/log');
+
+var addLogs = logDecorator(logger, name);
+var myfunc = addLogs(function (..., cb) { .... });
+```
+name: is a string identifying this composed function.
+logger is a function taking these arguments:
+* name: the name passed to the function
+* id: a random id that changes every time you execute the function
+* ts: the timestamp for this event
+* evt: the name of the event
+* payload: an object with additional information about this event
+
+For example:
+```js
+var logDecorator = require('async-deco/callback/log');
+var timeoutDecorator = require('async-deco/callback/timeout');
+var retryDecorator = require('async-deco/callback/retry');
+
+var decorator = compose(
+  logDecorator(function (name, id, ts, evt, payload) {
+    console.log(name, id, ts, evt, payload);
+  }, 'retry_and_timeout_func'),
+  retryDecorator(2, undefined, Error),
+  timeoutDecorator(20)
+);
+
+var f = decorator(... func ...);
+```
+Then when you execute the function "f":
+```js
+f(...args..., function (err, res) {
+  ...
+});
+```
+You can get something similar to:
+```js
+"retry_and_timeout_func", "asdadfsd", 1459770371655, "start", undefined
+"retry_and_timeout_func", "asdadfsd", 1459770371675, "timeout", { ms: 20 }
+"retry_and_timeout_func", "asdadfsd", 1459770371675, "retry", { times: 1 }
+"retry_and_timeout_func", "asdadfsd", 1459770371695, "timeout", { ms: 20 }
+"retry_and_timeout_func", "asdadfsd", 1459770371700, "end", { result: ... }
+```
+To make this work, the context (this) is extended with a new method __log.
+The context attributes and methods are still available through the prototype chain. For this reason inspecting "this" using Object.keys and using this.hasOwnProperty('prop') can return an unexpected result.
 
 Memoize
 -------
@@ -81,12 +113,13 @@ It caches the result. At any subsequent calls it will return the cached result.
 ```js
 var memoizeDecorator = require('async-deco/callback/memoize');
 
-var simpleMemoize = memoizeDecorator(getKey, logger);
+var simpleMemoize = memoizeDecorator(getKey);
 var myfunc = simpleMemoize(function (..., cb) { .... });
 ```
-It takes 2 arguments:
+It takes 1 argument:
 * a getKey function [optional]: it runs against the original arguments and returns the key used for the caching. If it is missing, only one result will be memoized.
-* a logger function (logs "cachehit") [optional]
+
+It logs "cachehit" with {key: cache key, result: cache result}
 
 Cache
 -----
@@ -94,12 +127,13 @@ It is a more sophisticated version of the memoize decorator. It can be used for 
 ```js
 var cacheDecorator = require('async-deco/callback/cache');
 
-var cached = cacheDecorator(cache, logger);
+var cached = cacheDecorator(cache);
 var myfunc = cached(function (..., cb) { .... });
 ```
-It takes 2 arguments:
+It takes 1 argument:
 * a cache object [mandatory]. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
-* a logger function (logs "cachehit") [optional]
+
+It logs "cachehit" with {key: cache key, result: cache result}.
 
 Proxy
 -----
@@ -111,12 +145,13 @@ var proxyDecorator = require('async-deco/callback/proxy');
 var proxy = cacheDecorator(function (..., cb) {
   // calls cb(errorInstance) if the access is denied
   // calls cb() if I can procede calling the function
-}, logger);
+});
 var myfunc = proxy(function (..., cb) { .... });
 ```
-It takes 2 arguments:
+It takes 1 argument:
 * a guard function [mandatory]. It takes the same arguments of the original function. If it returns an error (using the callback) the original function won't be called.
-* a logger function (logs "access denied") [optional]
+
+It logs "access denied" with { err: error returned by the guard function}
 
 Fallback
 --------
@@ -126,13 +161,14 @@ var fallbackDecorator = require('async-deco/callback/fallback');
 
 var fallback = fallbackDecorator(function (a, b, c, func) {
   func(undefined, 'giving up');
-}, Error, logger);
+}, Error);
 var myfunc = fallback(function (..., cb) { .... });
 ```
-It takes 3 arguments:
+It takes 2 arguments:
 * fallback function [mandatory]. It takes the same arguments of the original function (and a callback, even in the promise case).
 * error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback) [optional, it falls back on any error by default]
-* logger function (logs "fallback") [optional]
+
+It logs "fallback" with {actualResult: {err: error returned, res: result returned}}
 
 Fallback value
 --------------
@@ -140,13 +176,14 @@ If a function fails, returns a value
 ```js
 var fallbackValueDecorator = require('async-deco/callback/fallback-value');
 
-var fallback = fallbackValueDecorator('giving up', Error, logger);
+var fallback = fallbackValueDecorator('giving up', Error);
 var myfunc = fallback(function (..., cb) { .... });
 ```
-It takes 3 arguments:
+It takes 2 arguments:
 * fallback value [mandatory]
 * error instance for deciding to fallback, or a function taking error and result (if it returns true it'll trigger the fallback) [optional, it falls back on any error by default]
-* logger function (logs "fallback") [optional]
+
+It logs "fallback" with {actualResult: {err: error returned, res: result returned}}
 
 Fallback cache
 --------------
@@ -154,23 +191,14 @@ If a function fails, it tries to use a previous cached result.
 ```js
 var fallbackCacheDecorator = require('async-deco/callback/fallback-cache');
 
-var fallback = fallbackCacheDecorator(cache, Error, logger);
+var fallback = fallbackCacheDecorator(cache, Error);
 var myfunc = fallback(function (..., cb) { .... });
 ```
-It takes 3 arguments:
+It takes 2 arguments:
 * a cache object [mandatory]. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
 * error instance for deciding to fallback, or a function taking the error and result (if it returns true it'll trigger the fallback) [optional, it falls back on any error by default]
-* logger function (logs "fallback-cache") [optional]
 
-Log
----
-Logs when a function start, end and fail
-```js
-ar logDecorator = require('async-deco/callback/log');
-
-var addLogs = logDecorator(logger);
-var myfunc = addLogs(function (..., cb) { .... });
-```
+It logs "fallback-cache" with {key: cache key, result: cache result, actualResult: {err: error returned, res: result returned}}
 
 Timeout
 -------
@@ -178,13 +206,14 @@ If a function takes to much, returns a timeout exception.
 ```js
 var timeoutDecorator = require('async-deco/callback/timeout');
 
-var timeout20 = timeoutDecorator(20, logger);
+var timeout20 = timeoutDecorator(20);
 var myfunc = timeout20(function (..., cb) { .... });
 ```
 This will wait 20 ms before returning a TimeoutError.
-It takes 2 arguments:
+It takes 1 argument:
 * time in ms [mandatory]
-* a logger function (logs "timeout") [optional]
+
+It logs "timeout" with { ms: ms passed since the last execution}
 
 Retry
 -----
@@ -192,14 +221,15 @@ If a function fails, it retry running it again
 ```js
 var retryDecorator = require('async-deco/callback/retry');
 
-var retryTenTimes = retryDecorator(10, 0, Error, logger);
+var retryTenTimes = retryDecorator(10, 0, Error);
 var myfunc = retryTenTimes(function (..., cb) { .... });
 ```
-You can initialise the decorator with 3 arguments:
+You can initialise the decorator with 2 arguments:
 * number of retries [optional, it defaults to Infinity]
 * interval for trying again (number of a function based on the number of times) [optional, it defaults to 0]
 * error instance for deciding to retry, or function taking error and result (if it returns true it'll trigger the retry) [optional, it falls back on any error by default]
-* logger function (logs "retry") [optional]
+
+It logs "retry" with {times: number of attempts, actualResult: {err: original error, res: original result}}
 
 Limit
 -----
@@ -207,13 +237,14 @@ Limit the concurrency of a function.
 ```js
 var limitDecorator = require('async-deco/callback/limit');
 
-var limitToTwo = limitDecorator(2, getKey,logger);
+var limitToTwo = limitDecorator(2, getKey);
 var myfunc = limitToTwo(function (..., cb) { .... });
 ```
-You can initialise the decorator with 2 arguments:
+You can initialise the decorator with 1 argument:
 * number of parallel execution [mandatory]
 * a getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue.
-* logger function (logs "limit" when a function gets queued) [optional]
+
+It logs "limit" when a function gets queued with { number: number of function queued, key: cache key }
 
 Dedupe
 ------
@@ -223,12 +254,14 @@ It may use the "getKey" function to group the callbacks into queues.
 ```js
 var dedupeDecorator = require('async-deco/callback/dedupe');
 
-var dedupe = dedupeDecorator(getKey, getLogger);
+var dedupe = dedupeDecorator(getKey);
 var myfunc = dedupe(function (..., cb) { .... });
 ```
-The arguments:
+The argument:
 * getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue.
-* logger function (logs "deduping" whenever is calling more than one callback with the same results)
+
+It logs "deduping" whenever is calling more than one callback with the same results.
+{len: number of function call saved, key: cache key}
 
 Utilities
 =========
@@ -260,6 +293,14 @@ func(4, 6).then(function (result){
   ... // result === 10 here
 })
 ```
+You can also use it in an environment where standard "Promise" object is not supported. Just use a polyfill like (https://www.npmjs.com/package/es6-promise).
+```js
+var Promise = require('es6-promise').Promise;
+
+(function (global) {
+global.  Promise = Promise;
+}(this));
+```
 
 Compose
 -------
@@ -275,6 +316,13 @@ var newfunc = decorator(function (..., cb) { .... });
 ```
 Timeout after 20 ms and then retry 10 times before giving up.
 You should consider the last function is the one happen first!
+The order in which you compose the decorator changes the way it works, so plan it carefully!
+I suggest to:
+* put the log decorator as first
+* put the fallback decorators before the "timeout" and "retry"
+* put the "timeout" before the "retry"
+* put "limit" as the last one
+* put "dedupe", "memoize" or "cache" as last, just before limit
 
 Examples and use cases
 ======================

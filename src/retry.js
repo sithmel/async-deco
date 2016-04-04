@@ -38,7 +38,8 @@ function retryDecorator(wrapper, times, interval, error) {
       args[args.length - 1] = function (err, dep) {
         if (condition(err, dep) && counter < times) {
           logger('retry', {
-            times: counter
+            times: counter,
+            actualResult: {err: err, res: dep}
           });
           retry();
         }
