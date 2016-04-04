@@ -6,17 +6,9 @@ describe('retry (callback)', function () {
   var retryTwiceOnNull;
   var retryTwiceOnTypeError;
   var retryForever;
-  var log;
 
   beforeEach(function () {
-    log = [];
-    var logger = function () {
-      return function (type, obj) {
-        log.push({type: type, obj: obj});
-      };
-    };
-
-    retryTenTimes = retryDecorator(10, undefined, undefined, logger);
+    retryTenTimes = retryDecorator(10);
     retryTwiceOnNull = retryDecorator(2, undefined, function (err, dep) {return dep === null;});
     retryTwiceOnTypeError = retryDecorator(2, undefined, TypeError);
     retryForever = retryDecorator();
@@ -32,7 +24,6 @@ describe('retry (callback)', function () {
     func(function (err, res) {
       assert.equal(res, 'done');
       assert.equal(c, 1);
-      assert.equal(log.length, 0);
       done();
     });
   });
@@ -48,9 +39,6 @@ describe('retry (callback)', function () {
       assert.isUndefined(res);
       assert.instanceOf(err, Error);
       assert.equal(c, 10);
-      assert.equal(log.length, 9);
-      assert.deepEqual(log[0], {type: 'retry', obj: {times: 1}});
-      assert.deepEqual(log[8], {type: 'retry', obj: {times: 9}});
       done();
     });
   });

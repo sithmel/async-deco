@@ -1,14 +1,13 @@
-var noopLogger = require('./noop-logger');
+var defaultLogger = require('./default-logger');
 
-function memoizeDecorator(wrapper, getKey, getlogger) {
-  getlogger = getlogger || noopLogger;
+function memoizeDecorator(wrapper, getKey) {
   getKey = getKey || function () { return '_default'; };
   return wrapper(function (func) {
     var cache = {};
     return function () {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
-      var logger = getlogger.apply(context, args);
+      var logger = defaultLogger.apply(context);
       var cb = args[args.length - 1];
       var cacheKey = getKey.apply(context, args).toString();
       args[args.length - 1] = function (err, dep) {

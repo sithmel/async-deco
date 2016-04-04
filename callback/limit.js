@@ -1,8 +1,8 @@
 var _limit = require('../src/limit');
 var wrapper = require('../src/noop');
 
-function limit(max, getKey, logger) {
-  return _limit(wrapper, max, getKey, logger);
+function limit(max, getKey) {
+  return _limit(wrapper, max, getKey);
 }
 
 module.exports = limit;

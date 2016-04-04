@@ -4,18 +4,10 @@ var fallbackCacheDecorator = require('../../promise/fallback-cache');
 
 describe('fallback-cache (promise)', function () {
   var cached;
-  var log;
 
   beforeEach(function () {
-    log = [];
-    var logger = function () {
-      return function (type, obj) {
-        log.push({type: type, obj: obj});
-      };
-    };
-
     var cache = new Cache();
-    cached = fallbackCacheDecorator(cache, undefined, logger);
+    cached = fallbackCacheDecorator(cache);
   });
 
 
@@ -35,12 +27,8 @@ describe('fallback-cache (promise)', function () {
 
     f(1, 2, 3).then(function (dep) {
       assert.equal(dep, 6);
-      assert.equal(log.length, 0);
       f(1, 2, 3).then(function (dep) {
         assert.equal(dep, 6);
-        assert.deepEqual(log, [
-         {type: 'fallback-cachehit', obj: { key: '_default', result: 6, actualResult: {err: new Error('error'), res: undefined}}},
-        ]);
         done();
       });
     });
@@ -56,7 +44,6 @@ describe('fallback-cache (promise)', function () {
 
     f(1, 2, 3).catch(function (err) {
       assert.deepEqual(err, new Error('error'));
-      assert.equal(log.length, 0);
       done();
     });
   });

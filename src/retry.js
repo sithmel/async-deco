@@ -1,6 +1,6 @@
-var noopLogger = require('./noop-logger');
+var defaultLogger = require('./default-logger');
 
-function retryDecorator(wrapper, times, interval, error, getlogger) {
+function retryDecorator(wrapper, times, interval, error) {
   var condition;
   times = times || Infinity;
   error = error || Error;
@@ -9,7 +9,6 @@ function retryDecorator(wrapper, times, interval, error, getlogger) {
     interval :
     function () { return interval; };
 
-  getlogger = getlogger || noopLogger;
   if (error === Error || Error.isPrototypeOf(error)) {
     condition = function (err, dep) { return err instanceof error; };
   }
@@ -22,7 +21,7 @@ function retryDecorator(wrapper, times, interval, error, getlogger) {
       var counter = 0;
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
-      var logger = getlogger.apply(context, args);
+      var logger = defaultLogger.apply(context);
       var cb = args[args.length - 1];
 
       var retry = function () {

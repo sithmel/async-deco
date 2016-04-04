@@ -6,15 +6,8 @@ describe('dedupe (promise)', function () {
   var log;
 
   beforeEach(function () {
-    log = [];
-    var logger = function () {
-      return function (type, obj) {
-        log.push({type: type, obj: obj});
-      };
-    };
-
-    dedupe = dedupeDecorator(undefined, logger);
-    dedupeKey = dedupeDecorator(function (n) { return n % 2 === 0 ? 'even' : 'odd'; }, logger);
+    dedupe = dedupeDecorator();
+    dedupeKey = dedupeDecorator(function (n) { return n % 2 === 0 ? 'even' : 'odd'; });
   });
 
   it('must dedupe function calls', function (done) {

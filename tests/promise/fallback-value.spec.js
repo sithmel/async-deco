@@ -3,17 +3,9 @@ var fallbackDecorator = require('../../promise/fallback-value');
 
 describe('fallback-value (promise)', function () {
   var fallback;
-  var log;
 
   beforeEach(function () {
-    log = [];
-    var logger = function () {
-      return function (type, obj) {
-        log.push({type: type, obj: obj});
-      };
-    };
-
-    fallback = fallbackDecorator('giving up', undefined, logger);
+    fallback = fallbackDecorator('giving up');
   });
 
   it('must pass', function (done) {
@@ -24,7 +16,6 @@ describe('fallback-value (promise)', function () {
     });
     f(1, 2, 3).then(function (dep) {
       assert.equal(dep, 6);
-      assert.equal(log.length, 0);
       done();
     });
   });
@@ -37,7 +28,6 @@ describe('fallback-value (promise)', function () {
     });
     f(1, 2, 3).then(function (dep) {
       assert.equal(dep, 'giving up');
-      assert.deepEqual(log[0], {type: 'fallback', obj: { actualResult: {err: new Error('error!'), res: undefined}}});
       done();
     });
   });

@@ -6,21 +6,13 @@ var compose = require('../../utils/compose');
 
 describe('smartcache (callback)', function () {
   var cache, dedupe;
-  var log;
 
   beforeEach(function () {
-    log = [];
-    var logger = function () {
-      return function (type, obj) {
-        log.push({type: type, obj: obj});
-      };
-    };
-
     var maxAge = 120;
     var cacheObj = new Cache({maxAge: maxAge});
 
-    cache = cacheDecorator(cacheObj, logger);
-    dedupe = dedupeDecorator(undefined, logger);
+    cache = cacheDecorator(cacheObj);
+    dedupe = dedupeDecorator();
   });
 
   it('must dedupe function calls', function (done) {

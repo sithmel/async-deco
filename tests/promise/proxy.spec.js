@@ -3,19 +3,11 @@ var proxyDecorator = require('../../promise/proxy');
 
 describe('proxy (promise)', function () {
   var proxy;
-  var log;
 
   beforeEach(function () {
-    log = [];
-    var logger = function () {
-      return function (type, obj) {
-        log.push({type: type, obj: obj});
-      };
-    };
-
     proxy = proxyDecorator(function (number, cb) {
       cb(number % 2 === 0 ? new Error('Evens not allowed') : undefined);
-    }, logger);
+    });
   });
 
   it('must pass', function (done) {
@@ -44,5 +36,4 @@ describe('proxy (promise)', function () {
       done();
     });
   });
-
 });

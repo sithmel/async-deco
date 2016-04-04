@@ -4,17 +4,9 @@ var TimeoutError = require('../../errors/timeout-error');
 
 describe('timeout (callback)', function () {
   var timeout20;
-  var log;
 
   beforeEach(function () {
-    log = [];
-    var logger = function () {
-      return function (type, obj) {
-        log.push({type: type, obj: obj});
-      };
-    };
-
-    timeout20 = timeout(20, logger);
+    timeout20 = timeout(20);
   });
 
   it('must pass simple function', function (done) {
@@ -24,7 +16,6 @@ describe('timeout (callback)', function () {
 
     func(function (err, res) {
       assert.equal(res, 'done');
-      assert.equal(log.length, 0);
       done();
     });
   });
@@ -38,7 +29,6 @@ describe('timeout (callback)', function () {
 
     func(function (err, res) {
       assert.equal(res, 'done');
-      assert.equal(log.length, 0);
       done();
     });
   });
@@ -66,7 +56,6 @@ describe('timeout (callback)', function () {
     func(function (err, res) {
       assert.isUndefined(res);
       assert.instanceOf(err, TimeoutError);
-      assert.equal(log.length, 1);
       done();
     });
   });

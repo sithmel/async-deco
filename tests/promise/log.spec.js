@@ -7,10 +7,8 @@ describe('log (promise)', function () {
 
   beforeEach(function () {
     log = [];
-    var logger = function () {
-      return function (type, obj) {
-        log.push({type: type, obj: obj});
-      };
+    var logger = function (name, id, ts, type, obj) {
+      log.push({type: type, obj: obj});
     };
 
     wrapped = logDecorator(logger);

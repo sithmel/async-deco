@@ -1,8 +1,8 @@
 var _dedupe = require('../src/dedupe');
 var wrapper = require('../src/noop');
 
-function dedupe(getKey, logger) {
-  return _dedupe(wrapper, getKey, logger);
+function dedupe(getKey) {
+  return _dedupe(wrapper, getKey);
 }
 
 module.exports = dedupe;

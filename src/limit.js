@@ -1,9 +1,8 @@
 require('setimmediate');
-var noopLogger = require('./noop-logger');
+var defaultLogger = require('./default-logger');
 
-function limitDecorator(wrapper, max, getKey, getlogger) {
+function limitDecorator(wrapper, max, getKey) {
   getKey = getKey || function () { return '_default'; };
-  getlogger = getlogger || noopLogger;
 
   return wrapper(function (func) {
     var executionNumbers = {};
@@ -12,7 +11,7 @@ function limitDecorator(wrapper, max, getKey, getlogger) {
     return function () {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
-      var logger = getlogger.apply(context, args);
+      var logger = defaultLogger.apply(context);
       var cb = args[args.length - 1];
       var cacheKey = getKey.apply(context, args).toString();
 
