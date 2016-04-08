@@ -36,6 +36,41 @@ var decoratedFunction = logDecorator(logger, 'myfunction')(function (a, b, c) {
 ```
 Then you can run the decorated function.
 
+Logging
+=======
+All decorators use a common way to log whatever happens, using the "__log" method in the context (this).
+```js
+this.__log(name, id, ts, event, payload);
+```
+This methods is called with the following arguments:
+* name: the name passed of the function
+* id: an id that changes every time you execute the function
+* ts: the time stamp for this event
+* evt: the name of the event
+* payload: an object with additional information about this event
+
+This method is used only if present and can be also added by the "log" decorator.
+
+This package contains an helper for adding it manually:
+```js
+var buildLogger = require('async-deco/utils/build-logger');
+var context = buildLogger(undefined, 'name', 'id', function (name, id, ts, event, payload) {
+});
+decoratedFunction.call(context, arg1, arg2, function (err, res) {
+  ...  
+});
+```
+If you wish you can use this feature in your own decorators/functions:
+```js
+var defaultLogger = require('async-deco/utils/default-logger');
+
+function myFunction() {
+  var logger = defaultLogger.apply(this);
+  ...
+  logger('myevent', {... additional info ...});
+}
+```
+
 Requiring the library
 =====================
 You can either:
@@ -66,8 +101,8 @@ var logDecorator = require('async-deco/callback/log');
 var addLogs = logDecorator(logger, name);
 var myfunc = addLogs(function (..., cb) { .... });
 ```
-name: is a string identifying this composed function.
-logger is a function taking these arguments:
+name: [optional] is a string identifying this composed function.
+logger [optional] is a function taking these arguments:
 * name: the name passed to the function
 * id: a random id that changes every time you execute the function
 * ts: the timestamp for this event

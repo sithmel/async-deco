@@ -1,5 +1,5 @@
 module.exports = function () {
-  if ('__log' in this) {
+  if (typeof this === 'object' && '__log' in this) {
     return this.__log;
   }
   return function () {};

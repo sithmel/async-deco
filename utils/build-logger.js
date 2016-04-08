@@ -3,10 +3,11 @@
 // __log a function that calls the logger with its arguments, the __ns and current time stamp
 // the object returned has obj as prototype and it should behave like it
 
-module.exports = function buildLogger(obj, name, logger) {
+module.exports = function buildLogger(obj, name, id, logger) {
+  if (typeof obj === 'object' && '__log' in obj) {
+    return obj;
+  }
   function ObjWithLogger(logger) {
-    var id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10);
-
     Object.defineProperty(this, '__log', {
       value: function (evt, payload) {
         var ts = Date.now();

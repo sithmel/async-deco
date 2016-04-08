@@ -1,5 +1,5 @@
 require('setimmediate');
-var defaultLogger = require('./default-logger');
+var defaultLogger = require('../utils/default-logger');
 
 function limitDecorator(wrapper, max, getKey) {
   getKey = getKey || function () { return '_default'; };

@@ -1,4 +1,4 @@
-var defaultLogger = require('./default-logger');
+var defaultLogger = require('../utils/default-logger');
 
 function proxyDecorator(wrapper, guard) {
   return wrapper(function (func) {

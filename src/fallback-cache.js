@@ -1,4 +1,4 @@
-var defaultLogger = require('./default-logger');
+var defaultLogger = require('../utils/default-logger');
 
 function fallbackCacheDecorator(wrapper, cache, error) {
   var condition;

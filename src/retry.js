@@ -1,4 +1,4 @@
-var defaultLogger = require('./default-logger');
+var defaultLogger = require('../utils/default-logger');
 
 function retryDecorator(wrapper, times, interval, error) {
   var condition;

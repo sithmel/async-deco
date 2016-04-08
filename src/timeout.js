@@ -1,5 +1,5 @@
 var TimeoutError = require('../errors/timeout-error');
-var defaultLogger = require('./default-logger');
+var defaultLogger = require('../utils/default-logger');
 
 function timeout(wrapper, ms) {
 

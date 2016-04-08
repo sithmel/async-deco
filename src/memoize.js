@@ -1,4 +1,4 @@
-var defaultLogger = require('./default-logger');
+var defaultLogger = require('../utils/default-logger');
 
 function memoizeDecorator(wrapper, getKey) {
   getKey = getKey || function () { return '_default'; };

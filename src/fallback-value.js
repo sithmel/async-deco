@@ -1,4 +1,4 @@
-var defaultLogger = require('./default-logger');
+var defaultLogger = require('../utils/default-logger');
 
 function fallbackValueDecorator(wrapper, fallbackValue, error) {
   var condition;
