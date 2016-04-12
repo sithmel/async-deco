@@ -359,6 +359,19 @@ I suggest to:
 * put "limit" as the last one
 * put "dedupe", "memoize" or "cache" as last, just before limit
 
+Decorate
+--------
+This is a shortcut that allows to compose and decorate in a single instruction:
+```js
+var decorate = require('async-deco/utils/decorate');
+
+var newfunc = decorate(
+  retryDecorator(10, Error, logger),
+  timeoutDecorator(20, logger),
+  function (..., cb) { .... });
+```
+The function to decorate has to be the last argument.
+
 Examples and use cases
 ======================
 

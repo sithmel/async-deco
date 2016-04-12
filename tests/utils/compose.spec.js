@@ -118,5 +118,4 @@ describe('compose', function () {
 
   });
 
-
 });
