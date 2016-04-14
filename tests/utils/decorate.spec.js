@@ -46,4 +46,47 @@ describe('decorate', function () {
       done();
     });
   });
+
+  it('must be able to take one function', function (done) {
+    var f = decorate(
+      function (a, b, c, next) {
+        next(null, a + b + c);
+      }
+    );
+
+    f(1, 2, 3, function (err, dep) {
+      assert.equal(dep, 6);
+      done();
+    });
+  });
+
+  it('must work with sparse arrays', function (done) {
+    var log = [];
+    var logger = function (name, id, ts, type, obj) {
+      log.push({type: type, obj: obj});
+    };
+
+    var f = decorate([
+      undefined,
+      logDecorator(logger),
+      fallbackDecorator(function (a, b, c, func) {
+        func(null, 'no value');
+      }, Error),
+      undefined,
+      retryDecorator(2, undefined, Error),
+      timeoutDecorator(20),
+      function (a, b, c, next) {
+        next(null, a + b + c);
+      }
+    ]);
+
+    f(1, 2, 3, function (err, dep) {
+      assert.equal(dep, 6);
+      assert.deepEqual(log, [
+         { type: 'start', obj: undefined },
+         { type: 'end', obj: { result: 6 } }
+      ]);
+      done();
+    });
+  });
 });
