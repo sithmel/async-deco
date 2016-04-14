@@ -355,9 +355,9 @@ The order in which you compose the decorator changes the way it works, so plan i
 I suggest to:
 * put the log decorator as first
 * put the fallback decorators before the "timeout" and "retry"
-* put the "timeout" before the "retry"
+* put the "retry" before the "timeout"
 * put "limit" and/or "proxy" as the last one
-* put "dedupe", "memoize" or "cache" as last, just before limit
+* put "dedupe", "memoize" or "cache" as last, just before limit/proxy
 
 Decorate
 --------
