@@ -317,9 +317,9 @@ func(4, 6, function (err, result){
 
 sanitizeAsyncFunction
 ---------------------
-This special decorator add a couple of important checks to your callback based asynchronous function.
-It capture any unhandled exception that has been throwed and it uses as "err" argument of the callback.
-If the callback is fired twice, the second time it will be fire a "Callback fired twice" exception.
+This special decorator adds a couple of important checks to your callback based asynchronous functions.
+It captures any unhandled exception that has been throwed, and it uses it as "err" argument of the callback.
+If the callback is fired twice, the second time it will fire a "Callback fired twice" exception.
 ```js
 var callbackify = require('async-deco/utils/sanitizeAsyncFunction');
 
