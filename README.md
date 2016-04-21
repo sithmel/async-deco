@@ -315,6 +315,34 @@ func(4, 6, function (err, result){
 })
 ```
 
+sanitizeAsyncFunction
+---------------------
+This special decorator add a couple of important checks to your callback based asynchronous function.
+It capture any unhandled exception that has been throwed and it uses as "err" argument of the callback.
+If the callback is fired twice, the second time it will be fire a "Callback fired twice" exception.
+```js
+var callbackify = require('async-deco/utils/sanitizeAsyncFunction');
+
+var func = sanitizeAsyncFunction(function () {
+  throw new Error('generic error');
+});
+
+func(function (err, out) {
+  // err will be the error
+});
+```
+and
+```js
+var func = sanitizeAsyncFunction(function () {
+  cb(null, 'hello');
+  cb(null, 'hello');
+});
+
+func(function (err, out) {
+  // the second time err will contain a "Callback fired twice" exception.
+});
+```
+
 Promisify
 ---------
 Convert a callback based function to a function returning a promise. (It uses https://www.npmjs.com/package/es6-promisify)
