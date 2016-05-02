@@ -1,5 +1,6 @@
 var buildLogger = require('../utils/build-logger');
 var defaultLogger = require('../utils/default-logger');
+var uuid = require('uuid');
 
 function logDecorator(wrapper, log, name) {
   return wrapper(function (func) {
@@ -7,7 +8,7 @@ function logDecorator(wrapper, log, name) {
     return function () {
       var context, id;
       if (log) {
-        id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10);
+        id = uuid.v4();
         context = buildLogger(this, name, id, log);
       } else {
         context = this;
@@ -29,7 +30,7 @@ function logDecorator(wrapper, log, name) {
         }
         cb(err, dep);
       };
-      logger('start');
+      logger('start', {args: args.slice(0, -1), context: context});
       func.apply(context, args);
     };
   });
