@@ -15,9 +15,13 @@ function cacheDecorator(wrapper, cache) {
         cb(err, res);
       };
       cache.query(args, function (err, cacheQuery) {
-        if (!err && cacheQuery.cached === true) {
-          logger('cachehit', {key: cacheQuery.key, result: cacheQuery.hit});
-          cb(undefined, cacheQuery.hit);
+        if (err) {
+          logger('cache-error', {err: err});          
+          func.apply(context, args);
+        }
+        else if (cacheQuery.cached === true && !cacheQuery.stale) {
+          logger('cache-hit', {key: cacheQuery.key, result: cacheQuery.hit});
+          cb(null, cacheQuery.hit);
         }
         else {
           func.apply(context, args);

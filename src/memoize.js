@@ -17,8 +17,8 @@ function memoizeDecorator(wrapper, getKey) {
         cb(err, dep);
       };
       if (cacheKey in cache) {
-        logger('cachehit', {key: cacheKey, result: cache[cacheKey]});
-        return cb(undefined, cache[cacheKey]);
+        logger('memoize-hit', {key: cacheKey, result: cache[cacheKey]});
+        return cb(null, cache[cacheKey]);
       }
       else {
         func.apply(context, args);

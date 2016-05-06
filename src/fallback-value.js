@@ -19,7 +19,7 @@ function fallbackValueDecorator(wrapper, fallbackValue, error) {
       args[args.length - 1] = function (err, dep) {
         if (condition(err, dep)) {
           logger('fallback', {actualResult: {err: err, res: dep}});
-          cb(undefined, fallbackValue);
+          cb(null, fallbackValue);
         }
         else {
           cb(err, dep);

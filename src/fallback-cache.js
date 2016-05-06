@@ -1,8 +1,11 @@
 var defaultLogger = require('../utils/default-logger');
 
-function fallbackCacheDecorator(wrapper, cache, error) {
+function fallbackCacheDecorator(wrapper, cache, opts) {
   var condition;
-  error = error || Error;
+  opts = opts || {};
+  var error = opts.error || Error;
+  var useStale = opts.useStale;
+  var noPush = opts.noPush;
   if (error === Error || Error.isPrototypeOf(error)) {
     condition = function (err, dep) { return err instanceof error; };
   }
@@ -20,9 +23,13 @@ function fallbackCacheDecorator(wrapper, cache, error) {
       args[args.length - 1] = function (err, dep) {
         if (condition(err, dep)) {
           cache.query(args, function (e, cacheQuery) {
-            if (!e && cacheQuery.cached === true) {
-              logger('fallback-cachehit', {key: cacheQuery.key, result: cacheQuery.hit, actualResult: {err: err, res: dep}});
-              cb(undefined, cacheQuery.hit);
+            if (e) {
+              logger('fallback-cache-error', {err: err});          
+              cb(err, dep);
+            }
+            else if (cacheQuery.cached === true && (!useStale || !cacheQuery.stale)) {
+              logger('fallback-cache-hit', {key: cacheQuery.key, result: cacheQuery.hit, actualResult: {err: err, res: dep}});
+              cb(null, cacheQuery.hit);
             }
             else {
               cb(err, dep);
@@ -30,8 +37,8 @@ function fallbackCacheDecorator(wrapper, cache, error) {
           });
         }
         else {
-          cache.push(args, dep);
-          cb(undefined, dep);
+          !noPush && cache.push(args, dep);
+          cb(null, dep);
         }
       };
 

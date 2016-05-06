@@ -154,7 +154,7 @@ var myfunc = simpleMemoize(function (..., cb) { .... });
 It takes 1 argument:
 * a getKey function [optional]: it runs against the original arguments and returns the key used for the caching. If it is missing, only one result will be memoized.
 
-It logs "cachehit" with {key: cache key, result: cache result}
+It logs "memoize-hit" with {key: cache key, result: cache result}
 
 Cache
 -----
@@ -168,7 +168,7 @@ var myfunc = cached(function (..., cb) { .... });
 It takes 1 argument:
 * a cache object [mandatory]. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
 
-It logs "cachehit" with {key: cache key, result: cache result}.
+It logs "cache-hit" with {key: cache key, result: cache result} or "cache-error" (when the cache fails) with {err: error object}.
 
 Proxy
 -----
@@ -186,7 +186,7 @@ var myfunc = proxy(function (..., cb) { .... });
 It takes 1 argument:
 * a guard function [mandatory]. It takes the same arguments of the original function. If it returns an error (using the callback) the original function won't be called.
 
-It logs "access denied" with { err: error returned by the guard function}
+It logs "proxy-denied" with { err: error returned by the guard function}
 
 Fallback
 --------
@@ -226,14 +226,16 @@ If a function fails, it tries to use a previous cached result.
 ```js
 var fallbackCacheDecorator = require('async-deco/callback/fallback-cache');
 
-var fallback = fallbackCacheDecorator(cache, Error);
+var fallback = fallbackCacheDecorator(cache, options);
 var myfunc = fallback(function (..., cb) { .... });
 ```
 It takes 2 arguments:
 * a cache object [mandatory]. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
-* error instance for deciding to fallback, or a function taking the error and result (if it returns true it'll trigger the fallback) [optional, it falls back on any error by default]
-
-It logs "fallback-cache" with {key: cache key, result: cache result, actualResult: {err: error returned, res: result returned}}
+* an options object with this optional attributes:
+  * error: the error instance for deciding to fallback, or a function taking the error and result (if it returns true it'll trigger the fallback) [optional, it falls back on any error by default]
+  * useStale: if true it will use "stale" cache items as valid [optional, defaults to false]
+  * noPush: it true it won't put anything in the cache [optional, defaults to false]
+It logs "fallback-cache-hit" with {key: cache key, result: cache result, actualResult: {err: error returned, res: result returned}} or "fallback-cache-error" with {err: error returned by the cache}.
 
 Timeout
 -------
@@ -295,7 +297,7 @@ var myfunc = dedupe(function (..., cb) { .... });
 The argument:
 * getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue.
 
-It logs "deduping" whenever is calling more than one callback with the same results.
+It logs "dedupe" whenever is calling more than one callback with the same results.
 {len: number of function call saved, key: cache key}
 
 Utilities

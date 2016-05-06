@@ -59,8 +59,8 @@ describe('compose', function () {
       f(1, 2, 3, function (err, dep) {
         assert.equal(dep, 6);
         assert.deepEqual(log, [
-           { type: 'start', obj: {args: [1, 2, 3], context: log[0].obj.context} },
-           { type: 'end', obj: { result: 6 } }
+           { type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context} },
+           { type: 'log-end', obj: { result: 6 } }
         ]);
         done();
       });
@@ -75,7 +75,7 @@ describe('compose', function () {
 
       f(1, 2, 3, function (err, dep) {
         assert.equal(dep, 'no value');
-        assert.deepEqual(log[0], { type: 'start', obj: {args: [1, 2, 3], context: log[0].obj.context} });
+        assert.deepEqual(log[0], { type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context} });
         assert.deepEqual(log[1], { type: 'timeout', obj: { ms: 20 }});
 
         assert.equal(log[2].type, 'retry');
@@ -87,7 +87,7 @@ describe('compose', function () {
         assert.equal(log[4].type, 'fallback');
         assert.isUndefined(log[4].obj.actualResult.res);
         assert.instanceOf(log[4].obj.actualResult.err, TimeoutError);
-        assert.deepEqual(log[5], { type: 'end', obj: { result: 'no value' } });
+        assert.deepEqual(log[5], { type: 'log-end', obj: { result: 'no value' } });
         done();
       });
     });
@@ -105,13 +105,13 @@ describe('compose', function () {
       f(1, 2, 3, function (err, dep) {
         assert.equal(dep, 6);
 
-        assert.deepEqual(log[0], { type: 'start', obj: {args: [1, 2, 3], context: log[0].obj.context} });
+        assert.deepEqual(log[0], { type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context} });
         assert.deepEqual(log[1], { type: 'timeout', obj: { ms: 20 }});
         assert.equal(log[2].type, 'retry');
         assert.equal(log[2].obj.times, 1);
         assert.isUndefined(log[2].obj.actualResult.res);
         assert.instanceOf(log[2].obj.actualResult.err, TimeoutError);
-        assert.deepEqual(log[3], { type: 'end', obj: { result: 6 } });
+        assert.deepEqual(log[3], { type: 'log-end', obj: { result: 6 } });
         done();
       });
     });

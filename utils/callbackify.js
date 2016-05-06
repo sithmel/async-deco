@@ -17,14 +17,14 @@ function callbackify(func) {
 
     if (isPromise(output)) {
       output.then(function (res) { // onfulfilled
-        cb(undefined, res);
+        cb(null, res);
       },
       function (error) { // onrejected
         cb(error);
       });
     }
     else {
-      cb(undefined, output);
+      cb(null, output);
     }
   };
 }

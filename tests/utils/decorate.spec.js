@@ -40,8 +40,8 @@ describe('decorate', function () {
     f(1, 2, 3, function (err, dep) {
       assert.equal(dep, 6);
       assert.deepEqual(log, [
-         { type: 'start', obj: {args: [1, 2, 3], context: log[0].obj.context} },
-         { type: 'end', obj: { result: 6 } }
+         { type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context} },
+         { type: 'log-end', obj: { result: 6 } }
       ]);
       done();
     });
@@ -83,8 +83,8 @@ describe('decorate', function () {
     f(1, 2, 3, function (err, dep) {
       assert.equal(dep, 6);
       assert.deepEqual(log, [
-         { type: 'start', obj: {args: [1, 2, 3], context: log[0].obj.context} },
-         { type: 'end', obj: { result: 6 } }
+         { type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context} },
+         { type: 'log-end', obj: { result: 6 } }
       ]);
       done();
     });

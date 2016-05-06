@@ -21,8 +21,8 @@ describe('log (callback)', function () {
     f(1, 2, 3, function (err, dep) {
       assert.equal(dep, 6);
       assert.deepEqual(log, [
-        {type: 'start', obj: {args: [1, 2, 3], context: log[0].obj.context}},
-        {type: 'end', obj: {result: 6}}
+        {type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context}},
+        {type: 'log-end', obj: {result: 6}}
       ]);
       done();
     });
@@ -35,8 +35,8 @@ describe('log (callback)', function () {
     f(1, 2, 3, function (err, dep) {
       assert.instanceOf(err, Error);
       assert.deepEqual(log, [
-        {type: 'start', obj: {args: [1, 2, 3], context: log[0].obj.context}},
-        {type: 'error', obj: {err: new Error('error!')}}
+        {type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context}},
+        {type: 'log-error', obj: {err: new Error('error!')}}
       ]);
       done();
     });

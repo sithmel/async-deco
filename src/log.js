@@ -19,18 +19,18 @@ function logDecorator(wrapper, log, name) {
 
       args[args.length - 1] = function (err, dep) {
         if (err) {
-          logger('error', {
+          logger('log-error', {
             err: err
           });
         }
         else {
-          logger('end', {
+          logger('log-end', {
             result: dep
           });
         }
         cb(err, dep);
       };
-      logger('start', {args: args.slice(0, -1), context: context});
+      logger('log-start', {args: args.slice(0, -1), context: context});
       func.apply(context, args);
     };
   });

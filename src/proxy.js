@@ -11,7 +11,7 @@ function proxyDecorator(wrapper, guard) {
 
       guardArgs[args.length - 1] = function (err) {
         if (err) {
-          logger('access denied', {
+          logger('proxy-denied', {
             err: err
           });
           cb(err);
