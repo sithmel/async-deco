@@ -402,6 +402,67 @@ var newfunc = decorate(
 ```
 The function to decorate has to be the last argument.
 
+Parallel - Waterfall - Race
+---------------------------
+These special decorators can be used to manage the flow control of a group of functions (callback based).
+"parallel" executes every function in parallel. If a function returns an error the execution stops immediatly returning the error.
+The functions will get the same arguments and the result will be an array of all the results.
+```js
+var func = parallel([
+  function (x, cb) {
+    cb(null, x + 1);
+  },
+  function (x, cb) {
+    cb(null, x + 2);
+  }
+]);
+
+func(3, function (err, values) {
+  // values contains  [4, 5]
+});
+```
+"waterfall" executes the functions in series. The first function will get the arguments and the other will use the arguments passed by the previous one:
+```js
+var func = waterfall([
+  function (x, cb) {
+    cb(null, x + ' world');
+  },
+  function (x, cb) {
+    cb(null, x + '!');
+  }
+]);
+
+func('hello', function (err, value) {
+  // value === 'hello world!'
+});
+"race" will execute all functions in parallel but it will return the first valid result.
+```
+It is very easy to combine these functions to create a more complex flow:
+```js
+var func = waterfall([
+  parallel([
+    function (x, cb) {
+      cb(null, x * 2);
+    },
+    function (x, cb) {
+      cb(null, x * 3);
+    }
+  ]),
+  function (numbers, cb) {
+    cb(null, numbers.reduce(function (acc, item) {
+      return acc + item;
+    }, 0));
+  },
+  function (x, cb) {
+    cb(null, x - 5);
+  }
+]);
+
+func(5, function (err, value) {
+  // value === 20;
+});
+```
+
 Examples and use cases
 ======================
 

@@ -27,7 +27,8 @@ function fallbackCacheDecorator(wrapper, cache, opts) {
               logger('fallback-cache-error', {err: err});          
               cb(err, dep);
             }
-            else if (cacheQuery.cached === true && (!useStale || !cacheQuery.stale)) {
+            else if (cacheQuery.cached === true && 
+            (!cacheQuery.stale || (useStale && cacheQuery.stale))) {
               logger('fallback-cache-hit', {key: cacheQuery.key, result: cacheQuery.hit, actualResult: {err: err, res: dep}});
               cb(null, cacheQuery.hit);
             }
