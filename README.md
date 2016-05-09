@@ -404,7 +404,7 @@ The function to decorate has to be the last argument.
 
 Parallel - Waterfall - Race
 ---------------------------
-These special decorators can be used to manage the flow control of a group of functions (callback based).
+These special utilities can be used to manage the execution of a group of functions (callback based).
 "parallel" executes every function in parallel. If a function returns an error the execution stops immediatly returning the error.
 The functions will get the same arguments and the result will be an array of all the results.
 ```js
@@ -421,7 +421,7 @@ func(3, function (err, values) {
   // values contains  [4, 5]
 });
 ```
-"waterfall" executes the functions in series. The first function will get the arguments and the other will use the arguments passed by the previous one:
+"waterfall" executes the functions in series. The first function will get the arguments and the others will use the arguments passed by the previous one:
 ```js
 var func = waterfall([
   function (x, cb) {
@@ -435,8 +435,8 @@ var func = waterfall([
 func('hello', function (err, value) {
   // value === 'hello world!'
 });
-"race" will execute all functions in parallel but it will return the first valid result.
 ```
+"race" will execute all functions in parallel but it will return the first valid result.
 It is very easy to combine these functions to create a more complex flow:
 ```js
 var func = waterfall([
