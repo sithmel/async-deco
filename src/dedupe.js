@@ -1,7 +1,8 @@
 var defaultLogger = require('../utils/default-logger');
+var keyGetter = require('memoize-cache/key-getter');
 
 function dedupeDecorator(wrapper, getKey) {
-  getKey = getKey || function () { return '_default'; };
+  getKey = keyGetter(getKey || function () { return '_default'; });
 
   return wrapper(function (func) {
     var callback_queues = {};
@@ -11,7 +12,7 @@ function dedupeDecorator(wrapper, getKey) {
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);
       var cb = args[args.length - 1];
-      var cacheKey = getKey.apply(context, args).toString();
+      var cacheKey = getKey.apply(context, args);
 
       function runQueue(cacheKey, err, dep) {
         var len = cacheKey in callback_queues ? callback_queues[cacheKey].length : 0;
@@ -24,7 +25,10 @@ function dedupeDecorator(wrapper, getKey) {
         delete callback_queues[cacheKey];
       }
 
-      if (!(cacheKey in callback_queues)) {
+      if (cacheKey === null) {
+        func.apply(context, args);
+      }
+      else if (!(cacheKey in callback_queues)) {
         // creating callback
         args[args.length - 1] = (function (cacheKey) {
           return function (err, dep) {
