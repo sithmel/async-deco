@@ -1,6 +1,8 @@
 var defaultLogger = require('../utils/default-logger');
 
-function cacheDecorator(wrapper, cache) {
+function cacheDecorator(wrapper, cache, opts) {
+  opts = opts || {};
+
   return wrapper(function (func) {
     return function () {
       var context = this;
@@ -8,22 +10,22 @@ function cacheDecorator(wrapper, cache) {
       var logger = defaultLogger.apply(context);
       var cb = args[args.length - 1];
 
-      args[args.length - 1] = function (err, res) {
-        if (!err) {
-          cache.push(args, res);
-        }
-        cb(err, res);
-      };
       cache.query(args, function (err, cacheQuery) {
         if (err) {
-          logger('cache-error', {err: err});          
+          logger('cache-error', {cacheErr: err});
           func.apply(context, args);
         }
         else if (cacheQuery.cached === true && !cacheQuery.stale) {
-          logger('cache-hit', {key: cacheQuery.key, result: cacheQuery.hit});
+          logger('cache-hit', {key: cacheQuery.key, result: cacheQuery});
           cb(null, cacheQuery.hit);
         }
         else {
+          args[args.length - 1] = function (err, res) {
+            if (!err) {
+              cache.push(args, res);
+            }
+            cb(err, res);
+          };
           func.apply(context, args);
         }
       });

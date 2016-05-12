@@ -165,10 +165,11 @@ var cacheDecorator = require('async-deco/callback/cache');
 var cached = cacheDecorator(cache);
 var myfunc = cached(function (..., cb) { .... });
 ```
-It takes 1 argument:
+It takes 2 arguments:
 * a cache object [mandatory]. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
+* an "options" object [optional]:
 
-It logs "cache-hit" with {key: cache key, result: cache result} or "cache-error" (when the cache fails) with {err: error object}.
+It logs "cache-hit" with {key: cache key, result: cache result} or "cache-error" (when the cache fails) with {cacheErr: error object from the cache}.
 
 Proxy
 -----
@@ -235,7 +236,8 @@ It takes 2 arguments:
   * error: the error instance for deciding to fallback, or a function taking the error and result (if it returns true it'll trigger the fallback) [optional, it falls back on any error by default]
   * useStale: if true it will use "stale" cache items as valid [optional, defaults to false]
   * noPush: it true it won't put anything in the cache [optional, defaults to false]
-It logs "fallback-cache-hit" with {key: cache key, result: cache result, actualResult: {err: error returned, res: result returned}} or "fallback-cache-error" with {err: error returned by the cache}.
+
+It logs "fallback-cache-hit" with {key: cache key, result: cache object, actualResult: {err: error returned, res: result returned}} or "fallback-cache-error" with {err: error returned by the function, cacheErr: error returned by the cache}.
 
 Timeout
 -------

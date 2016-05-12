@@ -1,8 +1,9 @@
 require('setimmediate');
 var defaultLogger = require('../utils/default-logger');
+var keyGetter = require('memoize-cache/key-getter');
 
 function limitDecorator(wrapper, max, getKey) {
-  getKey = getKey || function () { return '_default'; };
+  getKey = keyGetter(getKey || function () { return '_default'; });
 
   return wrapper(function (func) {
     var executionNumbers = {};
@@ -13,7 +14,7 @@ function limitDecorator(wrapper, max, getKey) {
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);
       var cb = args[args.length - 1];
-      var cacheKey = getKey.apply(context, args).toString();
+      var cacheKey = getKey.apply(context, args);
 
       function runQueues() {
         // should run ALL the queues

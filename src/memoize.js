@@ -1,7 +1,8 @@
 var defaultLogger = require('../utils/default-logger');
+var keyGetter = require('memoize-cache/key-getter');
 
 function memoizeDecorator(wrapper, getKey) {
-  getKey = getKey || function () { return '_default'; };
+  getKey = keyGetter(getKey || function () { return '_default'; });
   return wrapper(function (func) {
     var cache = {};
     return function () {
@@ -9,14 +10,14 @@ function memoizeDecorator(wrapper, getKey) {
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);
       var cb = args[args.length - 1];
-      var cacheKey = getKey.apply(context, args).toString();
+      var cacheKey = getKey.apply(context, args);
       args[args.length - 1] = function (err, dep) {
-        if (!err) {
+        if (!err && cacheKey !== null) {
           cache[cacheKey] = dep;
         }
         cb(err, dep);
       };
-      if (cacheKey in cache) {
+      if (cacheKey !== null && cacheKey in cache) {
         logger('memoize-hit', {key: cacheKey, result: cache[cacheKey]});
         return cb(null, cache[cacheKey]);
       }
