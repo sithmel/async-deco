@@ -173,6 +173,7 @@ It logs:
 * "cache-hit" with {key: cache key, result: cache result}
 * "cache-error" (when the cache fails) with {cacheErr: error object from the cache}
 * "cache-miss" (when the item is not in the cache) with {key: cache key}
+* "cache-set" with {args: arguments for caching, res: result to cache}
 
 Proxy
 -----
@@ -244,6 +245,7 @@ It logs:
 * "fallback-cache-hit" with {key: cache key, result: cache object, actualResult: {err: error returned, res: result returned}}
 * "fallback-cache-error" with {err: error returned by the function, cacheErr: error returned by the cache}
 * "fallback-cache-miss" with {key: cache key, actualResult: {err: error returned, res: result returned}}
+* "fallback-cache-set" with {args: arguments for caching, res: result to cache}
 
 Timeout
 -------
