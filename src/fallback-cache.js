@@ -29,11 +29,12 @@ function fallbackCacheDecorator(wrapper, cache, opts) {
               cb(err, dep);
             }
             else if (cacheQuery.cached === true &&
-            (!cacheQuery.stale || (useStale && cacheQuery.stale))) {
+              (!cacheQuery.stale || (useStale && cacheQuery.stale))) {
               logger('fallback-cache-hit', {key: cacheQuery.key, result: cacheQuery, actualResult: {err: err, res: dep}});
               cb(null, cacheQuery.hit);
             }
             else {
+              logger('fallback-cache-miss', {key: cacheQuery.key, actualResult: {err: err, res: dep}});
               cb(err, dep);
             }
           });

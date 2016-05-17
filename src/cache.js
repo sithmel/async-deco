@@ -20,6 +20,7 @@ function cacheDecorator(wrapper, cache, opts) {
           cb(null, cacheQuery.hit);
         }
         else {
+          logger('cache-miss', {key: cacheQuery.key});
           args[args.length - 1] = function (err, res) {
             if (!err) {
               cache.push(args, res);
