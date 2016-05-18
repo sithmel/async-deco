@@ -33,6 +33,9 @@ function fallbackCacheDecorator(wrapper, cache, opts) {
               logger('fallback-cache-hit', {key: cacheQuery.key, result: cacheQuery, actualResult: {err: err, res: res}});
               cb(null, cacheQuery.hit);
             }
+            else if (cacheQuery.key === null) { // no cache
+              cb(err, res);
+            }
             else {
               logger('fallback-cache-miss', {key: cacheQuery.key, actualResult: {err: err, res: res}});
               cb(err, res);

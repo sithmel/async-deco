@@ -19,6 +19,9 @@ function cacheDecorator(wrapper, cache, opts) {
           logger('cache-hit', {key: cacheQuery.key, result: cacheQuery});
           cb(null, cacheQuery.hit);
         }
+        else if (cacheQuery.key === null) { // no cache
+          func.apply(context, args);
+        }
         else {
           logger('cache-miss', {key: cacheQuery.key});
           args[args.length - 1] = function (err, res) {
