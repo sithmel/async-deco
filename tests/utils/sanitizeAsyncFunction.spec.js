@@ -25,7 +25,7 @@ describe('safe', function () {
     });
   });
 
-  it('must catch double called callback', function (done) {
+  it('must catch double called callback', function () {
     var firstTime = true;
 
     var func = sanitizeAsyncFunction(function (a, b, cb) {
@@ -33,17 +33,45 @@ describe('safe', function () {
       cb(null, a + b);
     });
 
-    func(1, 2, function (err, out) {
-      if (firstTime) {
+    assert.throws(function () {
+      func(1, 2, function (err, out) {
+        assert.isTrue(firstTime);
         assert.equal(out, 3);
         firstTime = false;
-      }
-      else {
-        assert.instanceOf(err, Error);
-        assert.equal(err.message, 'Callback fired twice');
-        done();
-      }
-    });
+      });
+    }, 'Callback fired twice');
   });
 
+  it('must catch double called callback (2)', function () {
+    var firstTime = true;
+
+    var func = sanitizeAsyncFunction(function (a, b, cb) {
+      cb(null, a + b);
+      throw new Error('generic error');
+    });
+
+    assert.throws(function () {
+      func(1, 2, function (err, out) {
+        assert.isTrue(firstTime);
+        assert.equal(out, 3);
+        firstTime = false;
+      });
+    }, 'generic error');
+  });
+
+  it('must catch and throw errors on the callback', function () {
+    var firstTime = true;
+
+    var func = sanitizeAsyncFunction(function (a, b, cb) {
+      cb(null, a + b);
+    });
+
+    assert.throws(function () {
+      func(1, 2, function (err, out) {
+        assert.isTrue(firstTime);
+        firstTime = false;
+        throw(new Error('callback broken'));
+      });
+    }, 'callback broken');
+  });
 });
