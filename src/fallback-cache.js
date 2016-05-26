@@ -44,8 +44,9 @@ function fallbackCacheDecorator(wrapper, cache, opts) {
         }
         else {
           if (!noPush) {
-            logger('fallback-cache-set', {args: args, res: res});
-            cache.push(args, res);
+            if (cache.push(args, res)) {
+              logger('fallback-cache-set', {args: args, res: res});
+            }
           }
 
           cb(null, res);

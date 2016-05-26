@@ -26,8 +26,9 @@ function cacheDecorator(wrapper, cache, opts) {
           logger('cache-miss', {key: cacheQuery.key});
           args[args.length - 1] = function (err, res) {
             if (!err) {
-              logger('cache-set', {args: args, res: res});
-              cache.push(args, res);
+              if (cache.push(args, res)) {
+                logger('cache-set', {args: args, res: res});
+              }
             }
             cb(err, res);
           };
