@@ -109,5 +109,71 @@ describe('limit (callback)', function () {
     f(20, getResult);
     f(60, getResult);
   });
+});
 
+describe('hard limit (callback)', function () {
+  var limitToOne, limitToTwo, limitToThree;
+
+  beforeEach(function () {
+    limitToOne = limitDecorator({max: 1, queueSize: 0});
+    limitToTwo = limitDecorator({max: 1, queueSize: 1});
+  });
+
+  it('must limit to one function call', function (done) {
+    var assertTimePassed = timePassedFrom();
+
+    var f = limitToOne(function (a, next) {
+      setTimeout(function () {
+        next(undefined, a);
+      }, a);
+    });
+
+    var c = 0;
+    var getResult = function (err, dep) {
+      c++;
+      if (c === 1) { // the second function returns an error immediately
+        assert.instanceOf(err, Error);
+        assert.equal(err.message, 'Queue max size reached (0)');
+        assert.isUndefined(dep);
+      } else if (c == 2) { // the first function returns the result
+        assertTimePassed(40);
+        assert.equal(dep, 40);
+        done();
+      }
+    };
+
+    f(40, getResult);
+    f(20, getResult);
+  });
+
+  it('must limit to 2 function call', function (done) {
+    var assertTimePassed = timePassedFrom();
+
+    var f = limitToTwo(function (a, next) {
+      setTimeout(function () {
+        next(undefined, a);
+      }, a);
+    });
+
+    var c = 0;
+    var getResult = function (err, dep) {
+      c++;
+      if (c === 1) { // the thirs function returns an error immediately
+        assert.instanceOf(err, Error);
+        assert.equal(err.message, 'Queue max size reached (1)');
+        assert.isUndefined(dep);
+      } else if (c == 2) {
+        assertTimePassed(40);
+        assert.equal(dep, 40);
+      } else if (c == 3) {
+        assertTimePassed(60);
+        assert.equal(dep, 20);
+        done();
+      }
+    };
+
+    f(40, getResult);
+    f(20, getResult);
+    f(60, getResult);
+  });
 });

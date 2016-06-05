@@ -4,7 +4,12 @@ var keyGetter = require('memoize-cache/key-getter');
 
 function limitDecorator(wrapper, max, getKey) {
   getKey = keyGetter(getKey || function () { return '_default'; });
-
+  max = max || 1;
+  var queueSize = Infinity;
+  if (typeof max === 'object') {
+    queueSize = max.queueSize;
+    max = max.max;
+  }
   return wrapper(function (func) {
     var executionNumbers = {};
     var queues = {};
@@ -21,7 +26,6 @@ function limitDecorator(wrapper, max, getKey) {
         var cacheKey, f;
         for (cacheKey in executionNumbers) {
           if (executionNumbers[cacheKey] >= max) {
-            logger('limit', { number: executionNumbers[cacheKey], key: cacheKey });
             continue;
           }
           f = queues[cacheKey].shift();
@@ -31,7 +35,6 @@ function limitDecorator(wrapper, max, getKey) {
           }
         }
       }
-
 
       if (!(cacheKey in executionNumbers)) {
         executionNumbers[cacheKey] = 0;
@@ -48,10 +51,23 @@ function limitDecorator(wrapper, max, getKey) {
         cb(err, dep);
       };
 
-      queues[cacheKey].push(function () {
+      if (executionNumbers[cacheKey] < max) {
+        executionNumbers[cacheKey]++;
         func.apply(context, args);
-      });
-      runQueues();
+      }
+      else if (executionNumbers[cacheKey] >= max) {
+        if (queues[cacheKey].length >= queueSize) {
+          logger('limit-drop', { queueSize: queues[cacheKey].length, parallel: executionNumbers[cacheKey], key: cacheKey });
+          cb(new Error('Queue max size reached (' + queueSize + ')'));
+        }
+        else {
+          logger('limit-queue', { queueSize:queues[cacheKey].length, parallel: executionNumbers[cacheKey], key: cacheKey });
+          queues[cacheKey].push(function () {
+            func.apply(context, args);
+          });
+        }
+
+      }
     };
   });
 }

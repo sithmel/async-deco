@@ -16,9 +16,6 @@ function dedupeDecorator(wrapper, getKey) {
 
       function runQueue(cacheKey, err, dep) {
         var len = cacheKey in callback_queues ? callback_queues[cacheKey].length : 0;
-        if (len > 1) {
-          logger('dedupe', {len: len, key: cacheKey});
-        }
         for (var i = 0; i < len; i++) {
           callback_queues[cacheKey][i](err, dep);
         }
@@ -39,6 +36,7 @@ function dedupeDecorator(wrapper, getKey) {
         func.apply(context, args);
       }
       else {
+        logger('dedupe-queue', {key: cacheKey});
         callback_queues[cacheKey].push(cb);
       }
     };
