@@ -1,4 +1,5 @@
 require('setimmediate');
+var LimitError = require('../errors/limit-error');
 var defaultLogger = require('../utils/default-logger');
 var keyGetter = require('memoize-cache/key-getter');
 
@@ -8,7 +9,7 @@ function limitDecorator(wrapper, max, getKey) {
   var queueSize = Infinity;
   if (typeof max === 'object') {
     queueSize = max.queueSize;
-    max = max.max;
+    max = max.limit;
   }
   return wrapper(function (func) {
     var executionNumbers = {};
@@ -36,6 +37,10 @@ function limitDecorator(wrapper, max, getKey) {
         }
       }
 
+      if (cacheKey == null ) {
+        return func.apply(context, args);
+      }
+
       if (!(cacheKey in executionNumbers)) {
         executionNumbers[cacheKey] = 0;
         queues[cacheKey] = [];
@@ -58,7 +63,7 @@ function limitDecorator(wrapper, max, getKey) {
       else if (executionNumbers[cacheKey] >= max) {
         if (queues[cacheKey].length >= queueSize) {
           logger('limit-drop', { queueSize: queues[cacheKey].length, parallel: executionNumbers[cacheKey], key: cacheKey });
-          cb(new Error('Queue max size reached (' + queueSize + ')'));
+          cb(new LimitError('Max queue size reached (' + queueSize + ')'));
         }
         else {
           logger('limit-queue', { queueSize:queues[cacheKey].length, parallel: executionNumbers[cacheKey], key: cacheKey });

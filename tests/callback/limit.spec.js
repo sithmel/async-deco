@@ -1,5 +1,6 @@
 var assert = require('chai').assert;
 var limitDecorator = require('../../callback/limit');
+var LimitError = require('../../errors/limit-error');
 
 function timePassedFrom() {
   var t0 = Date.now();
@@ -115,8 +116,8 @@ describe('hard limit (callback)', function () {
   var limitToOne, limitToTwo, limitToThree;
 
   beforeEach(function () {
-    limitToOne = limitDecorator({max: 1, queueSize: 0});
-    limitToTwo = limitDecorator({max: 1, queueSize: 1});
+    limitToOne = limitDecorator({limit: 1, queueSize: 0});
+    limitToTwo = limitDecorator({limit: 1, queueSize: 1});
   });
 
   it('must limit to one function call', function (done) {
@@ -132,8 +133,7 @@ describe('hard limit (callback)', function () {
     var getResult = function (err, dep) {
       c++;
       if (c === 1) { // the second function returns an error immediately
-        assert.instanceOf(err, Error);
-        assert.equal(err.message, 'Queue max size reached (0)');
+        assert.instanceOf(err, LimitError);
         assert.isUndefined(dep);
       } else if (c == 2) { // the first function returns the result
         assertTimePassed(40);
@@ -159,8 +159,7 @@ describe('hard limit (callback)', function () {
     var getResult = function (err, dep) {
       c++;
       if (c === 1) { // the thirs function returns an error immediately
-        assert.instanceOf(err, Error);
-        assert.equal(err.message, 'Queue max size reached (1)');
+        assert.instanceOf(err, LimitError);
         assert.isUndefined(dep);
       } else if (c == 2) {
         assertTimePassed(40);

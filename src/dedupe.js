@@ -22,7 +22,7 @@ function dedupeDecorator(wrapper, getKey) {
         delete callback_queues[cacheKey];
       }
 
-      if (cacheKey === null) {
+      if (cacheKey == null) {
         func.apply(context, args);
       }
       else if (!(cacheKey in callback_queues)) {

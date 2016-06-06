@@ -280,7 +280,7 @@ It logs "retry" with {times: number of attempts, actualResult: {err: original er
 
 Limit
 -----
-Limit the concurrency of a function.
+Limit the concurrency of a function. Every function call that excedees the limit will be queued. If the queue size is reached the function call will return an error.
 ```js
 var limitDecorator = require('async-deco/callback/limit');
 
@@ -288,10 +288,14 @@ var limitToTwo = limitDecorator(2, getKey);
 var myfunc = limitToTwo(function (..., cb) { .... });
 ```
 You can initialise the decorator with 1 argument:
-* number of parallel execution [mandatory]
-* a getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue.
+* number of parallel execution [default to 1]. It can also be an object: {max: number, queueSize: number}.
+  * "limit" will be the number of parallel execution
+  * "queueSize" is the size of the queue (default to Infinity). If the queue reaches this size any further function call will return an error without calling the original function
+* a getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue. If it returns null or undefined, the limit will be ignored.
 
-It logs "limit" when a function gets queued with { number: number of function queued, key: cache key }
+logger('limit-drop', { queueSize: queues[cacheKey].length, parallel: executionNumbers[cacheKey], key: cacheKey });
+
+It logs "limit-queue" when a function gets queued or "limit-drop" when a function gets rejected (queue full). It'll also log these data: { queueSize: number of function queued, key: cache key, parallel: number of functions currently running }
 
 Dedupe
 ------
@@ -307,8 +311,8 @@ var myfunc = dedupe(function (..., cb) { .... });
 The argument:
 * getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue.
 
-It logs "dedupe" whenever is calling more than one callback with the same results.
-{len: number of function call saved, key: cache key}
+It logs "dedupe-queue" when a function is queued waiting for the result from another function.
+{key: cache key}
 
 Utilities
 =========
