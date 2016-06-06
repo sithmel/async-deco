@@ -293,8 +293,6 @@ You can initialise the decorator with 1 argument:
   * "queueSize" is the size of the queue (default to Infinity). If the queue reaches this size any further function call will return an error without calling the original function
 * a getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue. If it returns null or undefined, the limit will be ignored.
 
-logger('limit-drop', { queueSize: queues[cacheKey].length, parallel: executionNumbers[cacheKey], key: cacheKey });
-
 It logs "limit-queue" when a function gets queued or "limit-drop" when a function gets rejected (queue full). It'll also log these data: { queueSize: number of function queued, key: cache key, parallel: number of functions currently running }
 
 Dedupe
