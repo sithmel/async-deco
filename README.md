@@ -5,6 +5,20 @@ async-deco
 async-deco is a collection of decorators. It allows to add features such as timeout, retry, dedupe, limit and much more!
 They can be combined together using the "compose" function (included).
 
+Here is the list of the decorators (available for callback/promise functions):
+
+* [Log](#log)
+* [Memoize](#memoize)
+* [Cache](#cache)
+* [Proxy](#proxy)
+* [Fallback](#fallback)
+* [Fallback value](#fallback-value)
+* [Fallback cache](#fallback-cache)
+* [Timeout](#timeout)
+* [Retry](#retry)
+* [Limit](#limit)
+* [Dedupe](#dedupe)
+
 Callback and promises
 =====================
 All decorators are designed to work with functions using a callback or returning a promise. In case of callbacks, it must follow the [node convention](https://docs.nodejitsu.com/articles/errors/what-are-the-error-conventions): the callback should be the last argument and its arguments should be, an error instance and the output of the function.
@@ -360,7 +374,7 @@ func(function (err, out) {
 
 Promisify
 ---------
-Convert a callback based function to a function returning a promise. (It uses https://www.npmjs.com/package/es6-promisify)
+Convert a callback based function to a function returning a promise. It is a just a reference to https://www.npmjs.com/package/es6-promisify. It is exposed here for convenience.
 ```js
 var promisify = require('async-deco/utils/promisify');
 
