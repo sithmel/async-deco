@@ -1,5 +1,5 @@
 var defaultLogger = require('../utils/default-logger');
-var keyGetter = require('memoize-cache/key-getter');
+var keyGetter = require('memoize-cache-utils/key-getter');
 
 function dedupeDecorator(wrapper, getKey) {
   getKey = keyGetter(getKey || function () { return '_default'; });

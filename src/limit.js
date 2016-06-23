@@ -1,7 +1,7 @@
 require('setimmediate');
 var LimitError = require('../errors/limit-error');
 var defaultLogger = require('../utils/default-logger');
-var keyGetter = require('memoize-cache/key-getter');
+var keyGetter = require('memoize-cache-utils/key-getter');
 
 function limitDecorator(wrapper, max, getKey) {
   getKey = keyGetter(getKey || function () { return '_default'; });

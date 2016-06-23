@@ -26,12 +26,13 @@
     "eslint": "^1.10.3",
     "husky": "^0.10.2",
     "mocha": "^2.1.0",
+    "memoize-cache": "^3.2.4",
     "npm-release": "^1.0.0"
   },
   "dependencies": {
+    "memoize-cache-utils": "^0.0.2",
     "es6-promisify": "^3.0.0",
     "require-all": "^2.0.0",
-    "memoize-cache": "^3.2.4",
     "setimmediate": "^1.0.4",
     "uuid": "^2.0.2"
   }
