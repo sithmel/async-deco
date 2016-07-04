@@ -25,7 +25,7 @@ function retryDecorator(wrapper, times, interval, error) {
       var cb = args[args.length - 1];
 
       var retry = function () {
-        if (intervalFunc(counter++) > 0) {
+        if (counter++ && intervalFunc(counter) > 0) { // do not wait for counter === 0
           setTimeout(function () {
             func.apply(context, args);
           }, interval);
