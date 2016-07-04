@@ -1,6 +1,6 @@
 {
   "name": "async-deco",
-  "version": "5.1.7",
+  "version": "5.1.8",
   "description": "A collection of decorators for adding features to asynchronous functions (callback or promise based).",
   "main": "index.js",
   "scripts": {
