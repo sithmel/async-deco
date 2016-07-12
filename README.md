@@ -527,3 +527,13 @@ var decorator = compose(
 
 var newfunc = decorator(function (..., cb) { .... });
 ```
+
+Queue
+-----
+In some case you may want to preserve the sequence used to call a function. For example, sending commands to a db being sure they are executed in the right order.
+```js
+var limitDecorator = require('async-deco/callback/limit');
+
+var queue = limitDecorator(1);
+var myfunc = queue(function (..., cb) { .... });
+```
