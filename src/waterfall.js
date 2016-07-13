@@ -1,7 +1,6 @@
 
-function waterfall() {
-  var funcs = Array.prototype.slice.call(arguments, 0);
-  funcs = Array.isArray(funcs[0]) ? funcs[0] : funcs;
+function waterfall(funcs) {
+
   return function () {
     var functions = funcs.slice(0);
     var currentFunc;
@@ -22,7 +21,7 @@ function waterfall() {
     currentFunc = functions.shift();
     args[args.length - 1] = callback;
     currentFunc.apply(context, args);
-  }
+  };
 }
 
 module.exports = waterfall;

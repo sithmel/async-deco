@@ -18,6 +18,10 @@ Here is the list of the decorators (available for callback/promise functions):
 * [Retry](#retry)
 * [Limit](#limit)
 * [Dedupe](#dedupe)
+* [parallel](#parallel)
+* [waterfall](#waterfall)
+* [race](#race)
+* [balance](#balance)
 
 Callback and promises
 =====================
@@ -326,6 +330,145 @@ The argument:
 It logs "dedupe-queue" when a function is queued waiting for the result from another function.
 {key: cache key}
 
+Parallel
+--------
+"parallel" executes every function in parallel. If a function returns an error the execution stops immediatly returning the error.
+The functions will get the same arguments and the result will be an array of all the results.
+```js
+var parallel = require('async-deco/callback/parallel');
+
+var func = parallel([
+  function (x, cb) {
+    cb(null, x + 1);
+  },
+  function (x, cb) {
+    cb(null, x + 2);
+  }
+]);
+
+func(3, function (err, values) {
+  // values contains  [4, 5]
+});
+```
+
+Waterfall
+---------
+"waterfall" executes the functions in series. The first function will get the arguments and the others will use the arguments passed by the previous one:
+```js
+var waterfall = require('async-deco/callback/waterfall');
+
+var func = waterfall([
+  function (x, cb) {
+    cb(null, x + ' world');
+  },
+  function (x, cb) {
+    cb(null, x + '!');
+  }
+]);
+
+func('hello', function (err, value) {
+  // value === 'hello world!'
+});
+```
+
+Race
+----
+"race" will execute all functions in parallel but it will return the first valid result.
+```js
+var race = require('async-deco/callback/race');
+
+var func = race([
+  function (x, cb) {
+    setTimeout(function () {
+      cb(null, x + 1);
+    }, 20)
+  },
+  function (x, cb) {
+    setTimeout(function () {
+      cb(null, x + 2);
+    }, 10)
+  }
+]);
+
+func(3, function (err, values) {
+  // values contains  5 (fastest)
+});
+```
+
+Parallel - Waterfall - Race
+---------------------------
+It is very easy to combine these functions to create a more complex flow:
+```js
+var func = waterfall([
+  parallel([
+    function (x, cb) {
+      cb(null, x * 2);
+    },
+    function (x, cb) {
+      cb(null, x * 3);
+    }
+  ]),
+  function (numbers, cb) {
+    cb(null, numbers.reduce(function (acc, item) {
+      return acc + item;
+    }, 0));
+  },
+  function (x, cb) {
+    cb(null, x - 5);
+  }
+]);
+
+func(5, function (err, value) {
+  // value === 20;
+});
+```
+Although these functions are also available for promise, I suggest to use the native promise API, unless you have a better reason for doing differently.
+
+* parallel: Promise.all
+* race: Promise.race
+* waterfall: just chain different promises
+
+Balance
+-------
+This decorator allows to distribute the load between a group of functions.
+The functions should take the same arguments.
+```js
+var balance = require('async-deco/callback/balance');
+
+var balanceDecorator = balance();
+
+var func = balanceDecorator([...list of functions]);
+func(...args, function (err, res) {
+  // ...
+});
+```
+You can initialise the decorator with different policies:
+```js
+var balance = require('async-deco/callback/balance');
+var balancePolicies = require('async-deco/utils/balance-policies');
+
+var balanceDecorator = balance(balancePolicies.roundRobin);
+...
+```
+There are 3 policies available in the "balance-policies" package:
+
+* roundRobin: it rotates the execution between the functions
+* random: it picks up a random function
+* idlest (default): it tracks the load of each function and use the idlest
+
+You can also define your own policy:
+```js
+var balance = require('async-deco/callback/balance');
+
+var balanceDecorator = balance(function (counter, loads) {
+  // "counter2 is the number of times I have called the function
+  // "loads" is an array with length equal to the number of functions
+  // it contains how many calls are currently running for that function
+  // this function should return the index of the function I want to run
+});
+...
+```
+
 Utilities
 =========
 
@@ -428,67 +571,6 @@ var newfunc = decorate(
   function (..., cb) { .... });
 ```
 The function to decorate has to be the last argument.
-
-Parallel - Waterfall - Race
----------------------------
-These special utilities can be used to manage the execution of a group of functions (callback based).
-"parallel" executes every function in parallel. If a function returns an error the execution stops immediatly returning the error.
-The functions will get the same arguments and the result will be an array of all the results.
-```js
-var func = parallel([
-  function (x, cb) {
-    cb(null, x + 1);
-  },
-  function (x, cb) {
-    cb(null, x + 2);
-  }
-]);
-
-func(3, function (err, values) {
-  // values contains  [4, 5]
-});
-```
-"waterfall" executes the functions in series. The first function will get the arguments and the others will use the arguments passed by the previous one:
-```js
-var func = waterfall([
-  function (x, cb) {
-    cb(null, x + ' world');
-  },
-  function (x, cb) {
-    cb(null, x + '!');
-  }
-]);
-
-func('hello', function (err, value) {
-  // value === 'hello world!'
-});
-```
-"race" will execute all functions in parallel but it will return the first valid result.
-It is very easy to combine these functions to create a more complex flow:
-```js
-var func = waterfall([
-  parallel([
-    function (x, cb) {
-      cb(null, x * 2);
-    },
-    function (x, cb) {
-      cb(null, x * 3);
-    }
-  ]),
-  function (numbers, cb) {
-    cb(null, numbers.reduce(function (acc, item) {
-      return acc + item;
-    }, 0));
-  },
-  function (x, cb) {
-    cb(null, x - 5);
-  }
-]);
-
-func(5, function (err, value) {
-  // value === 20;
-});
-```
 
 Examples and use cases
 ======================

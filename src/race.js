@@ -1,7 +1,5 @@
 
-function race() {
-  var funcs = Array.prototype.slice.call(arguments, 0);
-  funcs = Array.isArray(funcs[0]) ? funcs[0] : funcs;
+function race(funcs) {
 
   return function () {
     var currentFunc;
@@ -26,11 +24,11 @@ function race() {
       }
     };
 
-    while(functions.length) {
+    while (functions.length) {
       currentFunc = functions.shift();
       currentFunc.apply(context, args);
     }
-  }
+  };
 }
 
 module.exports = race;

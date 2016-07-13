@@ -1,7 +1,5 @@
 
-function parallel() {
-  var funcs = Array.prototype.slice.call(arguments, 0);
-  funcs = Array.isArray(funcs[0]) ? funcs[0] : funcs;
+function parallel(funcs) {
   var len = funcs.length;
 
   return function () {
@@ -31,13 +29,13 @@ function parallel() {
       };
     }
 
-    while(functions.length) {
+    while (functions.length) {
       currentFunc = functions.shift();
       args[args.length - 1] = callback(index);
       index++;
       currentFunc.apply(context, args);
     }
-  }
+  };
 }
 
 module.exports = parallel;

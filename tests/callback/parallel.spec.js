@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var parallel = require('../../utils/parallel');
+var parallel = require('../../callback/parallel');
 
 
 describe('parallel', function () {

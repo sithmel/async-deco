@@ -7,7 +7,7 @@ function compose() {
 
   return function (result) {
     for (var i = fns.length - 1; i > -1; i--) {
-      if(!fns[i]) continue;
+      if (!fns[i]) continue;
       result = fns[i].call(this, result);
     }
     return result;

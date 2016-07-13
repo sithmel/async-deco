@@ -1,6 +1,6 @@
 var assert = require('chai').assert;
-var waterfall = require('../../utils/waterfall');
-var parallel = require('../../utils/parallel');
+var waterfall = require('../../callback/waterfall');
+var parallel = require('../../callback/parallel');
 
 describe('waterfall', function () {
 

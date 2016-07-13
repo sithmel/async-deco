@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var race = require('../../utils/race');
+var race = require('../../callback/race');
 
 describe('race', function () {
 
