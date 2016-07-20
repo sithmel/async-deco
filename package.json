@@ -30,8 +30,10 @@
     "npm-release": "^1.0.0"
   },
   "dependencies": {
-    "memoize-cache-utils": "^0.0.2",
     "es6-promisify": "^3.0.0",
+    "little-ds-toolkit": "0.0.2",
+    "lodash": "^4.13.1",
+    "memoize-cache-utils": "^0.0.2",
     "require-all": "^2.0.0",
     "setimmediate": "^1.0.4",
     "uuid": "^2.0.2"

@@ -22,6 +22,8 @@ Here is the list of the decorators (available for callback/promise functions):
 * [waterfall](#waterfall)
 * [race](#race)
 * [balance](#balance)
+* [debounce](#debounce)
+* [throttle](#throttle)
 
 Callback and promises
 =====================
@@ -469,6 +471,41 @@ var balanceDecorator = balance(function (counter, loads, args) {
 });
 ...
 ```
+
+Debounce
+--------
+This decorator is a pretty sophisticated version of debounce. In a few words, when a debounced function is called many times within a time interval, it gets executed only once.
+It uses the same options of lodash debounce (https://lodash.com/docs#debounce), but also allows to have multiple "debounce" contexts.
+The decorators takes these arguments:
+
+* wait (mandatory): it is the time interval to debounce
+* debounceOpts (optional): the debounce options used by lodash debounce:
+  * leading: Specify invoking on the leading edge of the timeout.
+  * trailing: Specify invoking on the trailing edge of the timeout.
+  * maxWait: The maximum time the decorated function is allowed to be delayed before it’s invoked
+* getKey (optional): it runs against the original arguments and returns the key used for creating different debounce context. If is undefined there will be a single debouncing context. If it returns null there won't be debouncing. Two functions in differents contexts aren't influenced each other and are executed independently.
+* cacheOpts (optional): the contexts are cached, in this object you can define a maxLen (maximum number of context) and a defaultTTL (contexts last only for this amount of ms).
+
+Example:
+```js
+var debounce = require('async-deco/callback/debounce');
+
+var debounceDecorator = debounce(1000, { maxWait: 500 }, function (key) { return key; }, { maxLen: 100 });
+
+var func = debounceDecorator(function (key, cb) {
+  // this function represent ideally a user pressing a key repeatedly
+  // we want to execute this function only only on some of the key press
+  // we create a maximum of 100 context, so 100 different keypress can be debounced (at the same time)
+});
+
+func('r', function (err, res) {
+  // the callback is not guaranteed to be called for every execution, being debounced.
+});
+```
+
+Throttle
+--------
+Implements the throttle algorithm, it has the same properties of the [debounce](#debounce).
 
 Utilities
 =========
