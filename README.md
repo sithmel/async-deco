@@ -460,10 +460,11 @@ You can also define your own policy:
 ```js
 var balance = require('async-deco/callback/balance');
 
-var balanceDecorator = balance(function (counter, loads) {
-  // "counter2 is the number of times I have called the function
+var balanceDecorator = balance(function (counter, loads, args) {
+  // "counter" is the number of times I have called the function
   // "loads" is an array with length equal to the number of functions
-  // it contains how many calls are currently running for that function
+  //         it contains how many calls are currently running for that function
+  // "args" is an array containing the arguments of the current function call
   // this function should return the index of the function I want to run
 });
 ...

@@ -12,7 +12,7 @@ function balanceDecorator(wrapper, policy) {
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);
       var cb = args[args.length - 1];
-      var selected = policy(executionNumber++, loads);
+      var selected = policy.call(context, executionNumber++, loads, args);
       loads[selected]++;
 
       args[args.length - 1] = function (err, res) {
