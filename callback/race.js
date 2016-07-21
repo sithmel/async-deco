@@ -1,2 +1,2 @@
-var _race = require('../src/parallel');
+var _race = require('../src/race');
 module.exports = _race;
