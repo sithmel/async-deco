@@ -1,7 +1,7 @@
 var assert = require('chai').assert;
 var sanitizeAsyncFunction = require('../../utils/sanitizeAsyncFunction');
 
-describe('safe', function () {
+describe('sanitizeAsyncFunction', function () {
   it('must execute function', function (done) {
     var func = sanitizeAsyncFunction(function (a, b, cb) {
       cb(null, a + b);
