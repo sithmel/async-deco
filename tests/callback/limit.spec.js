@@ -135,7 +135,7 @@ describe('hard limit (callback)', function () {
       if (c === 1) { // the second function returns an error immediately
         assert.instanceOf(err, LimitError);
         assert.isUndefined(dep);
-      } else if (c == 2) { // the first function returns the result
+      } else if (c === 2) { // the first function returns the result
         assertTimePassed(40);
         assert.equal(dep, 40);
         done();

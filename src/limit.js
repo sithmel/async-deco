@@ -4,6 +4,9 @@ var defaultLogger = require('../utils/default-logger');
 var keyGetter = require('memoize-cache-utils/key-getter');
 var TaskQueue = require('../utils/task-queue');
 
+var queueFactory = TaskQueue.queueFactory;
+var TaskQueueOverflowError = TaskQueue.TaskQueueOverflowError;
+
 function limitDecorator(wrapper, max, getKey, getPriority) {
   getKey = keyGetter(getKey || function () { return '_default'; });
   max = max || 1;
@@ -19,7 +22,7 @@ function limitDecorator(wrapper, max, getKey, getPriority) {
     return function () {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
-      var logger = defaultLogger.apply(context);
+      var logger;
       var cb = args[args.length - 1];
       var cacheKey = getKey.apply(context, args);
 
@@ -44,7 +47,7 @@ function limitDecorator(wrapper, max, getKey, getPriority) {
 
       if (!(cacheKey in executionNumbers)) {
         executionNumbers[cacheKey] = 0;
-        queues[cacheKey] = new TaskQueue(getPriority);
+        queues[cacheKey] = queueFactory(getPriority, queueSize);
       }
 
       args[args.length - 1] = function (err, dep) {
@@ -61,16 +64,22 @@ function limitDecorator(wrapper, max, getKey, getPriority) {
         executionNumbers[cacheKey]++;
         func.apply(context, args);
       }
-      else if (executionNumbers[cacheKey] >= max) {
-        if (queues[cacheKey].size() >= queueSize) {
-          logger('limit-drop', { queueSize: queues[cacheKey].size(), parallel: executionNumbers[cacheKey], key: cacheKey });
-          cb(new LimitError('Max queue size reached (' + queueSize + ')'));
+      else {
+        try {
+          queues[cacheKey].push(func, context, args, cb);
+          logger = defaultLogger.apply(context);
+          logger('limit-queue', { queueSize: queueSize, parallel: executionNumbers[cacheKey], key: cacheKey });
         }
-        else {
-          logger('limit-queue', { queueSize:queues[cacheKey].size(), parallel: executionNumbers[cacheKey], key: cacheKey });
-          queues[cacheKey].push(func, context, args);
+        catch (e) {
+          if (e instanceof TaskQueueOverflowError) {
+            logger = defaultLogger.apply(e.item.context);
+            logger('limit-drop', { queueSize: queueSize, parallel: executionNumbers[cacheKey], key: cacheKey });
+            e.item.cb(new LimitError('Max queue size reached (' + queueSize + ')'));
+          }
+          else {
+            throw e;
+          }
         }
-
       }
     };
   });
