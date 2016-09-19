@@ -17,6 +17,13 @@ describe('compose', function () {
     assert.equal(f(3), 19);
   });
 
+  it('must compose simple functions with more than one arg', function () {
+    var sum = function (a, b) { return a + b; };
+    var add10  = function (n) { return n + 10; };
+    var f = compose(add10, sum);
+    assert.equal(f(3, 4), 17);
+  });
+
   it('must ignore undefined', function () {
     var square = function (n) { return n*n; };
     var add10  = function (n) { return n + 10; };
