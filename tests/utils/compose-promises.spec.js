@@ -4,6 +4,7 @@ var callbackify = require('../../utils/callbackify');
 var fallbackDecorator = require('../../callback/fallback');
 var timeoutDecorator = require('../../callback/timeout');
 var logDecorator = require('../../callback/log');
+var addLogger = require('../../utils/add-logger');
 var retryDecorator = require('../../callback/retry');
 var promiseTranslator = require('../../src/promise-translator');
 var TimeoutError = require('../../errors/timeout-error');
@@ -19,7 +20,8 @@ describe('compose promises', function () {
     };
 
     decorator = compose(
-      promiseTranslator(logDecorator(logger)),
+      addLogger(logger),
+      promiseTranslator(logDecorator()),
       promiseTranslator(fallbackDecorator(function (a, b, c, func) {
         func(null, 'no value');
       }, Error, logger)),

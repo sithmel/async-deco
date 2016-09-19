@@ -3,10 +3,10 @@ var compose = require('../../utils/compose');
 var callbackify = require('../../utils/callbackify');
 var fallbackDecorator = require('../../callback/fallback');
 var logDecorator = require('../../callback/log');
+var addLogger = require('../../utils/add-logger');
 var timeoutDecorator = require('../../callback/timeout');
 var retryDecorator = require('../../callback/retry');
 var TimeoutError = require('../../errors/timeout-error');
-
 
 describe('compose', function () {
 
@@ -49,7 +49,8 @@ describe('compose', function () {
       };
 
       decorator = compose(
-        logDecorator(logger),
+        addLogger(logger),
+        logDecorator(),
         fallbackDecorator(function (a, b, c, func) {
           func(null, 'no value');
         }, Error),

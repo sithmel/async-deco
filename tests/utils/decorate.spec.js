@@ -3,6 +3,7 @@ var decorate = require('../../utils/decorate');
 
 var fallbackDecorator = require('../../callback/fallback');
 var logDecorator = require('../../callback/log');
+var addLogger = require('../../utils/add-logger');
 var timeoutDecorator = require('../../callback/timeout');
 var retryDecorator = require('../../callback/retry');
 
@@ -26,7 +27,8 @@ describe('decorate', function () {
     };
 
     var f = decorate(
-      logDecorator(logger),
+      addLogger(logger),
+      logDecorator(),
       fallbackDecorator(function (a, b, c, func) {
         func(null, 'no value');
       }, Error),
@@ -67,8 +69,9 @@ describe('decorate', function () {
     };
 
     var f = decorate([
+      addLogger(logger),
       undefined,
-      logDecorator(logger),
+      logDecorator(),
       fallbackDecorator(function (a, b, c, func) {
         func(null, 'no value');
       }, Error),

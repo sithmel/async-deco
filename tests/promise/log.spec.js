@@ -1,8 +1,10 @@
 var assert = require('chai').assert;
 var logDecorator = require('../../promise/log');
+var addLogger = require('../../utils/add-logger');
 
 describe('log (promise)', function () {
   var wrapped;
+  var addLog;
   var log;
 
   beforeEach(function () {
@@ -11,15 +13,16 @@ describe('log (promise)', function () {
       log.push({type: type, obj: obj});
     };
 
-    wrapped = logDecorator(logger);
+    wrapped = logDecorator();
+    addLog = addLogger(logger);
   });
 
   it('must log success', function (done) {
-    var f = wrapped(function (a, b, c) {
+    var f = addLog(wrapped(function (a, b, c) {
       return new Promise(function (resolve, reject) {
         resolve(a + b + c);
       });
-    });
+    }));
 
     f(1, 2, 3).then(function (dep) {
       assert.equal(dep, 6);
@@ -32,11 +35,11 @@ describe('log (promise)', function () {
   });
 
   it('must log error', function (done) {
-    var f = wrapped(function (a, b, c) {
+    var f = addLog(wrapped(function (a, b, c) {
       return new Promises(function (resolve, reject) {
         reject(new Error('error!'));
       });
-    });
+    }));
     f(1, 2, 3).catch(function (err) {
       assert.instanceOf(err, Error);
       assert.deepEqual(log, [

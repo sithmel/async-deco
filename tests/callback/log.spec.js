@@ -1,8 +1,10 @@
 var assert = require('chai').assert;
 var logDecorator = require('../../callback/log');
+var addLogger = require('../../utils/add-logger');
 
 describe('log (callback)', function () {
   var wrapped;
+  var addLog;
   var log;
 
   beforeEach(function () {
@@ -11,13 +13,14 @@ describe('log (callback)', function () {
       log.push({type: type, obj: obj});
     };
 
-    wrapped = logDecorator(logger);
+    wrapped = logDecorator();
+    addLog = addLogger(logger);
   });
 
   it('must log success', function (done) {
-    var f = wrapped(function (a, b, c, next) {
+    var f = addLog(wrapped(function (a, b, c, next) {
       next(undefined, a + b + c);
-    });
+    }));
     f(1, 2, 3, function (err, dep) {
       assert.equal(dep, 6);
       assert.deepEqual(log, [
@@ -29,9 +32,9 @@ describe('log (callback)', function () {
   });
 
   it('must log error', function (done) {
-    var f = wrapped(function (a, b, c, next) {
+    var f = addLog(wrapped(function (a, b, c, next) {
       next(new Error('error!'));
-    });
+    }));
     f(1, 2, 3, function (err, dep) {
       assert.instanceOf(err, Error);
       assert.deepEqual(log, [
