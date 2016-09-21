@@ -36,7 +36,7 @@ var logDecorator = require('async-deco/callback/log');
 ```
 This should be applied to functions with the node callback convention:
 ```js
-var decoratedFunction = logDecorator(logger, 'myfunction')(function (a, b, c, next) {
+var decoratedFunction = logDecorator(logger)(function (a, b, c, next) {
   ...
   next(undefined, result); // or next(error);
 });
@@ -47,7 +47,7 @@ var logDecorator = require('async-deco/promise/log');
 ```
 This should be used for function returning promises:
 ```js
-var decoratedFunction = logDecorator(logger, 'myfunction')(function (a, b, c) {
+var decoratedFunction = logDecorator(logger)(function (a, b, c) {
   return new Promise(function (resolve, reject) {
     ...
     resolve(result); // or reject(error);    
@@ -58,38 +58,65 @@ Then you can run the decorated function.
 
 Logging
 =======
-All decorators use a common way to log whatever happens, using the "__log" method in the context (this).
+All decorators uses a "logging context" added using the "addLogger" decorator (it works the same for callback/promises):
 ```js
-this.__log(name, id, ts, event, payload);
+var addLogger = require('async-deco/utils/add-logger');
+
+var logger = addLogger(function (event, payload, ts) {
+  // log here
+});
 ```
 This methods is called with the following arguments:
-* name: the name passed of the function
-* id: an id that changes every time you execute the function
-* ts: the time stamp for this event
 * evt: the name of the event
 * payload: an object with additional information about this event
+* ts: the time stamp for this event (in ms)
 
-This method is used only if present and can be also added by the "log" decorator.
-
-This package contains an helper for adding it manually:
-```js
-var buildLogger = require('async-deco/utils/build-logger');
-var context = buildLogger(undefined, 'name', 'id', function (name, id, ts, event, payload) {
-});
-decoratedFunction.call(context, arg1, arg2, function (err, res) {
-  ...  
-});
-```
-If you wish you can use this feature in your own decorators/functions:
+You can decorate any function like this:
 ```js
 var defaultLogger = require('async-deco/utils/default-logger');
 
-function myFunction() {
-  var logger = defaultLogger.apply(this);
-  ...
-  logger('myevent', {... additional info ...});
-}
+var f = logger(function () {
+  var log = defaultLogger.call(this);
+  log('event-name', { ... data ... })
+});
 ```
+The defaultLogger extract the logger function from the context.
+
+A bigger example:
+```js
+var addLogger = require('async-deco/utils/add-logger');
+var logDecorator = require('async-deco/callback/log');
+var timeoutDecorator = require('async-deco/callback/timeout');
+var retryDecorator = require('async-deco/callback/retry');
+
+var decorator = compose(
+  addLogger(function (evt, payload, ts) {
+    console.log(ts, evt, payload);
+  }),
+  logDecorator(),
+  retryDecorator(2, undefined, Error),
+  timeoutDecorator(20)
+);
+
+var f = decorator(... func ...);
+```
+Then when you execute the function "f":
+```js
+f(...args..., function (err, res) {
+  ...
+});
+```
+You can get something similar to:
+```js
+1459770371655, "start", undefined
+1459770371675, "timeout", { ms: 20 }
+1459770371675, "retry", { times: 1 }
+1459770371695, "timeout", { ms: 20 }
+1459770371700, "end", { result: ... }
+```
+
+To make this work, the addLogger decorator extends the context (this) with a new method __log.
+The context attributes and methods are still available through the prototype chain. For this reason inspecting "this" using Object.keys and using this.hasOwnProperty('prop') can return an unexpected result.
 
 Requiring the library
 =====================
@@ -112,55 +139,34 @@ Decorators
 ==========
 The examples are related to the callback version. Just import the promise version in case of decorating promise based functions.
 
-Log
----
-It logs when a function start, end and fail. It also enable the logging for the whole chain of decorators (if combined together).
+AddLogger
+---------
+It enables the logging for the whole chain of decorators (if combined together).
 ```js
-var logDecorator = require('async-deco/callback/log');
+var addLogger = require('async-deco/utils/add-logger');
 
-var addLogs = logDecorator(logger, name);
-var myfunc = addLogs(function (..., cb) { .... });
+var logger = addLogger(function (event, payload, ts) {
+  // log here
+});
+var f = logger(function () { /* decorated function */ });
 ```
-name: [optional] is a string identifying this composed function.
-logger [optional] is a function taking these arguments:
-* name: the name passed to the function
-* id: a random id that changes every time you execute the function
-* ts: the timestamp for this event
+
+The logger takes these arguments:
 * evt: the name of the event
 * payload: an object with additional information about this event
+* ts: the timestamp for this event
 
-For example:
+You can use this decorator multiple times to add multiple loggers.
+
+Log
+---
+It logs when a function start, end and fail.
 ```js
 var logDecorator = require('async-deco/callback/log');
-var timeoutDecorator = require('async-deco/callback/timeout');
-var retryDecorator = require('async-deco/callback/retry');
 
-var decorator = compose(
-  logDecorator(function (name, id, ts, evt, payload) {
-    console.log(name, id, ts, evt, payload);
-  }, 'retry_and_timeout_func'),
-  retryDecorator(2, undefined, Error),
-  timeoutDecorator(20)
-);
-
-var f = decorator(... func ...);
+var addLogs = logDecorator();
+var myfunc = addLogs(function (..., cb) { .... });
 ```
-Then when you execute the function "f":
-```js
-f(...args..., function (err, res) {
-  ...
-});
-```
-You can get something similar to:
-```js
-"retry_and_timeout_func", "asdadfsd", 1459770371655, "start", undefined
-"retry_and_timeout_func", "asdadfsd", 1459770371675, "timeout", { ms: 20 }
-"retry_and_timeout_func", "asdadfsd", 1459770371675, "retry", { times: 1 }
-"retry_and_timeout_func", "asdadfsd", 1459770371695, "timeout", { ms: 20 }
-"retry_and_timeout_func", "asdadfsd", 1459770371700, "end", { result: ... }
-```
-To make this work, the context (this) is extended with a new method __log.
-The context attributes and methods are still available through the prototype chain. For this reason inspecting "this" using Object.keys and using this.hasOwnProperty('prop') can return an unexpected result.
 
 Memoize
 -------
