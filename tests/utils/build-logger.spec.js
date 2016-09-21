@@ -10,43 +10,41 @@ describe('buildLogger', function () {
   });
 
   it('must be obj', function () {
-    newObj = buildLogger(originalObj, 'name', 'id', function (name, id, ts, event, payload) {
+    newObj = buildLogger(originalObj, function (event, payload, ts) {
     });
     assert.instanceOf(newObj, Object);
   });
 
   it('must work with undefined obj', function () {
-    newObj = buildLogger(originalObj, 'name', 'id', function (name, id, ts, event, payload) {
+    newObj = buildLogger(originalObj, function (event, payload, ts) {
     });
     assert(newObj);
     assert.instanceOf(newObj.__log, Function);
   });
 
   it('must be prototype', function () {
-    newObj = buildLogger(originalObj, 'name', 'id', function (name, id, ts, event, payload) {
+    newObj = buildLogger(originalObj, function (event, payload, ts) {
     });
     assert.isPrototypeOf(newObj, originalObj);
   });
 
   it('must have properties', function () {
-    newObj = buildLogger(originalObj, 'name', 'id', function (name, id, ts, event, payload) {
+    newObj = buildLogger(originalObj, function (event, payload, ts) {
     });
     assert.equal(newObj.test1, originalObj.test1);
     assert.equal(newObj.test2, originalObj.test2);
   });
 
   it('must have same enumerable members', function () {
-    newObj = buildLogger(originalObj, 'name', 'id', function (name, id, ts, event, payload) {
+    newObj = buildLogger(originalObj, function (event, payload, ts) {
     });
     assert.deepEqual(Object.keys(newObj), []);
   });
 
   it('must log', function (done) {
-    newObj = buildLogger(originalObj, 'name', 'id', function (name, id, ts, event, payload) {
-      assert.equal(name, 'name');
+    newObj = buildLogger(originalObj, function (event, payload, ts) {
       assert.equal(event, 'event');
       assert.equal(payload, 'payload');
-      assert.equal(id, 'id');
       assert.typeOf(ts, 'number');
       done();
     });

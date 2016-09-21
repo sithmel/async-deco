@@ -15,7 +15,7 @@ describe('compose promises', function () {
 
   beforeEach(function () {
     log = [];
-    var logger = function (name, id, ts, type, obj) {
+    var logger = function (type, obj, ts) {
       log.push({type: type, obj: obj});
     };
 

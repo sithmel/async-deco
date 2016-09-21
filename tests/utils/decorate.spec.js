@@ -22,7 +22,7 @@ describe('decorate', function () {
 
   it('must decorate complex scenarios', function (done) {
     var log = [];
-    var logger = function (name, id, ts, type, obj) {
+    var logger = function (type, obj, ts) {
       log.push({type: type, obj: obj});
     };
 
@@ -64,7 +64,7 @@ describe('decorate', function () {
 
   it('must work with sparse arrays', function (done) {
     var log = [];
-    var logger = function (name, id, ts, type, obj) {
+    var logger = function (type, obj, ts) {
       log.push({type: type, obj: obj});
     };
 

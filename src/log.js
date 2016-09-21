@@ -1,5 +1,4 @@
 var defaultLogger = require('../utils/default-logger');
-var uuid = require('uuid');
 
 function logDecorator(wrapper) {
   return wrapper(function (func) {
