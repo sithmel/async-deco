@@ -58,7 +58,7 @@ Then you can run the decorated function.
 
 Logging
 =======
-All decorators uses a "logging context" added using the "addLogger" decorator (it works the same for callback/promises):
+All decorators uses a "logging context" added using the decorator returned by "addLogger" (it works the same for callback/promises):
 ```js
 var addLogger = require('async-deco/utils/add-logger');
 
@@ -71,7 +71,7 @@ This methods is called with the following arguments:
 * payload: an object with additional information about this event
 * ts: the time stamp for this event (in ms)
 
-You can decorate any function like this:
+The resulting decorator can wrap a function:
 ```js
 var defaultLogger = require('async-deco/utils/default-logger');
 
@@ -80,9 +80,8 @@ var f = logger(function () {
   log('event-name', { ... data ... })
 });
 ```
-The defaultLogger extract the logger function from the context.
-
-A bigger example:
+The defaultLogger function extracts the logger function from the context.
+This is a very simple case but this pattern is really useful to share the log function between decorators:
 ```js
 var addLogger = require('async-deco/utils/add-logger');
 var logDecorator = require('async-deco/callback/log');
