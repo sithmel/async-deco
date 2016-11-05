@@ -18,7 +18,7 @@ describe('dedupe (promise)', function () {
       numberRuns++;
       return new Promise(function (resolve, reject) {
         setTimeout(function () {
-          resolve(undefined, a);
+          resolve(a);
         }, 0);
       });
     });
@@ -64,7 +64,7 @@ describe('dedupe (promise)', function () {
       numberRuns++;
       return new Promise(function (resolve, reject) {
         setTimeout(function () {
-          resolve(undefined, a);
+          resolve(a);
         }, 0);
       });
     });

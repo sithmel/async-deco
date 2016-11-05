@@ -78,7 +78,7 @@ describe('waterfall and parallel (promise)', function () {
       }
     ]);
 
-    func(5).then(function (err, value) {
+    func(5).then(function (value) {
       assert.equal(value, 20);
     });
   });
