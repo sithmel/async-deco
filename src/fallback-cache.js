@@ -22,6 +22,7 @@ function fallbackCacheDecorator(wrapper, cache, opts) {
       var cb = args[args.length - 1];
 
       args[args.length - 1] = function (err, res) {
+        var key;
         if (condition(err, res)) {
           cache.query(args, function (e, cacheQuery) {
             if (e) {
@@ -30,22 +31,23 @@ function fallbackCacheDecorator(wrapper, cache, opts) {
             }
             else if (cacheQuery.cached === true &&
               (!cacheQuery.stale || (useStale && cacheQuery.stale))) {
-              logger('fallback-cache-hit', {key: cacheQuery.key, result: cacheQuery, actualResult: {err: err, res: res}});
+              logger('fallback-cache-hit', {timing: cacheQuery.timing, key: cacheQuery.key, result: cacheQuery, actualResult: {err: err, res: res}});
               cb(null, cacheQuery.hit);
             }
             else if (cacheQuery.key === null) { // no cache
               cb(err, res);
             }
             else {
-              logger('fallback-cache-miss', {key: cacheQuery.key, actualResult: {err: err, res: res}});
+              logger('fallback-cache-miss', {timing: cacheQuery.timing, key: cacheQuery.key, actualResult: {err: err, res: res}});
               cb(err, res);
             }
           });
         }
         else {
           if (!noPush) {
-            if (cache.push(args, res)) {
-              logger('fallback-cache-set', {args: args, res: res});
+            key = cache.push(args, res);
+            if (key) {
+              logger('fallback-cache-set', {key: key, args: args, res: res});
             }
           }
 
