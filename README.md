@@ -313,7 +313,7 @@ var limitToTwo = limitDecorator(2, getKey);
 var myfunc = limitToTwo(function (..., cb) { .... });
 ```
 You can initialise the decorator with 1 argument:
-* number of parallel execution [default to 1]. It can also be an object: {max: number, queueSize: number}.
+* number of parallel execution [default to 1]. It can also be an object: {limit: number, queueSize: number}.
   * "limit" will be the number of parallel execution
   * "queueSize" is the size of the queue (default to Infinity). If the queue reaches this size any further function call will return an error without calling the original function
 * a getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue. If it returns null or undefined, the limit will be ignored.

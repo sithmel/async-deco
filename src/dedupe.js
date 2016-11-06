@@ -3,9 +3,9 @@ var keyGetter = require('memoize-cache-utils/key-getter');
 
 function dedupeDecorator(wrapper, getKey) {
   getKey = keyGetter(getKey || function () { return '_default'; });
+  var callback_queues = {};
 
   return wrapper(function (func) {
-    var callback_queues = {};
 
     return function () {
       var context = this;

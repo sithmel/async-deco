@@ -3,8 +3,9 @@ var keyGetter = require('memoize-cache-utils/key-getter');
 
 function memoizeDecorator(wrapper, getKey) {
   getKey = keyGetter(getKey || function () { return '_default'; });
+  var cache = {};
+
   return wrapper(function (func) {
-    var cache = {};
     return function () {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);

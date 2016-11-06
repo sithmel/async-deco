@@ -15,9 +15,10 @@ function limitDecorator(wrapper, max, getKey, getPriority) {
     queueSize = max.queueSize;
     max = max.limit;
   }
+  var executionNumbers = {};
+  var queues = {};
+
   return wrapper(function (func) {
-    var executionNumbers = {};
-    var queues = {};
 
     return function () {
       var context = this;
