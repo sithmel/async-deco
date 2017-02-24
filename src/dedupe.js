@@ -1,3 +1,4 @@
+require('setimmediate');
 var defaultLogger = require('../utils/default-logger');
 var keyGetter = require('memoize-cache-utils/key-getter');
 
@@ -17,7 +18,11 @@ function dedupeDecorator(wrapper, getKey) {
       function runQueue(cacheKey, err, dep) {
         var len = cacheKey in callback_queues ? callback_queues[cacheKey].length : 0;
         for (var i = 0; i < len; i++) {
-          callback_queues[cacheKey][i](err, dep);
+          setImmediate((function (f) {
+            return function () {
+              f(err, dep);
+            };
+          })(callback_queues[cacheKey][i]), 0);
         }
         delete callback_queues[cacheKey];
       }
