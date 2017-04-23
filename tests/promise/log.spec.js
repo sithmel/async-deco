@@ -2,6 +2,10 @@ var assert = require('chai').assert;
 var logDecorator = require('../../promise/log');
 var addLogger = require('../../utils/add-logger');
 
+function getLogkey() {
+  return 'key';
+}
+
 describe('log (promise)', function () {
   var wrapped;
   var addLog;
@@ -9,12 +13,12 @@ describe('log (promise)', function () {
 
   beforeEach(function () {
     log = [];
-    var logger = function (type, obj, ts) {
-      log.push({type: type, obj: obj});
+    var logger = function (type, obj, ts, key) {
+      log.push({type: type, obj: obj, key: key});
     };
 
     wrapped = logDecorator();
-    addLog = addLogger(logger);
+    addLog = addLogger(logger, getLogkey);
   });
 
   it('must log success', function (done) {
@@ -27,8 +31,8 @@ describe('log (promise)', function () {
     f(1, 2, 3).then(function (dep) {
       assert.equal(dep, 6);
       assert.deepEqual(log, [
-        {type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context}},
-        {type: 'log-end', obj: {result: 6}}
+        {type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context}, key: 'key'},
+        {type: 'log-end', obj: {result: 6}, key: 'key'}
       ]);
       done();
     });
@@ -43,8 +47,8 @@ describe('log (promise)', function () {
     f(1, 2, 3).catch(function (err) {
       assert.instanceOf(err, Error);
       assert.deepEqual(log, [
-        {type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context}},
-        {type: 'log-error', obj: {err: new Error('error!')}}
+        {type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context}, key: 'key'},
+        {type: 'log-error', obj: {err: new Error('error!')}, key: 'key'}
       ]);
       done();
     });

@@ -62,14 +62,23 @@ All decorators uses a "logging context" added using the decorator returned by "a
 ```js
 var addLogger = require('async-deco/utils/add-logger');
 
-var logger = addLogger(function (event, payload, ts) {
+function log(event, payload, ts, key) {
   // log here
-});
+}
+
+function getKey(...) { // same arguments as the decorated function
+  return key;
+}
+var logger = addLogger(log, getKey);
 ```
-This methods is called with the following arguments:
+The decorator is created passing 2 functions. A log function and an optional getKey function.
+The log function is called with the following arguments:
 * evt: the name of the event
 * payload: an object with additional information about this event
 * ts: the time stamp for this event (in ms)
+* key: a string representing a single execution. It can be used to understand what logs belong to the same execution.
+
+The getKey function (optional) takes the same arguments of the decorated function and returns the key (see descrition above). The default is a random string.
 
 The resulting decorator can wrap a function:
 ```js
@@ -77,7 +86,7 @@ var defaultLogger = require('async-deco/utils/default-logger');
 
 var f = logger(function () {
   var log = defaultLogger.call(this);
-  log('event-name', { ... data ... })
+  log('event-name', { ... data ... });
 });
 ```
 The defaultLogger function extracts the logger function from the context.
@@ -89,8 +98,8 @@ var timeoutDecorator = require('async-deco/callback/timeout');
 var retryDecorator = require('async-deco/callback/retry');
 
 var decorator = compose(
-  addLogger(function (evt, payload, ts) {
-    console.log(ts, evt, payload);
+  addLogger(function (evt, payload, ts, key) {
+    console.log(ts, evt, payload, key);
   }),
   logDecorator(),
   retryDecorator(2, undefined, Error),
@@ -107,11 +116,11 @@ f(...args..., function (err, res) {
 ```
 You can get something similar to:
 ```js
-1459770371655, "start", undefined
-1459770371675, "timeout", { ms: 20 }
-1459770371675, "retry", { times: 1 }
-1459770371695, "timeout", { ms: 20 }
-1459770371700, "end", { result: ... }
+1459770371655, "start", undefined "12345"
+1459770371675, "timeout", { ms: 20 } "12345"
+1459770371675, "retry", { times: 1 } "12345"
+1459770371695, "timeout", { ms: 20 } "12345"
+1459770371700, "end", { result: ... } "12345"
 ```
 
 To make this work, the addLogger decorator extends the context (this) with a new method __log.
@@ -140,22 +149,8 @@ The examples are related to the callback version. Just import the promise versio
 
 AddLogger
 ---------
-It enables the logging for the whole chain of decorators (if combined together).
-```js
-var addLogger = require('async-deco/utils/add-logger');
-
-var logger = addLogger(function (event, payload, ts) {
-  // log here
-});
-var f = logger(function () { /* decorated function */ });
-```
-
-The logger takes these arguments:
-* evt: the name of the event
-* payload: an object with additional information about this event
-* ts: the timestamp for this event
-
-You can use this decorator multiple times to add multiple loggers.
+It enables the logging for the whole chain of decorators. Read the description in the "Logging" paragraph.
+You can use this decorator multiple times to add multiple loggers (and multiple keys).
 
 Log
 ---

@@ -13,10 +13,11 @@ function wrap(obj) {
     Object.defineProperty(this, '__log', {
       value: (function (evt, payload) {
         var ts = Date.now();
-        var logger;
+        var logger, logKey;
         for (var i = 0; i < this.__log_funcs.length; i++) {
-          logger = this.__log_funcs[i];
-          logger(evt, payload, ts);
+          logger = this.__log_funcs[i].logger;
+          logKey = this.__log_funcs[i].logKey;
+          logger(evt, payload, ts, logKey);
         }
       }).bind(this),
       enumerable: false
@@ -29,11 +30,10 @@ function wrap(obj) {
   return new ObjWithLogger();
 }
 
-module.exports = function buildLogger(obj, logger) {
+module.exports = function buildLogger(obj, logger, logKey) {
   if (!(typeof obj === 'object' && '__log' in obj)) {
-    obj = wrap(obj);
+    obj = wrap(obj); // it only decorate once
   }
-
-  obj.__log_funcs.push(logger);
+  obj.__log_funcs.push({ logger: logger, logKey: logKey });
   return obj;
 };
