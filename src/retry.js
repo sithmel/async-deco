@@ -1,20 +1,14 @@
 var defaultLogger = require('../utils/default-logger');
+var getErrorCondition = require('./get-error-condition');
 
 function retryDecorator(wrapper, times, interval, error) {
-  var condition;
   times = times || Infinity;
-  error = error || Error;
   interval = interval || 0;
   var intervalFunc = typeof interval === 'function' ?
     interval :
     function () { return interval; };
 
-  if (error === Error || Error.isPrototypeOf(error)) {
-    condition = function (err, dep) { return err instanceof error; };
-  }
-  else {
-    condition = error;
-  }
+  var condition = getErrorCondition(error);
 
   return wrapper(function (func) {
     return function () {

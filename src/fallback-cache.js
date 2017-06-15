@@ -1,18 +1,12 @@
 var defaultLogger = require('../utils/default-logger');
+var getErrorCondition = require('./get-error-condition');
 
 function fallbackCacheDecorator(wrapper, cache, opts) {
-  var condition;
   opts = opts || {};
   var error = opts.error || Error;
   var useStale = opts.useStale;
   var noPush = opts.noPush;
-
-  if (error === Error || Error.isPrototypeOf(error)) {
-    condition = function (err, res) { return err instanceof error; };
-  }
-  else {
-    condition = error;
-  }
+  var condition = getErrorCondition(opts.error);
 
   return wrapper(function (func) {
     return function () {

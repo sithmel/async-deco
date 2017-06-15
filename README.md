@@ -189,6 +189,9 @@ It takes 2 arguments:
 * a cache object [mandatory]. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
 * an "options" object [optional]:
 
+The "options" object may contains:
+* an "error" attribute. This can be either an Error constructor function, or a function returning true if the result should be considered an error. The function takes as argument the output of the decorated function: error, result. If the result is an error the returned value is not cached.
+
 It logs:
 * "cache-hit" with {key: cache key, result: cache result}
 * "cache-error" (when the cache fails) with {cacheErr: error object from the cache}

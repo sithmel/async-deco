@@ -1,14 +1,9 @@
 var defaultLogger = require('../utils/default-logger');
+var getErrorCondition = require('./get-error-condition');
 
 function fallbackValueDecorator(wrapper, fallbackValue, error) {
-  var condition;
-  error = error || Error;
-  if (error === Error || Error.isPrototypeOf(error)) {
-    condition = function (err, dep) { return err instanceof error; };
-  }
-  else {
-    condition = error;
-  }
+  var condition = getErrorCondition(error);
+
   return wrapper(function (func) {
     return function () {
       var context = this;
