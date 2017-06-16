@@ -45,7 +45,7 @@ function fallbackCacheDecorator(wrapper, cache, opts) {
             }
           }
 
-          cb(null, res);
+          cb(err, res);
         }
       };
 
