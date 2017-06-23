@@ -1,6 +1,7 @@
 var defaultLogger = require('../utils/default-logger');
 
-function logDecorator(wrapper) {
+function logDecorator(wrapper, prefix) {
+  prefix = prefix || '';
   return wrapper(function (func) {
     return function () {
       var context = this;
@@ -10,18 +11,18 @@ function logDecorator(wrapper) {
 
       args[args.length - 1] = function (err, dep) {
         if (err) {
-          logger('log-error', {
+          logger(prefix + 'log-error', {
             err: err
           });
         }
         else {
-          logger('log-end', {
+          logger(prefix + 'log-end', {
             result: dep
           });
         }
         cb(err, dep);
       };
-      logger('log-start', {args: args.slice(0, -1), context: context});
+      logger(prefix + 'log-start', {args: args.slice(0, -1), context: context});
       func.apply(context, args);
     };
   });

@@ -161,6 +161,22 @@ var logDecorator = require('async-deco/callback/log');
 var addLogs = logDecorator();
 var myfunc = addLogs(function (..., cb) { .... });
 ```
+When using multiple decorator, it can be useful to attach this decorator multiple times, to give an insight about when the original function starts/ends and when the decorated function is called. To tell what log is called you can add a prefix to the logs. For example:
+```js
+var logDecorator = require('async-deco/callback/log');
+
+var addLogsToInnerFunction = logDecorator('inner-');
+var addLogsToOuterFunction = logDecorator('outer-');
+var cached = cacheDecorator(cache); // caching decorator
+
+var myfunc =
+  addLogsToOuterFunction(
+  cached(
+  addLogsToInnerFunction(
+    function (..., cb) { .... }));
+```
+In this example outer-log-start outer-log-end (or outer-log-error) will be always called. The inner logs only in case of cache miss.
+
 
 Memoize
 -------
