@@ -34,6 +34,7 @@
     "little-ds-toolkit": "0.2.1",
     "lodash": "^4.13.1",
     "memoize-cache-utils": "^0.0.2",
+    "occamsrazor-match": "^2.2.1",
     "require-all": "^2.0.0",
     "setimmediate": "^1.0.4",
     "uuid": "^2.0.2"

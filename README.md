@@ -11,6 +11,7 @@ Here is the list of the decorators (available for callback/promise functions):
 * [Memoize](#memoize)
 * [Cache](#cache)
 * [Proxy](#proxy)
+* [Validator](#validator)
 * [Fallback](#fallback)
 * [Fallback value](#fallback-value)
 * [Fallback cache](#fallback-cache)
@@ -231,6 +232,32 @@ It takes 1 argument:
 * a guard function [mandatory]. It takes the same arguments of the original function. If it returns an error (using the callback) the original function won't be called.
 
 It logs "proxy-denied" with { err: error returned by the guard function}
+
+Validator
+---------
+It uses [occamsrazor-match](https://github.com/sithmel/occamsrazor-match) (or any function) to perform arguments validation. It throws an exception if the validation fail.
+It is available in 3 flavours, the usual callback, promise and synchronous.
+
+```js
+// var validatorDecorator = require('async-deco/promise/validator'); promise based
+// var validatorDecorator = require('async-deco/utils/validator'); synchronous
+
+var validatorDecorator = require('async-deco/callback/validator');
+
+var validator = validatorDecorator({ name: /[a-zA-Z]/ }, or([false, true]));
+
+var func = validator(function queryUser(user, onlyFirst, cb) {
+  ...
+});
+
+func({ name: 'Bruce Wayne'}, true, function (err, res) {
+  ... this passes the validation
+});
+
+func('Bruce Wayne', true, function (err, res) {
+  ... this returns an error
+});
+```
 
 Fallback
 --------
