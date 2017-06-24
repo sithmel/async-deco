@@ -41,6 +41,8 @@ describe('validator (callback)', function () {
     func(1, true, function (err, res) {
       assert.isUndefined(res);
       assert.equal(err.message, 'Function called with wrong arguments: array:[isNumber:2,or(isFalse isTrue)]');
+      assert.deepEqual(err.errors, [
+        { path: '[0]', name: 'isNumber:2', value: 1 }]);
       done();
     });
   });

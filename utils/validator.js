@@ -1,5 +1,7 @@
 var match = require('occamsrazor-match');
 var and = require('occamsrazor-match/extra/and');
+var validationErrors = require('occamsrazor-match/extra/validationErrors');
+var ValidatorError = require('../errors/validator-error');
 
 function validatorDecorator() {
   var args = Array.prototype.slice.call(arguments, 0);
@@ -9,10 +11,11 @@ function validatorDecorator() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var argsToValidate = Array.prototype.slice.call(arguments, 0, args.length);
-      if (validators(argsToValidate)) {
+      var errors = validationErrors();
+      if (validators(argsToValidate, errors)) {
         return func.apply(context, args);
       } else {
-        throw new Error('Function called with wrong arguments: ' + validators.name);
+        throw new ValidatorError('Function called with wrong arguments: ' + validators.name, errors());
       }
     };
   };

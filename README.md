@@ -258,6 +258,7 @@ func('Bruce Wayne', true, function (err, res) {
   ... this returns an error
 });
 ```
+The error returned contains a special "errors" property containing an array of all errors.
 
 Fallback
 --------
