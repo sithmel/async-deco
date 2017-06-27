@@ -1,5 +1,5 @@
 var defaultLogger = require('../utils/default-logger');
-var ValidatorError = require('../errors/validator-error');
+var ValidatorError = require('occamsrazor-match/validate-error');
 var match = require('occamsrazor-match');
 var and = require('occamsrazor-match/extra/and');
 var validationErrors = require('occamsrazor-match/extra/validationErrors');

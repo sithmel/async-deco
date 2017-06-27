@@ -235,13 +235,9 @@ It logs "proxy-denied" with { err: error returned by the guard function}
 
 Validator
 ---------
-It uses [occamsrazor-match](https://github.com/sithmel/occamsrazor-match) (or any function) to perform arguments validation. It throws an exception if the validation fail.
-It is available in 3 flavours, the usual callback, promise and synchronous.
+It uses [occamsrazor-match](https://github.com/sithmel/occamsrazor-match) to perform arguments validation on asynchronous function. It returns an exception if the validation fail. For simpler synchronous functions you can use the decorator included in occamsrazor-match.
 
 ```js
-// var validatorDecorator = require('async-deco/promise/validator'); promise based
-// var validatorDecorator = require('async-deco/utils/validator'); synchronous
-
 var validatorDecorator = require('async-deco/callback/validator');
 
 var validator = validatorDecorator({ name: /[a-zA-Z]/ }, or([false, true]));
