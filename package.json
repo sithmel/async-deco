@@ -26,15 +26,15 @@
     "eslint": "^1.10.3",
     "husky": "^0.10.2",
     "mocha": "^2.1.0",
-    "memoize-cache": "^3.3.1",
+    "memoize-cache": "^5.0.1",
     "npm-release": "^1.0.0"
   },
   "dependencies": {
     "es6-promisify": "^3.0.0",
-    "little-ds-toolkit": "0.2.1",
+    "little-ds-toolkit": "0.4.0",
     "lodash": "^4.13.1",
-    "memoize-cache-utils": "^0.0.2",
-    "occamsrazor-match": "^4.0.0",
+    "memoize-cache-utils": "^0.1.1",
+    "occamsrazor-match": "^4.1.0",
     "require-all": "^2.0.0",
     "setimmediate": "^1.0.4",
     "uuid": "^2.0.2"

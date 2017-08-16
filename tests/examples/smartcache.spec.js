@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var Cache = require('memoize-cache').ramCache;
+var Cache = require('memoize-cache').CacheRAM;
 var dedupeDecorator = require('../../callback/dedupe');
 var cacheDecorator = require('../../callback/cache');
 var compose = require('../../utils/compose');

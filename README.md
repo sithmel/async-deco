@@ -195,7 +195,7 @@ It logs "memoize-hit" with {key: cache key, result: cache result}
 
 Cache
 -----
-It is a more sophisticated version of the memoize decorator. It can be used for caching in a db/file etc using memoize-cache (https://github.com/sithmel/memoize-cache).
+It is a more sophisticated version of the memoize decorator. It can be used for caching in a db/file etc using memoize-cache (https://github.com/sithmel/memoize-cache). Please use version > 5.0.0. Or memoize-cache-redis > 1.0.0 or memoize-cache-manager > 1.0.0.
 ```js
 var cacheDecorator = require('async-deco/callback/cache');
 
@@ -298,7 +298,7 @@ var fallback = fallbackCacheDecorator(cache, options);
 var myfunc = fallback(function (..., cb) { .... });
 ```
 It takes 2 arguments:
-* a cache object [mandatory]. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
+* a cache object [mandatory]. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache). Please use version > 5.0.0. Or memoize-cache-redis > 1.0.0 or memoize-cache-manager > 1.0.0.
 * an options object with this optional attributes:
   * error: the error instance for deciding to fallback, or a function taking the error and result (if it returns true it'll trigger the fallback) [optional, it falls back on any error by default]
   * useStale: if true it will use "stale" cache items as valid [optional, defaults to false]

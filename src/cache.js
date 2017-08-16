@@ -31,7 +31,7 @@ function cacheDecorator(wrapper, cache, opts) {
             if (!condition(err, res)) {
               key = cache.push(args, res);
               if (key) {
-                logger('cache-set', {key: key, args: args, res: res});
+                logger('cache-set', {key: key.key, tags: key.tags, args: args, res: res});
               }
             }
             cb(err, res);

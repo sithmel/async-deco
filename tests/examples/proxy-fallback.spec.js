@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var Cache = require('memoize-cache').ramCache;
+var Cache = require('memoize-cache').CacheRAM;
 var proxyDecorator = require('../../callback/proxy');
 var fallbackValueDecorator = require('../../callback/fallback-value');
 var compose = require('../../utils/compose');

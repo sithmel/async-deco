@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var Cache = require('memoize-cache').ramCache;
+var Cache = require('memoize-cache').CacheRAM;
 var fallbackCacheDecorator = require('../../callback/fallback-cache');
 
 describe('fallback-cache (callback)', function () {
