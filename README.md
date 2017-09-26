@@ -10,6 +10,7 @@ Here is the list of the decorators (available for callback/promise functions):
 * [Log](#log)
 * [Memoize](#memoize)
 * [Cache](#cache)
+* [Purge Cache](#purge-cache)
 * [Proxy](#proxy)
 * [Validator](#validator)
 * [Fallback](#fallback)
@@ -214,6 +215,26 @@ It logs:
 * "cache-error" (when the cache fails) with {cacheErr: error object from the cache}
 * "cache-miss" (when the item is not in the cache) with {key: cache key}
 * "cache-set" with {args: arguments for caching, res: result to cache}
+
+Purge Cache
+-----------
+When the decorated function succeed, it purges the corresponding cache entry/entries.
+```js
+var purgeCacheDecorator = require('async-deco/callback/purge-cache');
+
+var purgeCache = purgeCacheDecorator(cache, opts);
+var myfunc = purgeCache(function (..., cb) { .... });
+```
+It takes 2 arguments:
+* a cache object [mandatory]. The interface should be compatible with memoize-cache (https://github.com/sithmel/memoize-cache)
+* an "options" object [optional]:
+
+The "options" object may contains:
+* an "error" attribute. This can be either an Error constructor function, or a function returning true if the result should be considered an error. The function takes as argument the output of the decorated function: error, result. If the result is an error the returned value is not cached.
+* a "key" function: this function runs on the arguments of the decorated function and return a string. This string is used as cache key
+* a "tags" function: this function runs on the arguments of the decorated function and return a list of tags. This string is used as surrogate key
+
+You can have either "tags" or "key". Not both.
 
 Proxy
 -----
