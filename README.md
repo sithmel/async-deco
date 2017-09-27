@@ -231,10 +231,10 @@ It takes 2 arguments:
 
 The "options" object may contains:
 * an "error" attribute. This can be either an Error constructor function, or a function returning true if the result should be considered an error. The function takes as argument the output of the decorated function: error, result. If the result is an error the returned value is not cached.
-* a "key" function: this function runs on the arguments of the decorated function and return a string. This string is used as cache key
-* a "tags" function: this function runs on the arguments of the decorated function and return a list of tags. This string is used as surrogate key
+* a "keys" function: this function runs on the arguments of the decorated function and return an array. This array is the list of keys to remove.
+* a "tags" function: this function runs on the arguments of the decorated function and return a list of tags. These strings are used as surrogate keys
 
-You can have either "tags" or "key". Not both.
+You can have either "tags" or "keys". Not both.
 
 Proxy
 -----

@@ -10,12 +10,16 @@ describe('purge-cache (callback)', function () {
     var getKey = function (key) {
       return key;
     };
+
+    var getKeys = function (key) {
+      return [key];
+    };
     var getTags = function () {
       return ['tag'];
     };
     var cache = new Cache({ key: getKey, tags: getTags });
     cached = cacheDecorator(cache);
-    purgeCache = purgeCacheDecorator(cache, { key: getKey });
+    purgeCache = purgeCacheDecorator(cache, { keys: getKeys });
     purgeCacheByTags = purgeCacheDecorator(cache, { tags: getTags });
   });
 
