@@ -20,9 +20,9 @@ function dedupeDecorator(wrapper, getKey, bus) {
         return func.apply(context, args);
       }
 
-      bus.queue(cacheKey, cb);
 
-      if (bus.length(cacheKey) === 1) {
+      if (!bus.has(cacheKey)) {
+        bus.queue(cacheKey, cb);
         // creating callback
         args[args.length - 1] = (function (cacheKey) {
           return function (err, res) {
@@ -32,6 +32,7 @@ function dedupeDecorator(wrapper, getKey, bus) {
         func.apply(context, args);
       }
       else {
+        bus.queue(cacheKey, cb);
         logger('dedupe-queue', { key: cacheKey });
       }
     };

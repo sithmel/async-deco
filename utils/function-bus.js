@@ -21,7 +21,7 @@ FunctionBus.prototype.execute = function execute(key, args) {
     return;
   }
 
-  var len = this.length(key);
+  var len = this._length(key);
   for (var i = 0; i < len; i++) {
     setImmediate((function (f) {
       return function () {
@@ -43,7 +43,11 @@ FunctionBus.prototype.resume = function resume(key) {
   }
 };
 
-FunctionBus.prototype.length = function length(key) {
+FunctionBus.prototype.has = function has(key) {
+  return key in this.callback_queues;
+};
+
+FunctionBus.prototype._length = function _length(key) {
   return this.callback_queues[key] ? this.callback_queues[key].length : 0;
 };
 
