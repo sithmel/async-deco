@@ -2,7 +2,7 @@
 function parallel(funcs) {
   var len = funcs.length;
 
-  return function () {
+  return function _parallel() {
     var currentFunc;
     var functions = funcs.slice(0);
     var index = 0;
@@ -13,7 +13,7 @@ function parallel(funcs) {
     var context = this;
 
     function callback(i) {
-      return function (err, res) {
+      return function __parallel(err, res) {
         len--;
         if (done) {
           return; // into the bitbucket

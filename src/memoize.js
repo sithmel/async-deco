@@ -5,8 +5,8 @@ function memoizeDecorator(wrapper, getKey) {
   getKey = keyGetter(getKey || function () { return '_default'; });
   var cache = {};
 
-  return wrapper(function (func) {
-    return function () {
+  return wrapper(function _memoizeDecorator(func) {
+    return function _memoize() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);

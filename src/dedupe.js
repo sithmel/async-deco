@@ -7,9 +7,9 @@ function dedupeDecorator(wrapper, getKey, bus) {
   getKey = keyGetter(getKey || function () { return '_default'; });
   bus = bus || new FunctionBus();
 
-  return wrapper(function (func) {
+  return wrapper(function _dedupeDecorator(func) {
 
-    return function () {
+    return function _dedupe() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);

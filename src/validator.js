@@ -6,8 +6,8 @@ var validationErrors = require('occamsrazor-match/extra/validationErrors');
 
 function validatorDecorator(wrapper, args) {
   var validators = match(args);
-  return wrapper(function (func) {
-    return function () {
+  return wrapper(function _validatorDecorator(func) {
+    return function _validator() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);

@@ -3,11 +3,11 @@ var balancePolicies = require('../utils/balance-policies');
 
 function balanceDecorator(wrapper, policy) {
   policy = policy || balancePolicies.idlest;
-  return wrapper(function (funcs) {
+  return wrapper(function _balanceDecorator(funcs) {
     var loads = funcs.map(function () {return 0;});
     var executionNumber = 0;
 
-    return function () {
+    return function _balance() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);

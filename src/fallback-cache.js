@@ -8,8 +8,8 @@ function fallbackCacheDecorator(wrapper, cache, opts) {
   var noPush = opts.noPush;
   var condition = getErrorCondition(opts.error);
 
-  return wrapper(function (func) {
-    return function () {
+  return wrapper(function _fallbackCacheDecorator(func) {
+    return function _fallbackCache() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);

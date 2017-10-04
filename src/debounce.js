@@ -3,13 +3,13 @@ var throttle = require('lodash/throttle');
 var decoratorCacheFactory = require('../utils/decorator-cache-factory');
 
 function debounceCBDecorator(wait, opts) {
-  return function (func) {
+  return function _debounceCBDecorator(func) {
     return debounce(func, wait, opts);
   };
 }
 
 function throttleCBDecorator(wait, opts) {
-  return function (func) {
+  return function _throttleCBDecorator(func) {
     return throttle(func, wait, opts);
   };
 }

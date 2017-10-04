@@ -2,8 +2,8 @@ var defaultLogger = require('../utils/default-logger');
 
 function logDecorator(wrapper, prefix) {
   prefix = prefix || '';
-  return wrapper(function (func) {
-    return function () {
+  return wrapper(function _logDecorator(func) {
+    return function _log() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);

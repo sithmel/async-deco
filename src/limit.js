@@ -18,9 +18,9 @@ function limitDecorator(wrapper, max, getKey, getPriority) {
   var executionNumbers = {};
   var queues = {};
 
-  return wrapper(function (func) {
+  return wrapper(function _limitDecorator(func) {
 
-    return function () {
+    return function _limit() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var logger;

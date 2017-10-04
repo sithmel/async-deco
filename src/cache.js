@@ -5,8 +5,8 @@ function cacheDecorator(wrapper, cache, opts) {
   opts = opts || {};
   var condition = getErrorCondition(opts.error);
 
-  return wrapper(function (func) {
-    return function () {
+  return wrapper(function _cacheDecorator(func) {
+    return function _cache() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);

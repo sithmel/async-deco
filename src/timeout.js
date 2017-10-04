@@ -1,10 +1,10 @@
 var TimeoutError = require('../errors/timeout-error');
 var defaultLogger = require('../utils/default-logger');
 
-function timeout(wrapper, ms) {
+function timeoutDecorator(wrapper, ms) {
 
-  return wrapper(function (func) {
-    return function () {
+  return wrapper(function _timeoutDecorator(func) {
+    return function _timeout() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);
@@ -37,4 +37,4 @@ function timeout(wrapper, ms) {
   });
 }
 
-module.exports = timeout;
+module.exports = timeoutDecorator;

@@ -8,8 +8,8 @@ function purgeCacheDecorator(wrapper, cache, opts) {
   var getCacheKeys = keysGetter(opts.keys);
   var getTags = keysGetter(opts.tags);
 
-  return wrapper(function (func) {
-    return function () {
+  return wrapper(function _purgeCacheDecorator(func) {
+    return function _purgeCache() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var keys = getCacheKeys.apply(this, args);

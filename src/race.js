@@ -1,7 +1,7 @@
 
 function race(funcs) {
 
-  return function () {
+  return function _race() {
     var currentFunc;
     var functions = funcs.slice(0);
     var i = functions.length;

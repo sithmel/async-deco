@@ -1,7 +1,7 @@
 
 function waterfall(funcs) {
 
-  return function () {
+  return function _waterfall() {
     var functions = funcs.slice(0);
     var currentFunc;
     var args = Array.prototype.slice.call(arguments, 0);

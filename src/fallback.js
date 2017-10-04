@@ -4,8 +4,8 @@ var getErrorCondition = require('./get-error-condition');
 function fallbackDecorator(wrapper, fallbackFunction, error) {
   var condition = getErrorCondition(error);
 
-  return wrapper(function (func) {
-    return function () {
+  return wrapper(function _fallbackDecorator(func) {
+    return function _fallback() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var logger = defaultLogger.apply(context);

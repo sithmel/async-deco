@@ -1,8 +1,8 @@
 var defaultLogger = require('../utils/default-logger');
 
 function proxyDecorator(wrapper, guard) {
-  return wrapper(function (func) {
-    return function () {
+  return wrapper(function _proxyDecorator(func) {
+    return function _proxy() {
       var context = this;
       var args = Array.prototype.slice.call(arguments, 0);
       var guardArgs = Array.prototype.slice.call(arguments, 0);
