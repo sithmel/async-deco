@@ -1,10 +1,11 @@
 require('setimmediate');
 var defaultLogger = require('../utils/default-logger');
 var keyGetter = require('memoize-cache-utils/key-getter');
+var FunctionBus = require('../utils/function-bus');
 
-function dedupeDecorator(wrapper, getKey) {
+function dedupeDecorator(wrapper, getKey, bus) {
   getKey = keyGetter(getKey || function () { return '_default'; });
-  var callback_queues = {};
+  bus = bus || new FunctionBus();
 
   return wrapper(function (func) {
 
@@ -15,34 +16,23 @@ function dedupeDecorator(wrapper, getKey) {
       var cb = args[args.length - 1];
       var cacheKey = getKey.apply(context, args);
 
-      function runQueue(cacheKey, err, dep) {
-        var len = cacheKey in callback_queues ? callback_queues[cacheKey].length : 0;
-        for (var i = 0; i < len; i++) {
-          setImmediate((function (f) {
-            return function () {
-              f(err, dep);
-            };
-          })(callback_queues[cacheKey][i]), 0);
-        }
-        delete callback_queues[cacheKey];
+      if (cacheKey === null) {
+        return func.apply(context, args);
       }
 
-      if (cacheKey == null) {
-        func.apply(context, args);
-      }
-      else if (!(cacheKey in callback_queues)) {
+      bus.queue(cacheKey, cb);
+
+      if (bus.length(cacheKey) === 1) {
         // creating callback
         args[args.length - 1] = (function (cacheKey) {
-          return function (err, dep) {
-            runQueue(cacheKey, err, dep);
+          return function (err, res) {
+            bus.execute(cacheKey, [err, res]);
           };
         }(cacheKey));
-        callback_queues[cacheKey] = [cb];
         func.apply(context, args);
       }
       else {
-        logger('dedupe-queue', {key: cacheKey});
-        callback_queues[cacheKey].push(cb);
+        logger('dedupe-queue', { key: cacheKey });
       }
     };
   });

@@ -393,6 +393,7 @@ var myfunc = dedupe(function (..., cb) { .... });
 ```
 The argument:
 * getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue.
+* functionBus object [optional]: this object is used to group functions by key and run them. The default implementation is able to group functions belonging to the same process. It also allows to pause/resume the execution of these functions.
 
 It logs "dedupe-queue" when a function is queued waiting for the result from another function.
 {key: cache key}
