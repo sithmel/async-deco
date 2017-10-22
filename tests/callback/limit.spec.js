@@ -158,7 +158,7 @@ describe('hard limit (callback)', function () {
     var c = 0;
     var getResult = function (err, dep) {
       c++;
-      if (c === 1) { // the thirs function returns an error immediately
+      if (c === 1) { // the third function returns an error immediately
         assert.instanceOf(err, LimitError);
         assert.isUndefined(dep);
       } else if (c == 2) {
