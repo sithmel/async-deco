@@ -1,6 +1,5 @@
 var assert = require('chai').assert;
 var atomicDecorator = require('../../promise/atomic');
-var LimitError = require('../../errors/limit-error');
 var redis = require('redis');
 var Redlock = require('redlock');
 

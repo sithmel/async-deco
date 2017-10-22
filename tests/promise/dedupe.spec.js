@@ -7,7 +7,7 @@ describe('dedupe (promise)', function () {
 
   beforeEach(function () {
     dedupe = dedupeDecorator();
-    dedupeKey = dedupeDecorator(function (n) { return n % 2 === 0 ? 'even' : 'odd'; });
+    dedupeKey = dedupeDecorator({ getKey: function (n) { return n % 2 === 0 ? 'even' : 'odd'; } });
   });
 
   it('must dedupe function calls', function (done) {

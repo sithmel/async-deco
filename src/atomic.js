@@ -4,9 +4,9 @@ var Lock = require('../utils/lock');
 
 function atomicDecorator(wrapper, opts) {
   opts = opts || {};
-  getKey = keyGetter(opts.getKey || function () { return '_default'; });
-  lock = opts.lock || new Lock();
-  ttl = opts.ttl || 1000;
+  var getKey = keyGetter(opts.getKey || function () { return '_default'; });
+  var lockObj = opts.lock || new Lock();
+  var ttl = opts.ttl || 1000;
 
   return wrapper(function _atomicDecorator(func) {
 
@@ -29,7 +29,7 @@ function atomicDecorator(wrapper, opts) {
         }
       };
 
-      lock.lock(cacheKey, ttl, function (e, lock) {
+      lockObj.lock(cacheKey, ttl, function (e, lock) {
         logError(e);
 
         args[args.length - 1] = function (err, res) {

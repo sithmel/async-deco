@@ -1,8 +1,8 @@
 var _dedupe = require('../src/dedupe');
 var wrapper = require('../src/promise-translator');
 
-function dedupe(getKey) {
-  return _dedupe(wrapper, getKey);
+function dedupe(opts) {
+  return _dedupe(wrapper, opts);
 }
 
 module.exports = dedupe;

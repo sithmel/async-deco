@@ -6,8 +6,8 @@ describe('dedupe (callback)', function () {
 
   beforeEach(function () {
     dedupe = dedupeDecorator();
-    dedupeKey = dedupeDecorator(function (n) { return n % 2 === 0 ? 'even' : 'odd'; });
-    noDedupe = dedupeDecorator(function (n) { return null; });
+    dedupeKey = dedupeDecorator({ getKey: function (n) { return n % 2 === 0 ? 'even' : 'odd'; } });
+    noDedupe = dedupeDecorator({ getKey: function (n) { return null; } });
   });
 
   it('must dedupe function calls', function (done) {

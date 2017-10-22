@@ -19,6 +19,7 @@ Here is the list of the decorators (available for callback/promise functions):
 * [Timeout](#timeout)
 * [Retry](#retry)
 * [Limit](#limit)
+* [Atomic](#atomic)
 * [Dedupe](#dedupe)
 * [parallel](#parallel)
 * [waterfall](#waterfall)
@@ -380,6 +381,44 @@ You can initialise the decorator with 1 argument:
 
 It logs "limit-queue" when a function gets queued or "limit-drop" when a function gets rejected (queue full). It'll also log these data: { queueSize: number of function queued, key: cache key, parallel: number of functions currently running }
 
+Atomic
+------
+The decorated function can't be called concurrently. Here's what happen, in order:
+* the "getKey" (passed in the option) is called against the arguments.
+    * If the result is null the function call happens normally
+    * if getKey is not defined the key is _default (it doesn't take the arguments into consideration)
+    * if the result is a string, this will be used as key
+* the resource called "key" gets locked
+* the decorated function is executed
+* the lock "key" is released
+
+The default locking mechanism is very simple and works "in the same process". Its interface is compatible with node-redlock a distributed locking mechanism backed by redis.
+```js
+var atomicDecorator = require('async-deco/callback/atomic');
+
+var atomic = atomicDecorator(opts);
+var myfunc = atomic(function (..., cb) { .... });
+```
+Options:
+* getKey [optional]: a function for calculate a key from the given arguments.
+* ttl [optional]: the maximum time to live for the lock. In ms. It defaults to 1000ms.
+* lock [optional]: an instance of the locking object. You can pass any object compatible with the Lock instance (node-redlock for example).
+
+```js
+var atomicDecorator = require('async-deco/callback/atomic');
+var redis = require('redis');
+var Redlock = require('redlock');
+
+var client = redis.createClient();
+var redlock = new Redlock([client]);
+var atomic = atomicDecorator({ lock: redlock, ttl: 1000 });
+
+var atomicFunc = atomic(func);
+atomic(..., function (err, res) {
+  ...
+});
+```
+
 Dedupe
 ------
 It executes the original function, while is waiting for the output it doesn't call the function anymore but instead it collects the callbacks.
@@ -388,15 +427,37 @@ It may use the "getKey" function to group the callbacks into queues.
 ```js
 var dedupeDecorator = require('async-deco/callback/dedupe');
 
-var dedupe = dedupeDecorator(getKey);
+var dedupe = dedupeDecorator(options);
 var myfunc = dedupe(function (..., cb) { .... });
 ```
-The argument:
+Options:
 * getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue.
-* functionBus object [optional]: this object is used to group functions by key and run them. The default implementation is able to group functions belonging to the same process. It also allows to pause/resume the execution of these functions.
+* functionBus [optional]: this object is used to group functions by key and run them. The default implementation is able to group functions belonging to the same process.
+* lock [optional]: this object is used to lock a function execution (by key).
+* ttl [optional]: the maximum time to live for the lock (in ms). Default to 1000ms.
 
-It logs "dedupe-queue" when a function is queued waiting for the result from another function.
-{key: cache key}
+Using redis backed version of [functionBus](https://github.com/sithmel/function-bus-redis) and [lock](https://github.com/mike-marcacci/node-redlock) it is possible to implement a distributed version of the of the deduplication. Example:
+```js
+var dedupeDecorator = require('async-deco/callback/dedupe');
+var redis = require('redis');
+var Lock = require('redis-redlock');
+var FunctionBus = require('function-bus-redis');
+
+var lock = new Lock([redis.createClient()]);
+var functionBus = new FunctionBus({
+  pub: redis.createClient(),
+  sub:redis.createClient()
+});
+
+var dedupe = dedupeDecorator({
+  lock: lock,
+  functionBus: functionBus
+});
+
+var myfunc = dedupe(function (..., cb) { .... });
+```
+It logs "dedupe-execute" when a group of callbacks are called.
+{key: cache key, len: number of invocations}
 
 Parallel
 --------
@@ -701,6 +762,34 @@ var newfunc = decorate(
   function (..., cb) { .... });
 ```
 The function to decorate has to be the last argument.
+
+Function bus
+------------
+An object storing functions by key. These can be then executed grouped by key.
+It is used to support the "dedupe" decorator.
+```js
+var FunctionBus = require('async-deco/utils/function-bus');
+var functionBus = new FunctionBus();
+
+// queue functions by key
+functionBus.queue('a', func1);
+functionBus.queue('a', func2);
+functionBus.queue('b', func3);
+
+// number of functions queued by key
+functionBus.len('a'); // 2
+functionBus.len('b'); // 1
+functionBus.len('c'); // 0
+
+// execute the 2 functions with key "a"
+// passing 3 arguments: 1, 2, 3
+functionBus.execute('a', [1, 2, 3]);
+```
+There is also a distributed version [function-bus-redis](https://github.com/sithmel/function-bus-redis).
+
+Lock
+----
+A lock object that mimics the API of [node-redlock](https://github.com/mike-marcacci/node-redlock). It is used to support the "dedupe" and "atomic" decorators.
 
 Examples and use cases
 ======================
