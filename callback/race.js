@@ -1,2 +1,2 @@
-var _race = require('../src/race');
-module.exports = _race;
+var _race = require('../src/race')
+module.exports = _race

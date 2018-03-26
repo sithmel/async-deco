@@ -1,8 +1,8 @@
-var _log = require('../src/log');
-var wrapper = require('../src/noop');
+var _log = require('../src/log')
+var wrapper = require('../src/noop')
 
-function log(prefix) {
-  return _log(wrapper, prefix);
+function log (prefix) {
+  return _log(wrapper, prefix)
 }
 
-module.exports = log;
+module.exports = log

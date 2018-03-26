@@ -1,47 +1,47 @@
-var assert = require('chai').assert;
-var Cache = require('memoize-cache').CacheRAM;
-var fallbackCacheDecorator = require('../../callback/fallback-cache');
+/* eslint-env node, mocha */
+var assert = require('chai').assert
+var Cache = require('memoize-cache').CacheRAM
+var fallbackCacheDecorator = require('../../callback/fallback-cache')
 
 describe('fallback-cache (callback)', function () {
-  var cached;
+  var cached
 
   beforeEach(function () {
-    var cache = new Cache();
-    cached = fallbackCacheDecorator(cache);
-  });
-
+    var cache = new Cache()
+    cached = fallbackCacheDecorator(cache)
+  })
 
   it('must fallback using a cached value', function (done) {
-    var counter = 0;
+    var counter = 0
     var f = cached(function (a, b, c, next) {
-      counter++;
+      counter++
       if (counter === 1) {
-        next(undefined, a + b + c);
+        next(undefined, a + b + c)
+      } else {
+        next(new Error('error'))
       }
-      else {
-        next(new Error('error'));
-      }
-    });
+    })
 
     f(1, 2, 3, function (err, dep) {
-      assert.equal(dep, 6);
+      assert.isFalse(!!err)
+      assert.equal(dep, 6)
       f(1, 2, 3, function (err, dep) {
-        assert.equal(dep, 6);
-        done();
-      });
-    });
-  });
+        assert.isFalse(!!err)
+        assert.equal(dep, 6)
+        done()
+      })
+    })
+  })
 
   it('can\'t fallback using a cached value', function (done) {
-    var counter = 0;
     var f = cached(function (a, b, c, next) {
-      next(new Error('error'));
-    });
+      next(new Error('error'))
+    })
 
     f(1, 2, 3, function (err, dep) {
-      assert.deepEqual(err, new Error('error'));
-      done();
-    });
-  });
-
-});
+      assert.equal(err.message, 'error')
+      assert.instanceOf(err, Error)
+      done()
+    })
+  })
+})

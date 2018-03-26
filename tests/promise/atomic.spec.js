@@ -1,79 +1,84 @@
-var assert = require('chai').assert;
-var atomicDecorator = require('../../promise/atomic');
-var redis = require('redis');
-var Redlock = require('redlock');
+/* eslint-env node, mocha */
+var assert = require('chai').assert
+var atomicDecorator = require('../../promise/atomic')
+var redis = require('redis')
+var Redlock = require('redlock')
 
 describe('atomic (promise)', function () {
-  var limitToOne;
+  var limitToOne
 
   beforeEach(function () {
-    limitToOne = atomicDecorator();
-  });
+    limitToOne = atomicDecorator()
+  })
 
   it('must limit to one function call', function (done) {
-    var numberRunning = 0;
+    var numberRunning = 0
     var f0 = function (a) {
-      numberRunning++;
+      numberRunning++
       return new Promise(function (resolve, reject) {
         setTimeout(function () {
-          numberRunning--;
-          resolve(a);
-        }, a);
-      });
-    };
+          numberRunning--
+          resolve(a)
+        }, a)
+      })
+    }
 
-    var f = limitToOne(f0);
+    var f = limitToOne(f0)
 
-    var c = 0;
+    var c = 0
     var getResult = function (dep) {
-      assert.equal(numberRunning, 0);
-      c++;
+      assert.equal(numberRunning, 0)
+      c++
       if (c === 3) {
-        done();
+        done()
       }
-    };
+    }
 
-    f(40).then(getResult);
-    f(20).then(getResult);
-    f(60).then(getResult);
-  });
-});
+    f(40).then(getResult)
+    f(20).then(getResult)
+    f(60).then(getResult)
+  })
+})
 
 describe('atomic using redis (promise)', function () {
-  var limitToOne;
+  var limitToOne, client
 
   beforeEach(function () {
-    var client = redis.createClient();
+    client = redis.createClient()
 
-    var redlock = new Redlock([client]);
-    limitToOne = atomicDecorator({ lock: redlock });
-  });
+    var redlock = new Redlock([client])
+    limitToOne = atomicDecorator({ lock: redlock })
+  })
+
+  afterEach(function () {
+    client.quit()
+  })
 
   it('must limit to one function call', function (done) {
-    var numberRunning = 0;
+    var numberRunning = 0
     var f0 = function (a) {
-      numberRunning++;
+      numberRunning++
       return new Promise(function (resolve, reject) {
         setTimeout(function () {
-          numberRunning--;
-          resolve(a);
-        }, a);
-      });
-    };
+          numberRunning--
+          resolve(a)
+        }, a)
+      })
+    }
 
-    var f = limitToOne(f0);
+    var f = limitToOne(f0)
 
-    var c = 0;
+    var c = 0
     var getResult = function (dep) {
-      assert.equal(numberRunning, 0);
-      c++;
+      assert.equal(numberRunning, 0)
+      c++
       if (c === 3) {
-        done();
+        done()
       }
-    };
+    }
 
-    f(40).then(getResult);
-    f(20).then(getResult);
-    f(60).then(getResult);
-  });
-});
+    f(40).then(getResult)
+    f(20).then(getResult)
+    f(60).then(getResult)
+  })
+})

@@ -1,4 +1,4 @@
-var _waterfall = require('../src/waterfall');
-var wrapper = require('../src/promise-translator');
+var _waterfall = require('../src/waterfall')
+var wrapper = require('../src/promise-translator')
 
-module.exports = wrapper(_waterfall);
+module.exports = wrapper(_waterfall)

@@ -1,8 +1,8 @@
-var _fallbackValue = require('../src/fallback-value');
-var wrapper = require('../src/noop');
+var _fallbackValue = require('../src/fallback-value')
+var wrapper = require('../src/noop')
 
-function fallbackValue(value, error) {
-  return _fallbackValue(wrapper, value, error);
+function fallbackValue (value, error) {
+  return _fallbackValue(wrapper, value, error)
 }
 
-module.exports = fallbackValue;
+module.exports = fallbackValue

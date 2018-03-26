@@ -1,8 +1,8 @@
-var _memoize = require('../src/memoize');
-var wrapper = require('../src/promise-translator');
+var _memoize = require('../src/memoize')
+var wrapper = require('../src/promise-translator')
 
-function memoize(getKey) {
-  return _memoize(wrapper, getKey);
+function memoize (getKey) {
+  return _memoize(wrapper, getKey)
 }
 
-module.exports = memoize;
+module.exports = memoize

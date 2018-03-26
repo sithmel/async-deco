@@ -1,8 +1,8 @@
-var _throttle = require('../src/debounce').throttle;
-var wrapper = require('../src/noop');
+var _throttle = require('../src/debounce').throttle
+var wrapper = require('../src/noop')
 
-function throttle(wait, throttleOpts, getKey, cacheOpts) {
-  return _throttle(wrapper, wait, throttleOpts, getKey, cacheOpts);
+function throttle (wait, throttleOpts, getKey, cacheOpts) {
+  return _throttle(wrapper, wait, throttleOpts, getKey, cacheOpts)
 }
 
-module.exports = throttle;
+module.exports = throttle

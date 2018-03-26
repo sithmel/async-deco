@@ -1,29 +1,28 @@
-var defaultLogger = require('../utils/default-logger');
+var defaultLogger = require('../utils/default-logger')
 
-function proxyDecorator(wrapper, guard) {
-  return wrapper(function _proxyDecorator(func) {
-    return function _proxy() {
-      var context = this;
-      var args = Array.prototype.slice.call(arguments, 0);
-      var guardArgs = Array.prototype.slice.call(arguments, 0);
-      var logger = defaultLogger.apply(context);
-      var cb = args[args.length - 1];
+function proxyDecorator (wrapper, guard) {
+  return wrapper(function _proxyDecorator (func) {
+    return function _proxy () {
+      var context = this
+      var args = Array.prototype.slice.call(arguments, 0)
+      var guardArgs = Array.prototype.slice.call(arguments, 0)
+      var logger = defaultLogger.apply(context)
+      var cb = args[args.length - 1]
 
       guardArgs[args.length - 1] = function (err) {
         if (err) {
           logger('proxy-denied', {
             err: err
-          });
-          cb(err);
+          })
+          cb(err)
+        } else {
+          func.apply(context, args)
         }
-        else {
-          func.apply(context, args);
-        }
-      };
+      }
 
-      guard.apply(context, guardArgs);
-    };
-  });
+      guard.apply(context, guardArgs)
+    }
+  })
 }
 
-module.exports = proxyDecorator;
+module.exports = proxyDecorator

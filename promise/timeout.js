@@ -1,8 +1,8 @@
-var _timeout = require('../src/timeout');
-var wrapper = require('../src/promise-translator');
+var _timeout = require('../src/timeout')
+var wrapper = require('../src/promise-translator')
 
-function timeout(ms) {
-  return _timeout(wrapper, ms);
+function timeout (ms) {
+  return _timeout(wrapper, ms)
 }
 
-module.exports = timeout;
+module.exports = timeout

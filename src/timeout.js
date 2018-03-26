@@ -1,40 +1,39 @@
-var TimeoutError = require('../errors/timeout-error');
-var defaultLogger = require('../utils/default-logger');
+var TimeoutError = require('../errors/timeout-error')
+var defaultLogger = require('../utils/default-logger')
 
-function timeoutDecorator(wrapper, ms) {
+function timeoutDecorator (wrapper, ms) {
+  return wrapper(function _timeoutDecorator (func) {
+    return function _timeout () {
+      var context = this
+      var args = Array.prototype.slice.call(arguments, 0)
+      var logger = defaultLogger.apply(context)
+      var cb = args[args.length - 1]
 
-  return wrapper(function _timeoutDecorator(func) {
-    return function _timeout() {
-      var context = this;
-      var args = Array.prototype.slice.call(arguments, 0);
-      var logger = defaultLogger.apply(context);
-      var cb = args[args.length - 1];
-
-      var timedout = false;
+      var timedout = false
       var timeout = setTimeout(function () {
-        var err = new TimeoutError('TimeoutError: Service timed out after ' + ms.toString() + ' ms');
-        timedout = true;
+        var err = new TimeoutError('TimeoutError: Service timed out after ' + ms.toString() + ' ms')
+        timedout = true
         logger('timeout', {
           ms: ms
-        });
-        cb(err);
-      }, ms);
+        })
+        cb(err)
+      }, ms)
 
       // new callback
       args[args.length - 1] = function () {
-        var cb_context = this;
-        var cb_args = Array.prototype.slice.call(arguments, 0);
+        var cbContext = this
+        var cbArgs = Array.prototype.slice.call(arguments, 0)
 
         if (timedout) {
-          return; // abort because has been already called
+          return // abort because has been already called
         }
-        clearTimeout(timeout); // abort time out
-        cb.apply(cb_context, cb_args);
-      };
+        clearTimeout(timeout) // abort time out
+        cb.apply(cbContext, cbArgs)
+      }
 
-      func.apply(context, args);
-    };
-  });
+      func.apply(context, args)
+    }
+  })
 }
 
-module.exports = timeoutDecorator;
+module.exports = timeoutDecorator

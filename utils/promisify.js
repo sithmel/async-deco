@@ -1,2 +1,2 @@
-var promisify = require('es6-promisify');
-module.exports = promisify;
+var promisify = require('es6-promisify')
+module.exports = promisify

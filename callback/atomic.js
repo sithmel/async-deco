@@ -1,8 +1,8 @@
-var _atomic = require('../src/atomic');
-var wrapper = require('../src/noop');
+var _atomic = require('../src/atomic')
+var wrapper = require('../src/noop')
 
-function atomic(opts) {
-  return _atomic(wrapper, opts);
+function atomic (opts) {
+  return _atomic(wrapper, opts)
 }
 
-module.exports = atomic;
+module.exports = atomic

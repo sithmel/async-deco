@@ -1,62 +1,72 @@
-var assert = require('chai').assert;
-var timeout = require('../../callback/timeout');
-var TimeoutError = require('../../errors/timeout-error');
+/* eslint-env node, mocha */
+var assert = require('chai').assert
+var timeout = require('../../promise/timeout')
+var TimeoutError = require('../../errors/timeout-error')
 
 describe('timeout (promise)', function () {
-  var timeout20;
+  var timeout20
 
   beforeEach(function () {
-    timeout20 = timeout(20);
-  });
+    timeout20 = timeout(20)
+  })
 
   it('must pass simple function', function (done) {
-    var func = timeout20(function (cb) {
-      cb(null, 'done');
-    });
+    var func = timeout20(function () {
+      return Promise.resolve('done')
+    })
 
-    func(function (err, res) {
-      assert.equal(res, 'done');
-      done();
-    });
-  });
+    func()
+      .then(function (res) {
+        assert.equal(res, 'done')
+        done()
+      })
+  })
 
   it('must pass simple function (async)', function (done) {
-    var func = timeout20(function (cb) {
-      setTimeout(function () {
-        cb(null, 'done');
-      }, 10);
-    });
+    var func = timeout20(function () {
+      return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+          resolve('done')
+        }, 10)
+      })
+    })
 
-    func(function (err, res) {
-      assert.equal(res, 'done');
-      done();
-    });
-  });
+    func()
+      .then(function (res) {
+        assert.equal(res, 'done')
+        done()
+      })
+  })
 
   it('must pass simple function (async) with args', function (done) {
-    var func = timeout20(function (a, b, cb) {
-      setTimeout(function () {
-        cb(null, a + b);
-      }, 10);
-    });
+    var func = timeout20(function (a, b) {
+      return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+          resolve(a + b)
+        }, 10)
+      })
+    })
 
-    func(5, 6, function (err, res) {
-      assert.equal(res, 11);
-      done();
-    });
-  });
+    func(5, 6)
+      .then(function (res) {
+        assert.equal(res, 11)
+        done()
+      })
+  })
 
   it('must throw simple function', function (done) {
-    var func = timeout20(function (cb) {
-      setTimeout(function () {
-        cb(null, 'done');
-      }, 25);
-    });
+    var func = timeout20(function () {
+      return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+          resolve(done)
+        }, 25)
+      })
+    })
 
-    func(function (err, res) {
-      assert.isUndefined(res);
-      assert.instanceOf(err, TimeoutError);
-      done();
-    });
-  });
-});
+    func()
+      .catch(function (err) {
+        assert.instanceOf(err, TimeoutError)
+        done()
+      })
+  })
+})
