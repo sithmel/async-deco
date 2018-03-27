@@ -1,2 +1,4 @@
 var _waterfall = require('../src/waterfall')
-module.exports = _waterfall
+var wrapper = require('../src/callback-translator')
+
+module.exports = wrapper(_waterfall)

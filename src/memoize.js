@@ -1,11 +1,11 @@
 var defaultLogger = require('../utils/default-logger')
 var keyGetter = require('memoize-cache-utils/key-getter')
 
-function memoizeDecorator (wrapper, getKey) {
+function getMemoizeDecorator (wrapper, getKey) {
   getKey = keyGetter(getKey || function () { return '_default' })
   var cache = {}
 
-  return wrapper(function _memoizeDecorator (func) {
+  return wrapper(function memoize (func) {
     return function _memoize () {
       var context = this
       var args = Array.prototype.slice.call(arguments, 0)
@@ -28,4 +28,4 @@ function memoizeDecorator (wrapper, getKey) {
   })
 }
 
-module.exports = memoizeDecorator
+module.exports = getMemoizeDecorator

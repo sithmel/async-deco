@@ -1,18 +1,18 @@
 var defaultLogger = require('../utils/default-logger')
 var getErrorCondition = require('./get-error-condition')
 
-function cacheDecorator (wrapper, cache, opts) {
+function getCacheDecorator (wrapper, cacheObj, opts) {
   opts = opts || {}
   var condition = getErrorCondition(opts.error)
 
-  return wrapper(function _cacheDecorator (func) {
+  return wrapper(function cache (func) {
     return function _cache () {
       var context = this
       var args = Array.prototype.slice.call(arguments, 0)
       var logger = defaultLogger.apply(context)
       var cb = args[args.length - 1]
 
-      cache.query(args, function (err, cacheQuery) {
+      cacheObj.query(args, function (err, cacheQuery) {
         var key
         if (err) {
           logger('cache-error', {cacheErr: err})
@@ -26,7 +26,7 @@ function cacheDecorator (wrapper, cache, opts) {
           logger('cache-miss', {key: cacheQuery.key, timing: cacheQuery.timing})
           args[args.length - 1] = function (err, res) {
             if (!condition(err, res)) {
-              key = cache.push(args, res)
+              key = cacheObj.push(args, res)
               if (key) {
                 logger('cache-set', {key: key.key, tags: key.tags, args: args, res: res})
               }
@@ -40,4 +40,4 @@ function cacheDecorator (wrapper, cache, opts) {
   })
 }
 
-module.exports = cacheDecorator
+module.exports = getCacheDecorator

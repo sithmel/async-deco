@@ -4,8 +4,8 @@ var LRU = require('little-ds-toolkit/lib/lru-cache')
 function decoratorCacheFactory (wrapper, decorator, getKey, cacheOpts) {
   getKey = keyGetter(getKey || function () { return '_default' })
   var lru = new LRU(cacheOpts)
-  return wrapper(function (func) {
-    return function () {
+  return wrapper(function throttle (func) {
+    return function _throttle () {
       var context = this
       var args = Array.prototype.slice.call(arguments, 0)
       var cacheKey = getKey.apply(context, args)

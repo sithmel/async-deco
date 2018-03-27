@@ -1,9 +1,9 @@
 var defaultLogger = require('../utils/default-logger')
 var balancePolicies = require('../utils/balance-policies')
 
-function balanceDecorator (wrapper, policy) {
+function getBalanceDecorator (wrapper, policy) {
   policy = policy || balancePolicies.idlest
-  return wrapper(function _balanceDecorator (funcs) {
+  return wrapper(function balance (funcs) {
     var loads = funcs.map(function () { return 0 })
     var executionNumber = 0
 
@@ -27,4 +27,4 @@ function balanceDecorator (wrapper, policy) {
   })
 }
 
-module.exports = balanceDecorator
+module.exports = getBalanceDecorator

@@ -1,9 +1,9 @@
 var buildLogger = require('./build-logger')
 var keyGetter = require('memoize-cache-utils/key-getter')
 
-function addLogger (log, getKey) {
+function getAddLogger (log, getKey) {
   getKey = keyGetter(getKey || function () { return Math.floor(Math.random() * 10000000).toString() })
-  return function (func) {
+  return function addLogger (func) {
     return function () {
       var args = Array.prototype.slice.call(arguments, 0)
       var logKey = getKey.apply(this, args)
@@ -13,4 +13,4 @@ function addLogger (log, getKey) {
   }
 }
 
-module.exports = addLogger
+module.exports = getAddLogger

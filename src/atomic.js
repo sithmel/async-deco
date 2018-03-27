@@ -2,13 +2,13 @@ var defaultLogger = require('../utils/default-logger')
 var keyGetter = require('memoize-cache-utils/key-getter')
 var Lock = require('../utils/lock')
 
-function atomicDecorator (wrapper, opts) {
+function getAtomicDecorator (wrapper, opts) {
   opts = opts || {}
   var getKey = keyGetter(opts.getKey || function () { return '_default' })
   var lockObj = opts.lock || new Lock()
   var ttl = opts.ttl || 1000
 
-  return wrapper(function _atomicDecorator (func) {
+  return wrapper(function atomic (func) {
     return function _atomic () {
       var context = this
       var args = Array.prototype.slice.call(arguments, 0)
@@ -47,4 +47,4 @@ function atomicDecorator (wrapper, opts) {
   })
 }
 
-module.exports = atomicDecorator
+module.exports = getAtomicDecorator

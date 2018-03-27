@@ -1,6 +1,6 @@
 
 function safe (func) {
-  return function () {
+  return function _safe () {
     var context = this
     var args = Array.prototype.slice.call(arguments, 0)
     var cb = args[args.length - 1]

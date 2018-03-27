@@ -14,15 +14,15 @@ function throttleCBDecorator (wait, opts) {
   }
 }
 
-function debounceDecorator (wrapper, wait, debounceOpts, getKey, cacheOpts) {
+function getDebounceDecorator (wrapper, wait, debounceOpts, getKey, cacheOpts) {
   return decoratorCacheFactory(wrapper, debounceCBDecorator(wait, debounceOpts), getKey, cacheOpts)
 }
 
-function throttleDecorator (wrapper, wait, throttleOpts, getKey, cacheOpts) {
+function getThrottleDecorator (wrapper, wait, throttleOpts, getKey, cacheOpts) {
   return decoratorCacheFactory(wrapper, throttleCBDecorator(wait, throttleOpts), getKey, cacheOpts)
 }
 
 module.exports = {
-  debounce: debounceDecorator,
-  throttle: throttleDecorator
+  debounce: getDebounceDecorator,
+  throttle: getThrottleDecorator
 }

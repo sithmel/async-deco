@@ -1,7 +1,7 @@
 var defaultLogger = require('../utils/default-logger')
 var getErrorCondition = require('./get-error-condition')
 
-function retryDecorator (wrapper, times, interval, error) {
+function getRetryDecorator (wrapper, times, interval, error) {
   times = times || Infinity
   interval = interval || 0
   var intervalFunc = typeof interval === 'function'
@@ -10,7 +10,7 @@ function retryDecorator (wrapper, times, interval, error) {
 
   var condition = getErrorCondition(error)
 
-  return wrapper(function _retryDecorator (func) {
+  return wrapper(function retry (func) {
     return function _retry () {
       var counter = 0
       var context = this
@@ -44,4 +44,4 @@ function retryDecorator (wrapper, times, interval, error) {
   })
 }
 
-module.exports = retryDecorator
+module.exports = getRetryDecorator

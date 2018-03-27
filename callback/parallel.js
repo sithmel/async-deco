@@ -1,2 +1,4 @@
 var _parallel = require('../src/parallel')
-module.exports = _parallel
+var wrapper = require('../src/callback-translator')
+
+module.exports = wrapper(_parallel)

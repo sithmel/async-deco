@@ -1,2 +1,4 @@
 var _race = require('../src/race')
-module.exports = _race
+var wrapper = require('../src/callback-translator')
+
+module.exports = wrapper(_race)

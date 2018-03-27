@@ -3,7 +3,7 @@ function isPromise (obj) {
 }
 
 function callbackify (func) {
-  return function () {
+  return function _callbackify () {
     // get arguments
     var context = this
     var args = Array.prototype.slice.call(arguments, 0, -1)

@@ -3,7 +3,7 @@ var keyGetter = require('memoize-cache-utils/key-getter')
 var Lock = require('../utils/lock')
 var FunctionBus = require('../utils/function-bus')
 
-function dedupeDecorator (wrapper, opts) {
+function getDedupeDecorator (wrapper, opts) {
   opts = opts || {}
   opts = typeof opts === 'function' ? { getKey: opts } : opts
   var getKey = keyGetter(opts.getKey || function () { return '_default' })
@@ -11,8 +11,8 @@ function dedupeDecorator (wrapper, opts) {
   var functionBus = opts.functionBus || new FunctionBus()
   var ttl = opts.ttl || 1000
 
-  return wrapper(function (func) {
-    return function () {
+  return wrapper(function dedupe (func) {
+    return function _dedupe () {
       var context = this
       var args = Array.prototype.slice.call(arguments, 0)
       var logger = defaultLogger.apply(context)
@@ -43,4 +43,4 @@ function dedupeDecorator (wrapper, opts) {
   })
 }
 
-module.exports = dedupeDecorator
+module.exports = getDedupeDecorator

@@ -1,13 +1,13 @@
 var defaultLogger = require('../utils/default-logger')
 var getErrorCondition = require('./get-error-condition')
 
-function fallbackCacheDecorator (wrapper, cache, opts) {
+function getFallbackCacheDecorator (wrapper, cache, opts) {
   opts = opts || {}
   var useStale = opts.useStale
   var noPush = opts.noPush
   var condition = getErrorCondition(opts.error)
 
-  return wrapper(function _fallbackCacheDecorator (func) {
+  return wrapper(function fallbackCache (func) {
     return function _fallbackCache () {
       var context = this
       var args = Array.prototype.slice.call(arguments, 0)
@@ -49,4 +49,4 @@ function fallbackCacheDecorator (wrapper, cache, opts) {
   })
 }
 
-module.exports = fallbackCacheDecorator
+module.exports = getFallbackCacheDecorator

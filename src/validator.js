@@ -3,9 +3,9 @@ var ValidatorError = require('occamsrazor-match/validate-error')
 var match = require('occamsrazor-match')
 var validationErrors = require('occamsrazor-match/extra/validationErrors')
 
-function validatorDecorator (wrapper, args) {
+function getValidatorDecorator (wrapper, args) {
   var validators = match(args)
-  return wrapper(function _validatorDecorator (func) {
+  return wrapper(function validator (func) {
     return function _validator () {
       var context = this
       var args = Array.prototype.slice.call(arguments, 0)
@@ -27,4 +27,4 @@ function validatorDecorator (wrapper, args) {
   })
 }
 
-module.exports = validatorDecorator
+module.exports = getValidatorDecorator

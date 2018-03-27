@@ -1,5 +1,5 @@
 var _memoize = require('../src/memoize')
-var wrapper = require('../src/noop')
+var wrapper = require('../src/callback-translator')
 
 function memoize (getKey) {
   return _memoize(wrapper, getKey)

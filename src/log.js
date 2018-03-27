@@ -1,8 +1,8 @@
 var defaultLogger = require('../utils/default-logger')
 
-function logDecorator (wrapper, prefix) {
+function getLogDecorator (wrapper, prefix) {
   prefix = prefix || ''
-  return wrapper(function _logDecorator (func) {
+  return wrapper(function log (func) {
     return function _log () {
       var context = this
       var args = Array.prototype.slice.call(arguments, 0)
@@ -27,4 +27,4 @@ function logDecorator (wrapper, prefix) {
   })
 }
 
-module.exports = logDecorator
+module.exports = getLogDecorator

@@ -7,7 +7,7 @@ var TaskQueue = require('../utils/task-queue')
 var queueFactory = TaskQueue.queueFactory
 var TaskQueueOverflowError = TaskQueue.TaskQueueOverflowError
 
-function limitDecorator (wrapper, max, getKey, getPriority) {
+function getLimitDecorator (wrapper, max, getKey, getPriority) {
   getKey = keyGetter(getKey || function () { return '_default' })
   max = max || 1
   var queueSize = Infinity
@@ -18,7 +18,7 @@ function limitDecorator (wrapper, max, getKey, getPriority) {
   var executionNumbers = {}
   var queues = {}
 
-  return wrapper(function _limitDecorator (func) {
+  return wrapper(function limit (func) {
     return function _limit () {
       var context = this
       var args = Array.prototype.slice.call(arguments, 0)
@@ -82,4 +82,4 @@ function limitDecorator (wrapper, max, getKey, getPriority) {
   })
 }
 
-module.exports = limitDecorator
+module.exports = getLimitDecorator

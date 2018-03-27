@@ -727,6 +727,22 @@ var Promise = require('es6-promise').Promise;
 global.  Promise = Promise;
 }(this));
 ```
+funcRenamer
+-----------
+It is a decorator that changes the name of the resulting function.
+```js
+var funcRenamer = require('async-deco/utils/funcRenamer');
+var rename = funcRenamer('hello')
+var f = rename(function ciao () {})
+// f.name === 'hello'
+```
+It can also decorate the name (setting the second argument to true):
+```js
+var funcRenamer = require('async-deco/utils/funcRenamer');
+var rename = funcRenamer('hello', true)
+var f = rename(function world () {})
+// f.name === 'hello(world)'
+```
 
 Compose
 -------

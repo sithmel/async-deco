@@ -2,13 +2,13 @@ var defaultLogger = require('../utils/default-logger')
 var getErrorCondition = require('./get-error-condition')
 var keysGetter = require('memoize-cache-utils/keys-getter')
 
-function purgeCacheDecorator (wrapper, cache, opts) {
+function getPurgeCacheDecorator (wrapper, cache, opts) {
   opts = opts || {}
   var condition = getErrorCondition(opts.error)
   var getCacheKeys = keysGetter(opts.keys)
   var getTags = keysGetter(opts.tags)
 
-  return wrapper(function _purgeCacheDecorator (func) {
+  return wrapper(function purgeCache (func) {
     return function _purgeCache () {
       var context = this
       var args = Array.prototype.slice.call(arguments, 0)
@@ -43,4 +43,4 @@ function purgeCacheDecorator (wrapper, cache, opts) {
   })
 }
 
-module.exports = purgeCacheDecorator
+module.exports = getPurgeCacheDecorator

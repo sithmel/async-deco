@@ -1,10 +1,10 @@
 var defaultLogger = require('../utils/default-logger')
 var getErrorCondition = require('./get-error-condition')
 
-function fallbackDecorator (wrapper, fallbackFunction, error) {
+function getFallbackDecorator (wrapper, fallbackFunction, error) {
   var condition = getErrorCondition(error)
 
-  return wrapper(function _fallbackDecorator (func) {
+  return wrapper(function fallback (func) {
     return function _fallback () {
       var context = this
       var args = Array.prototype.slice.call(arguments, 0)
@@ -25,4 +25,4 @@ function fallbackDecorator (wrapper, fallbackFunction, error) {
   })
 }
 
-module.exports = fallbackDecorator
+module.exports = getFallbackDecorator
