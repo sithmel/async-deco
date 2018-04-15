@@ -44,3 +44,43 @@ describe('memoize (promise)', function () {
     })
   })
 })
+
+describe('memoize with parameters (promise)', function () {
+  var cached
+
+  beforeEach(function () {
+    cached = memoizeDecorator({
+      len: 1,
+      cacheKey: function (a, b, c) {
+        return a + b + c
+      }
+    })
+  })
+
+  it('must cache using different keys', function (done) {
+    var f = cached(function (a, b, c) {
+      return Promise.resolve(a + b + c)
+    })
+
+    f(1, 2, 3).then(function (dep) {
+      assert.equal(dep, 6)
+      f(3, 2, 1).then(function (dep) {
+        assert.equal(dep, 6)
+        done()
+      })
+    })
+  })
+
+  it('must cache', function (done) {
+    var f = cached(function (a, b, c) {
+      Promise.resolve(Math.random())
+    })
+
+    f(1, 2, 3).then(function (res1) {
+      f(3, 2, 1).then(function (res2) {
+        assert.equal(res1, res2)
+        done()
+      })
+    })
+  })
+})

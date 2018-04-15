@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "es6-promisify": "^6.0.0",
-    "little-ds-toolkit": "^0.4.0",
+    "little-ds-toolkit": "^1.0.0",
     "lodash": "^4.17.5",
     "memoize-cache-utils": "^0.1.1",
     "occamsrazor-match": "^4.1.0",

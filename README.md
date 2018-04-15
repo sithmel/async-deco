@@ -180,20 +180,24 @@ var myfunc =
 ```
 In this example outer-log-start outer-log-end (or outer-log-error) will be always called. The inner logs only in case of cache miss.
 
-
 Memoize
 -------
-It caches the result. At any subsequent calls it will return the cached result.
+This decorator implements an "in RAM" cache. That means that is possible having non-string cache keys and non-serializable values.
+The cache is LRU, so it is advisable picking up a fixed cache length.
 ```js
 var memoizeDecorator = require('async-deco/callback/memoize');
 
-var simpleMemoize = memoizeDecorator(getKey);
-var myfunc = simpleMemoize(function (..., cb) { .... });
+var cached = memoizeDecorator({ error: ..., len: ..., ttl: ..., cacheKey: ....});
+var myfunc = cached(function (..., cb) { .... });
 ```
-It takes 1 argument:
-* a getKey function [optional]: it runs against the original arguments and returns the key used for the caching. If it is missing, only one result will be memoized.
+The "options" object may contains:
+* an "error" attribute. This can be either an Error constructor function, or a function returning true if the result should be considered an error. The function takes as argument the output of the decorated function: error, result. If the result is an error the returned value is not cached.
+* "len": the size of the cache
+* "ttl": the number of ms to consider the cache entry valid. If a cached value is stale it remains cached until it exceeds the size of the cache
+* "getKey": a function that returns a cacheKey, giving the same arguments of the decorated function
 
-It logs "memoize-hit" with {key: cache key, result: cache result}
+It logs:
+* "memoize-hit" with {key: cache key, result: cache result}
 
 Cache
 -----
