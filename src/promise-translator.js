@@ -1,4 +1,4 @@
-var promisify = require('es6-promisify').promisify
+var promisify = require('../utils/promisify')
 var callbackify = require('../utils/callbackify')
 var funcRenamer = require('../utils/func-renamer')
 

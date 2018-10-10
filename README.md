@@ -712,7 +712,7 @@ func(function (err, out) {
 
 Promisify
 ---------
-Convert a callback based function to a function returning a promise. It is a reference to [es6-promisify](https://www.npmjs.com/package/es6-promisify), exposed here for convenience.
+Convert a callback based function to a function returning a promise.
 ```js
 var promisify = require('async-deco/utils/promisify');
 
