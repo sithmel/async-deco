@@ -5,7 +5,7 @@ var dedupeDecorator = require('../../callback/dedupe')
 var cacheDecorator = require('../../callback/cache')
 var compose = require('../../utils/compose')
 
-describe('smartcache (callback)', function () {
+describe.skip('smartcache (callback)', function () {
   var cache, dedupe
 
   beforeEach(function () {

@@ -40,7 +40,7 @@ describe('atomic (promise)', function () {
   })
 })
 
-describe('atomic using redis (promise)', function () {
+describe.skip('atomic using redis (promise)', function () {
   var limitToOne, client
 
   beforeEach(function () {

@@ -20,7 +20,7 @@ describe('function bus', function () {
     bus.queue('b', function (obj) {
       result += obj
     })
-    bus.execute('a', ['test'])
+    bus.execute('a', null, 'test')
     setTimeout(function () {
       assert.equal(result, 'testtest')
       done()

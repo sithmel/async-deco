@@ -2,10 +2,9 @@
 var assert = require('chai').assert
 var memoizeDecorator = require('../../promise/memoize')
 var logDecorator = require('../../promise/log')
-var parallel = require('../../promise/parallel')
 var compose = require('../../utils/compose')
 
-describe('correct name (promise)', function () {
+describe.skip('correct name (promise)', function () {
   it('must rename function', function () {
     var memoize = memoizeDecorator()
     var log = logDecorator()

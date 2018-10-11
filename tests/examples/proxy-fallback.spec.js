@@ -4,7 +4,7 @@ var proxyDecorator = require('../../callback/proxy')
 var fallbackValueDecorator = require('../../callback/fallback-value')
 var compose = require('../../utils/compose')
 
-describe('proxy fallback (callback)', function () {
+describe.skip('proxy fallback (callback)', function () {
   var proxy, fallbackValue, decorator
 
   beforeEach(function () {

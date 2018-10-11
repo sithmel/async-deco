@@ -1,30 +1,32 @@
 var defaultLogger = require('../utils/default-logger')
 var balancePolicies = require('../utils/balance-policies')
 
-function getBalanceDecorator (wrapper, policy) {
-  policy = policy || balancePolicies.idlest
-  return wrapper(function balance (funcs) {
-    var loads = funcs.map(function () { return 0 })
-    var executionNumber = 0
+function getBalanceDecorator (policy = balancePolicies.idlest) {
+  return function balance (funcs) {
+    const loads = funcs.map(function () { return 0 })
+    let executionNumber = 0
 
-    return function _balance () {
-      var context = this
-      var args = Array.prototype.slice.call(arguments, 0)
-      var logger = defaultLogger.apply(context)
-      var cb = args[args.length - 1]
+    return function _balance (...args) {
+      const context = this
+      const logger = defaultLogger.apply(context)
+
+      // var cb = args[args.length - 1]
       var selected = policy.call(context, executionNumber++, loads, args)
       loads[selected]++
 
-      args[args.length - 1] = function (err, res) {
-        loads[selected]--
-        cb(err, res)
-      }
+      logger('balance-execute', { loads: loads, executing: selected })
 
-      logger('balance-execute', {loads: loads, executing: selected})
-
-      funcs[selected].apply(context, args)
+      return funcs[selected].apply(context, args)
+        .then((res) => {
+          loads[selected]--
+          return res
+        })
+        .catch((err) => {
+          loads[selected]--
+          throw err
+        })
     }
-  })
+  }
 }
 
 module.exports = getBalanceDecorator
