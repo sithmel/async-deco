@@ -2,6 +2,7 @@ var defaultLogger = require('../utils/default-logger')
 var keyGetter = require('memoize-cache-utils/key-getter')
 var Lock = require('../utils/lock')
 var FunctionBus = require('../utils/function-bus')
+var funcRenamer = require('../utils/func-renamer')
 
 const returnDefault = () => '_default'
 
@@ -13,7 +14,8 @@ function getDedupeDecorator (opts = {}) {
   const ttl = opts.ttl || 1000
 
   return function dedupe (func) {
-    return function _dedupe (...args) {
+    const renamer = funcRenamer(`dedupe(${func.name || 'anonymous'})`)
+    return renamer(function _dedupe (...args) {
       const context = this
       const logger = defaultLogger.apply(context)
       const cacheKey = getKey.apply(context, args)
@@ -43,7 +45,7 @@ function getDedupeDecorator (opts = {}) {
           }
         })
       })
-    }
+    })
   }
 }
 

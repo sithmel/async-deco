@@ -9,13 +9,9 @@ describe('funcRenamer', function () {
 
   it('can rename a function', function () {
     var rename = funcRenamer('hello')
-    var f = rename(function ciao () {})
+    var original = function ciao () {}
+    var f = rename(original)
     assert.equal(f.name, 'hello')
-  })
-
-  it('can decorate the name of a function', function () {
-    var rename = funcRenamer('hello', true)
-    var f = rename(function ciao () {})
-    assert.equal(f.name, 'hello(ciao)')
+    assert.equal(original, f)
   })
 })

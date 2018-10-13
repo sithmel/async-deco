@@ -1,8 +1,10 @@
 var defaultLogger = require('../utils/default-logger')
+var funcRenamer = require('../utils/func-renamer')
 
-function getCacheDecorator (cacheObj, opts = {}) {
+function getCacheDecorator (cacheObj) {
   return function cache (func) {
-    return function _cache (...args) {
+    const renamer = funcRenamer(`cache(${func.name || 'anonymous'})`)
+    return renamer(function _cache (...args) {
       const context = this
       const logger = defaultLogger.apply(context)
 
@@ -30,7 +32,7 @@ function getCacheDecorator (cacheObj, opts = {}) {
           }
         })
       })
-    }
+    })
   }
 }
 

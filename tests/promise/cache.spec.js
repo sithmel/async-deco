@@ -28,4 +28,9 @@ describe('cache (promise)', function () {
       })
     })
   })
+
+  it('changes the name of the function', function () {
+    var func = cached(function func () {})
+    assert.equal(func.name, 'cache(func)')
+  })
 })

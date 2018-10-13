@@ -11,6 +11,11 @@ describe('atomic (promise)', function () {
     limitToOne = atomicDecorator()
   })
 
+  it('changes the name of the function', function () {
+    var func = limitToOne(function myfunc () {})
+    assert.equal(func.name, 'atomic(myfunc)')
+  })
+
   it('must limit to one function call', function (done) {
     var numberRunning = 0
     var f0 = function (a) {

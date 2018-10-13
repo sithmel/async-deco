@@ -8,7 +8,7 @@ var timeoutDecorator = require('../../callback/timeout')
 var retryDecorator = require('../../callback/retry')
 var TimeoutError = require('../../errors/timeout-error')
 
-describe('compose', function () {
+describe.skip('compose', function () {
   it('must compose simple functions', function () {
     var square = function (n) { return n * n }
     var add10 = function (n) { return n + 10 }

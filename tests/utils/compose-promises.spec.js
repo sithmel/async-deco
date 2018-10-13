@@ -9,7 +9,7 @@ var retryDecorator = require('../../callback/retry')
 var promiseTranslator = require('../../src/promise-translator')
 var TimeoutError = require('../../errors/timeout-error')
 
-describe('compose promises', function () {
+describe.skip('compose promises', function () {
   var decorator
   var log
 

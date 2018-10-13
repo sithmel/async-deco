@@ -13,7 +13,7 @@ describe('fallback-cache (promise)', function () {
 
   it('must fallback using a cached value', function (done) {
     var counter = 0
-    var f = cached(function (a, b, c, next) {
+    var f = cached(function (a, b, c) {
       return new Promise(function (resolve, reject) {
         counter++
         if (counter === 1) {
@@ -34,7 +34,7 @@ describe('fallback-cache (promise)', function () {
   })
 
   it('can\'t fallback using a cached value', function (done) {
-    var f = cached(function (a, b, c, next) {
+    var f = cached(function (a, b, c) {
       return new Promise(function (resolve, reject) {
         reject(new Error('error'))
       })

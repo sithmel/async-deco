@@ -1,6 +1,5 @@
-function funcRenamer (name, doDecorate) {
+function funcRenamer (newName) {
   return function rename (fn) {
-    var newName = doDecorate && fn.name ? name + '(' + (fn.name || 'anonymous') + ')' : name
     try {
       Object.defineProperty(fn, 'name', { value: newName })
       return fn

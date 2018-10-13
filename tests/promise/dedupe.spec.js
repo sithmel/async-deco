@@ -99,4 +99,9 @@ describe('dedupe (promise)', function () {
       done()
     }, 60)
   })
+
+  it('changes the name of the function', function () {
+    var func = dedupe(function func () {})
+    assert.equal(func.name, 'dedupe(func)')
+  })
 })

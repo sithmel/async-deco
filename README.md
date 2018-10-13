@@ -1,3 +1,11 @@
+TODO:
+
+import/export modern js
+move logger externally (add level)
+add prefixes to decorators
+modernise test
+add test cases
+
 async-deco
 ==========
 [![Build Status](https://travis-ci.org/sithmel/async-deco.svg?branch=master)](https://travis-ci.org/sithmel/async-deco)
