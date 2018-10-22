@@ -19,7 +19,8 @@ function getRetryDecorator (wrapper, times, interval, error) {
       var cb = args[args.length - 1]
 
       var retry = function __retry () {
-        var timeout = counter++ ? intervalFunc(counter) : 0
+        var timeout = counter ? intervalFunc(counter) : 0
+        counter++
         if (timeout) {
           setTimeout(function () {
             func.apply(context, args)
