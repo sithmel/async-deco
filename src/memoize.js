@@ -31,7 +31,7 @@ function getMemoizeDecorator (wrapper, opts) {
 
       if (cacheKey !== null && cache.has(cacheKey)) {
         result = cache.get(cacheKey)
-        logger('memoize-hit', {key: cacheKey, result: result})
+        logger('memoize-hit', { key: cacheKey, result: result })
         return cb(null, result)
       } else {
         func.apply(context, args)

@@ -7,7 +7,7 @@ describe('buildLogger', function () {
   var newObj
 
   beforeEach(function () {
-    originalObj = {test1: 1, test2: 2}
+    originalObj = { test1: 1, test2: 2 }
   })
 
   it('must be obj', function () {

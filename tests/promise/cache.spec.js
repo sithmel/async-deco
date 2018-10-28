@@ -7,9 +7,9 @@ describe('cache (promise)', function () {
   var cached
 
   beforeEach(function () {
-    var cache = new Cache({key: function (a, b, c) {
+    var cache = new Cache({ key: function (a, b, c) {
       return a + b + c
-    }})
+    } })
     cached = cacheDecorator(cache)
   })
 

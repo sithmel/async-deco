@@ -14,7 +14,7 @@ function getFallbackDecorator (fallbackFunction, opts = {}) {
       return func.apply(context, args)
         .catch((err) => {
           if (condition(err)) {
-            logger('fallback', {actualResult: {err: err}})
+            logger('fallback', { actualResult: { err: err } })
             return fallbackFunction.apply(context, args)
           }
           throw err

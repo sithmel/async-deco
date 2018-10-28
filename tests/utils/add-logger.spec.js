@@ -7,7 +7,7 @@ describe('addLogger', function () {
   it('attach a logger', function () {
     var logs = []
     var logger = addLogger(function (evt, obj, ts) {
-      logs.push({evt: evt, obj: obj})
+      logs.push({ evt: evt, obj: obj })
     })
     var f = logger(function () {
       var l = defaultLogger.call(this)
@@ -20,7 +20,7 @@ describe('addLogger', function () {
   it('attach a logger to object', function () {
     var logs = []
     var logger = addLogger(function (evt, obj, ts) {
-      logs.push({evt: evt, obj: obj})
+      logs.push({ evt: evt, obj: obj })
     })
     var context = { test: 1 }
     var f = function () {
@@ -37,10 +37,10 @@ describe('addLogger', function () {
     var logs1 = []
     var logs2 = []
     var logger1 = addLogger(function (evt, obj, ts) {
-      logs1.push({evt: evt, obj: obj})
+      logs1.push({ evt: evt, obj: obj })
     })
     var logger2 = addLogger(function (evt, obj, ts) {
-      logs2.push({evt: evt, obj: obj})
+      logs2.push({ evt: evt, obj: obj })
     })
     var f = logger2(logger1(function () {
       var l = defaultLogger.call(this)

@@ -15,7 +15,7 @@ describe('log (promise)', function () {
   beforeEach(function () {
     log = []
     var logger = function (type, obj, ts, key) {
-      log.push({type: type, obj: obj, key: key})
+      log.push({ type: type, obj: obj, key: key })
     }
 
     wrapped = logDecorator()
@@ -32,8 +32,8 @@ describe('log (promise)', function () {
     f(1, 2, 3).then(function (dep) {
       assert.equal(dep, 6)
       assert.deepEqual(log, [
-        {type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context}, key: 'key'},
-        {type: 'log-end', obj: {result: 6}, key: 'key'}
+        { type: 'log-start', obj: { args: [1, 2, 3], context: log[0].obj.context }, key: 'key' },
+        { type: 'log-end', obj: { result: 6 }, key: 'key' }
       ])
       done()
     })
@@ -48,7 +48,7 @@ describe('log (promise)', function () {
     f(1, 2, 3).catch(function (err) {
       assert.instanceOf(err, Error)
       assert.deepEqual(log[0],
-        {type: 'log-start', obj: {args: [1, 2, 3], context: log[0].obj.context}, key: 'key'})
+        { type: 'log-start', obj: { args: [1, 2, 3], context: log[0].obj.context }, key: 'key' })
       assert.deepEqual(log[1].type, 'log-error')
       assert.deepEqual(log[1].key, 'key')
       assert.instanceOf(log[1].obj.err, Error)

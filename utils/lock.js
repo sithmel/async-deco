@@ -22,7 +22,7 @@ Lock.prototype.lock = function (resource, ttl, callback) {
 
     callback(null, { unlock: function (cb) {
       that.unlock(resource, cb)
-    }})
+    } })
   }
 }
 

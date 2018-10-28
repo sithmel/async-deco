@@ -21,7 +21,7 @@ function getLogDecorator (wrapper, prefix) {
         }
         cb(err, dep)
       }
-      logger(prefix + 'log-start', {args: args.slice(0, -1), context: context})
+      logger(prefix + 'log-start', { args: args.slice(0, -1), context: context })
       func.apply(context, args)
     }
   })
