@@ -16,9 +16,9 @@ describe('limit (promise)', function () {
   var limitToOne, limitToTwo, limitToThree
 
   beforeEach(function () {
-    limitToOne = limitDecorator(1)
-    limitToTwo = limitDecorator(2)
-    limitToThree = limitDecorator(3)
+    limitToOne = limitDecorator({ concurrency: 1 })
+    limitToTwo = limitDecorator({ concurrency: 2 })
+    limitToThree = limitDecorator({ concurrency: 3 })
   })
 
   it('must limit to one function call', function (done) {

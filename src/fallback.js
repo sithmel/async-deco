@@ -1,28 +1,26 @@
 var defaultLogger = require('../utils/default-logger')
 var getErrorCondition = require('./get-error-condition')
+var funcRenamer = require('../utils/func-renamer')
 
-function getFallbackDecorator (wrapper, fallbackFunction, error) {
-  var condition = getErrorCondition(error)
+function getFallbackDecorator (fallbackFunction, opts = {}) {
+  const condition = getErrorCondition(opts.error)
 
-  return wrapper(function fallback (func) {
-    return function _fallback () {
-      var context = this
-      var args = Array.prototype.slice.call(arguments, 0)
-      var logger = defaultLogger.apply(context)
-      var cb = args[args.length - 1]
+  return function fallback (func) {
+    const renamer = funcRenamer(`fallback(${func.name || 'anonymous'})`)
+    return renamer(function _fallback (...args) {
+      const context = this
+      const logger = defaultLogger.apply(context)
 
-      args[args.length - 1] = function (err, dep) {
-        if (condition(err, dep)) {
-          logger('fallback', {actualResult: {err: err, res: dep}})
-          fallbackFunction.apply(context, args.slice(0, -1).concat(cb))
-        } else {
-          cb(err, dep)
-        }
-      }
-
-      func.apply(context, args)
-    }
-  })
+      return func.apply(context, args)
+        .catch((err) => {
+          if (condition(err)) {
+            logger('fallback', {actualResult: {err: err}})
+            return fallbackFunction.apply(context, args)
+          }
+          throw err
+        })
+    })
+  }
 }
 
 module.exports = getFallbackDecorator
