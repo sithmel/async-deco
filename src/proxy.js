@@ -1,28 +1,21 @@
 var defaultLogger = require('../utils/default-logger')
+var funcRenamer = require('../utils/func-renamer')
 
-function getProxyDecorator (wrapper, guard) {
-  return wrapper(function proxy (func) {
-    return function _proxy () {
+function getProxyDecorator (guard) {
+  return function proxy (func) {
+    const renamer = funcRenamer(`proxy(${func.name || 'anonymous'})`)
+    return renamer(function _proxy (...args) {
       var context = this
-      var args = Array.prototype.slice.call(arguments, 0)
-      var guardArgs = Array.prototype.slice.call(arguments, 0)
       var logger = defaultLogger.apply(context)
-      var cb = args[args.length - 1]
 
-      guardArgs[args.length - 1] = function (err) {
-        if (err) {
-          logger('proxy-denied', {
-            err: err
-          })
-          cb(err)
-        } else {
-          func.apply(context, args)
-        }
-      }
-
-      guard.apply(context, guardArgs)
-    }
-  })
+      return guard.apply(context, args)
+        .catch((err) => {
+          logger('proxy-denied', { err })
+          throw err
+        })
+        .then(() => func.apply(context, args))
+    })
+  }
 }
 
 module.exports = getProxyDecorator

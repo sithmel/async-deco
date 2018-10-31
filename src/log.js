@@ -1,30 +1,24 @@
 var defaultLogger = require('../utils/default-logger')
+var funcRenamer = require('../utils/func-renamer')
 
-function getLogDecorator (wrapper, prefix) {
-  prefix = prefix || ''
-  return wrapper(function log (func) {
-    return function _log () {
+function getLogDecorator (prefix = '') {
+  return function log (func) {
+    const renamer = funcRenamer(`log${prefix}(${func.name || 'anonymous'})`)
+    return renamer(function _log (...args) {
       var context = this
-      var args = Array.prototype.slice.call(arguments, 0)
       var logger = defaultLogger.apply(context)
-      var cb = args[args.length - 1]
-
-      args[args.length - 1] = function (err, dep) {
-        if (err) {
-          logger(prefix + 'log-error', {
-            err: err
-          })
-        } else {
-          logger(prefix + 'log-end', {
-            result: dep
-          })
-        }
-        cb(err, dep)
-      }
-      logger(prefix + 'log-start', { args: args.slice(0, -1), context: context })
-      func.apply(context, args)
-    }
-  })
+      logger(prefix + 'log-start', {})
+      return func.apply(context, args)
+        .then((res) => {
+          logger(prefix + 'log-end', { result: res })
+          return res
+        })
+        .catch((err) => {
+          logger(prefix + 'log-error', { err: err })
+          throw err
+        })
+    })
+  }
 }
 
 module.exports = getLogDecorator

@@ -6,13 +6,16 @@ describe('proxy (promise)', function () {
   var proxy
 
   beforeEach(function () {
-    proxy = proxyDecorator(function (number, cb) {
-      cb(number % 2 === 0 ? new Error('Evens not allowed') : undefined)
+    proxy = proxyDecorator(function (number) {
+      if (number % 2 === 0) {
+        return Promise.reject(new Error('Evens not allowed'))
+      }
+      return Promise.resolve(undefined)
     })
   })
 
   it('must pass', function (done) {
-    var func = proxy(function (number, cb) {
+    var func = proxy(function (number) {
       return new Promise(function (resolve, reject) {
         resolve(number * 2)
       })
@@ -25,7 +28,7 @@ describe('proxy (promise)', function () {
   })
 
   it('must throw', function (done) {
-    var func = proxy(function (number, cb) {
+    var func = proxy(function (number) {
       return new Promise(function (resolve, reject) {
         resolve(number * 2)
       })

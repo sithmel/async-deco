@@ -73,7 +73,7 @@ describe('memoize with parameters (promise)', function () {
 
   it('must cache', function (done) {
     var f = cached(function (a, b, c) {
-      Promise.resolve(Math.random())
+      return Promise.resolve(Math.random())
     })
 
     f(1, 2, 3).then(function (res1) {

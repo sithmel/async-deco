@@ -1,43 +1,43 @@
 var defaultLogger = require('../utils/default-logger')
 var LRUCache = require('little-ds-toolkit/lib/lru-cache')
-var getErrorCondition = require('./get-error-condition')
+var funcRenamer = require('../utils/func-renamer')
 
-function getMemoizeDecorator (wrapper, opts) {
+const returnDefault = () => '_default'
+
+function getMemoizeDecorator (opts) {
   opts = opts || {}
   if (typeof opts === 'function') {
     opts = { getKey: opts }
   }
-  var getKey = opts.getKey || function () { return '_default' }
+  var getKey = opts.getKey || returnDefault
   var defaultTTL = opts.ttl
   var maxLen = opts.len
-  var condition = getErrorCondition(opts.error)
   var cache = new LRUCache({ maxLen: maxLen, defaultTTL: defaultTTL })
 
-  return wrapper(function memoize (func) {
-    return function _memoize () {
-      var result
+  return function memoize (func) {
+    const renamer = funcRenamer(`memoize(${func.name || 'anonymous'})`)
+    return renamer(function _memoize (...args) {
       var context = this
-      var args = Array.prototype.slice.call(arguments, 0)
       var logger = defaultLogger.apply(context)
-      var cb = args[args.length - 1]
       var cacheKey = getKey.apply(context, args)
 
-      args[args.length - 1] = function (err, res) {
-        if (cacheKey !== null && !condition(err, res)) {
-          cache.set(cacheKey, res)
-        }
-        cb(err, res)
+      if (cacheKey === null) {
+        return func.apply(context, args)
       }
 
-      if (cacheKey !== null && cache.has(cacheKey)) {
-        result = cache.get(cacheKey)
+      if (cache.has(cacheKey)) {
+        const result = cache.get(cacheKey)
         logger('memoize-hit', { key: cacheKey, result: result })
-        return cb(null, result)
+        return Promise.resolve(result)
       } else {
-        func.apply(context, args)
+        return func.apply(context, args)
+          .then((res) => {
+            cache.set(cacheKey, res)
+            return res
+          })
       }
-    }
-  })
+    })
+  }
 }
 
 module.exports = getMemoizeDecorator
