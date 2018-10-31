@@ -1,46 +1,43 @@
 var defaultLogger = require('../utils/default-logger')
-var getErrorCondition = require('./get-error-condition')
 var keysGetter = require('memoize-cache-utils/keys-getter')
+var funcRenamer = require('../utils/func-renamer')
 
-function getPurgeCacheDecorator (wrapper, cache, opts) {
+function getPurgeCacheDecorator (cache, opts) {
   opts = opts || {}
-  var condition = getErrorCondition(opts.error)
   var getCacheKeys = keysGetter(opts.keys)
   var getTags = keysGetter(opts.tags)
 
-  return wrapper(function purgeCache (func) {
-    return function _purgeCache () {
+  return function purgeCache (func) {
+    const renamer = funcRenamer(`purgeCache(${func.name || 'anonymous'})`)
+    return renamer(function _purgeCache (...args) {
       var context = this
-      var args = Array.prototype.slice.call(arguments, 0)
-      var keys = getCacheKeys.apply(this, args)
-      var tags = getTags.apply(this, args)
+      var keys = getCacheKeys.apply(context, args)
+      var tags = getTags.apply(context, args)
       var logger = defaultLogger.apply(context)
-      var cb = args[args.length - 1]
 
-      var catchingError = function (err) {
-        if (err) logger('purge-cache-error', { cacheErr: err })
-        return !!err
-      }
-
-      args[args.length - 1] = function (err, res) {
-        if (!condition(err, res)) {
-          if (tags && Array.isArray(tags) && tags.length) {
-            cache.purgeByTags(tags, function () {
-              if (!catchingError(err)) logger('purge-cache', { tags: tags })
-            })
-          } else if (keys && Array.isArray(keys) && keys.length) {
-            cache.purgeByKeys(keys, function () {
-              if (!catchingError(err)) logger('purge-cache', { keys: keys })
-            })
-          }
+      const callback = function (err) {
+        if (err) {
+          logger('purge-cache-error', { cacheErr: err })
         } else {
-          logger('purge-cache-miss', { err: err, res: res })
+          logger('purge-cache', { tags, keys })
         }
-        cb(err, res)
       }
-      func.apply(context, args)
-    }
-  })
+
+      return func.apply(context, args)
+        .then((res) => {
+          if (tags && Array.isArray(tags) && tags.length) {
+            cache.purgeByTags(tags, callback)
+          } else if (keys && Array.isArray(keys) && keys.length) {
+            cache.purgeByKeys(keys, callback)
+          }
+          return res
+        })
+        .catch((err) => {
+          logger('purge-cache-miss', { err: err })
+          throw err
+        })
+    })
+  }
 }
 
 module.exports = getPurgeCacheDecorator

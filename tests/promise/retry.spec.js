@@ -4,12 +4,10 @@ var retryDecorator = require('../../promise/retry')
 
 describe('retry (promise)', function () {
   var retryTenTimes
-  var retryTwiceOnTypeError
   var retryForever
 
   beforeEach(function () {
-    retryTenTimes = retryDecorator(10)
-    retryTwiceOnTypeError = retryDecorator(2, undefined, TypeError)
+    retryTenTimes = retryDecorator({ times: 10 })
     retryForever = retryDecorator()
   })
 
@@ -61,26 +59,6 @@ describe('retry (promise)', function () {
     func().then(function (res) {
       assert.equal(res, 'done')
       assert.equal(c, 5)
-      done()
-    })
-  })
-
-  it.skip('must work on custom error', function (done) {
-    var c = 0
-    var func = retryTwiceOnTypeError(function () {
-      return new Promise(function (resolve, reject) {
-        c++
-        if (c === 1) {
-          reject(new TypeError('error'))
-        } else {
-          resolve('done')
-        }
-      })
-    })
-
-    func().then(function (res) {
-      assert.equal(res, 'done')
-      assert.equal(c, 1)
       done()
     })
   })

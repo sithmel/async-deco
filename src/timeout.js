@@ -1,39 +1,28 @@
 var TimeoutError = require('../errors/timeout-error')
 var defaultLogger = require('../utils/default-logger')
+var funcRenamer = require('../utils/func-renamer')
 
-function getTimeoutDecorator (wrapper, ms) {
-  return wrapper(function timeout (func) {
-    return function _timeout () {
+function throwOnTimeout (ms) {
+  return new Promise((resolve, reject) =>
+    setTimeout(() =>
+      reject(new TimeoutError(`TimeoutError: Service timed out after ${ms.toString()} ms`)), ms))
+}
+
+function getTimeoutDecorator (ms) {
+  return function timeout (func) {
+    const renamer = funcRenamer(`timeout(${func.name || 'anonymous'})`)
+    return renamer(function _timeout (...args) {
       var context = this
-      var args = Array.prototype.slice.call(arguments, 0)
       var logger = defaultLogger.apply(context)
-      var cb = args[args.length - 1]
-
-      var timedout = false
-      var timeout = setTimeout(function () {
-        var err = new TimeoutError('TimeoutError: Service timed out after ' + ms.toString() + ' ms')
-        timedout = true
-        logger('timeout', {
-          ms: ms
+      return Promise.race([func.apply(context, args), throwOnTimeout(ms)])
+        .catch((err) => {
+          if (err instanceof TimeoutError) {
+            logger('timeout', { ms })
+          }
+          throw err
         })
-        cb(err)
-      }, ms)
-
-      // new callback
-      args[args.length - 1] = function () {
-        var cbContext = this
-        var cbArgs = Array.prototype.slice.call(arguments, 0)
-
-        if (timedout) {
-          return // abort because has been already called
-        }
-        clearTimeout(timeout) // abort time out
-        cb.apply(cbContext, cbArgs)
-      }
-
-      func.apply(context, args)
-    }
-  })
+    })
+  }
 }
 
 module.exports = getTimeoutDecorator

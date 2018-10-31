@@ -1,47 +1,42 @@
 var defaultLogger = require('../utils/default-logger')
-var getErrorCondition = require('./get-error-condition')
+var funcRenamer = require('../utils/func-renamer')
 
-function getRetryDecorator (wrapper, times, interval, error) {
-  times = times || Infinity
-  interval = interval || 0
+const customSetTimeout = (func, interval) => interval ? setTimeout(func, interval) : func()
+
+function getRetryDecorator (opts = {}) {
+  const times = opts.times || Infinity
+  const interval = opts.interval || 0
   var intervalFunc = typeof interval === 'function'
     ? interval
     : function () { return interval }
 
-  var condition = getErrorCondition(error)
-
-  return wrapper(function retry (func) {
-    return function _retry () {
+  return function retry (func) {
+    const renamer = funcRenamer(`retry(${func.name || 'anonymous'})`)
+    return renamer(function _retry (...args) {
       var counter = 0
       var context = this
-      var args = Array.prototype.slice.call(arguments, 0)
       var logger = defaultLogger.apply(context)
-      var cb = args[args.length - 1]
 
-      var retry = function __retry () {
-        if (counter++ && intervalFunc(counter) > 0) { // do not wait for counter === 0
-          setTimeout(function () {
+      return new Promise((resolve, reject) => {
+        (function retry () {
+          var interval = counter ? intervalFunc(counter) : 0
+          counter++
+          customSetTimeout(() =>
             func.apply(context, args)
-          }, interval)
-        } else {
-          func.apply(context, args)
-        }
-      }
-
-      args[args.length - 1] = function (err, dep) {
-        if (condition(err, dep) && counter < times) {
-          logger('retry', {
-            times: counter,
-            actualResult: { err: err, res: dep }
-          })
-          retry()
-        } else {
-          cb(err, dep)
-        }
-      }
-      retry()
-    }
-  })
+              .then(resolve)
+              .catch((err) => {
+                if (counter < times) {
+                  logger('retry', { times: counter, err })
+                  return retry()
+                } else {
+                  reject(err)
+                }
+              })
+          , interval)
+        })()
+      })
+    })
+  }
 }
 
 module.exports = getRetryDecorator

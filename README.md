@@ -5,6 +5,7 @@ move logger externally (add level)
 add prefixes to decorators
 modernise test
 add test cases
+memoize-cache and dependencies
 
 async-deco
 ==========
