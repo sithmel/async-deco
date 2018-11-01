@@ -1,6 +1,6 @@
-var defaultLogger = require('../utils/default-logger')
+var defaultLogger = require('./utils/default-logger')
 var keysGetter = require('memoize-cache-utils/keys-getter')
-var funcRenamer = require('../utils/func-renamer')
+var funcRenamer = require('./utils/func-renamer')
 
 function getPurgeCacheDecorator (cache, opts) {
   opts = opts || {}

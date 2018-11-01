@@ -1,12 +1,12 @@
 {
   "name": "async-deco",
   "version": "8.5.1",
-  "description": "A collection of decorators for adding features to asynchronous functions (callback or promise based).",
+  "description": "A collection of decorators for adding features to asynchronous functions",
   "main": "index.js",
   "scripts": {
-    "test": "mocha tests/**/*.js",
+    "test": "mocha test/**/*.spec.js",
     "watch": "npm run test -- -w",
-    "lint": "eslint --fix --ext .js ./src ./tests ./errors ./promise ./utils",
+    "lint": "eslint --fix --ext .js ./src ./test",
     "precommit": "npm run lint",
     "prepush": "npm run test"
   },
@@ -35,14 +35,9 @@
   },
   "dependencies": {
     "dequeue": "^1.0.5",
-    "es6-promisify": "^6.0.0",
     "funqueue-promise": "0.0.3",
     "little-ds-toolkit": "^1.1.0",
-    "lodash": "^4.17.5",
     "memoize-cache-utils": "^0.1.1",
-    "occamsrazor-match": "^4.1.0",
-    "require-all": "^2.2.0",
-    "setimmediate": "^1.0.5",
-    "uuid": "^3.2.1"
+    "occamsrazor-match": "^4.1.0"
   }
 }

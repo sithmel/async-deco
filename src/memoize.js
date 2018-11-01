@@ -1,6 +1,6 @@
-var defaultLogger = require('../utils/default-logger')
+var defaultLogger = require('./utils/default-logger')
 var LRUCache = require('little-ds-toolkit/lib/lru-cache')
-var funcRenamer = require('../utils/func-renamer')
+var funcRenamer = require('./utils/func-renamer')
 
 const returnDefault = () => '_default'
 

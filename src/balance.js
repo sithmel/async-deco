@@ -1,6 +1,6 @@
-var defaultLogger = require('../utils/default-logger')
-var balancePolicies = require('../utils/balance-policies')
-var funcRenamer = require('../utils/func-renamer')
+var defaultLogger = require('./utils/default-logger')
+var balancePolicies = require('./utils/balance-policies')
+var funcRenamer = require('./utils/func-renamer')
 
 function getBalanceDecorator (policy = balancePolicies.idlest) {
   return function balance (funcs) {

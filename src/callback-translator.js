@@ -1,4 +1,4 @@
-var funcRenamer = require('../utils/func-renamer')
+var funcRenamer = require('./utils/func-renamer')
 
 function getFuncName (func) {
   return func.name || 'anonymous'

@@ -1,6 +1,6 @@
-var defaultLogger = require('../utils/default-logger')
+var defaultLogger = require('./utils/default-logger')
 var getErrorCondition = require('./get-error-condition')
-var funcRenamer = require('../utils/func-renamer')
+var funcRenamer = require('./utils/func-renamer')
 
 function getFallbackCacheDecorator (cache, opts = {}) {
   const useStale = opts.useStale

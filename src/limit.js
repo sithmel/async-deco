@@ -1,6 +1,6 @@
-var defaultLogger = require('../utils/default-logger')
+var defaultLogger = require('./utils/default-logger')
 var keyGetter = require('memoize-cache-utils/key-getter')
-var funcRenamer = require('../utils/func-renamer')
+var funcRenamer = require('./utils/func-renamer')
 const FunQueue = require('funqueue-promise')
 
 const returnDefault = () => '_default'

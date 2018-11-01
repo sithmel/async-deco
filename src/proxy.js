@@ -1,5 +1,5 @@
-var defaultLogger = require('../utils/default-logger')
-var funcRenamer = require('../utils/func-renamer')
+var defaultLogger = require('./utils/default-logger')
+var funcRenamer = require('./utils/func-renamer')
 
 function getProxyDecorator (guard) {
   return function proxy (func) {

@@ -1,6 +1,6 @@
-var TimeoutError = require('../errors/timeout-error')
-var defaultLogger = require('../utils/default-logger')
-var funcRenamer = require('../utils/func-renamer')
+var TimeoutError = require('./errors/timeout-error')
+var defaultLogger = require('./utils/default-logger')
+var funcRenamer = require('./utils/func-renamer')
 
 function throwOnTimeout (ms) {
   return new Promise((resolve, reject) =>

@@ -1,5 +1,5 @@
-var defaultLogger = require('../utils/default-logger')
-var funcRenamer = require('../utils/func-renamer')
+var defaultLogger = require('./utils/default-logger')
+var funcRenamer = require('./utils/func-renamer')
 
 const customSetTimeout = (func, interval) => interval ? setTimeout(func, interval) : func()
 
