@@ -7,7 +7,7 @@ describe('timeout (promise)', function () {
   var timeout20
 
   beforeEach(function () {
-    timeout20 = timeout(20)
+    timeout20 = timeout({ ms: 20 })
   })
 
   it('must pass simple function', function (done) {

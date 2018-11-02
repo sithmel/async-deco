@@ -6,9 +6,7 @@ describe('fallback (promise)', function () {
   var fallback
 
   beforeEach(function () {
-    fallback = fallbackDecorator(function (a, b, c) {
-      return Promise.resolve('giving up')
-    })
+    fallback = fallbackDecorator({ fallback: (a, b, c) => Promise.resolve('giving up') })
   })
 
   it('must pass', function (done) {

@@ -1,4 +1,4 @@
-var defaultLogger = require('./utils/default-logger')
+var getLogger = require('./utils/get-logger')
 var keyGetter = require('memoize-cache-utils/key-getter')
 var Lock = require('./utils/lock')
 var funcRenamer = require('./utils/func-renamer')
@@ -7,6 +7,7 @@ const returnDefault = () => '_default'
 
 function getAtomicDecorator (opts = {}) {
   const getKey = keyGetter(opts.getKey || returnDefault)
+  const logger = getLogger(opts.logger)
   const lockObj = opts.lock || new Lock()
   const ttl = opts.ttl || 1000
 
@@ -14,7 +15,6 @@ function getAtomicDecorator (opts = {}) {
     const renamer = funcRenamer(`atomic(${func.name || 'anonymous'})`)
     return renamer(function _atomic (...args) {
       const context = this
-      const logger = defaultLogger.apply(context)
       const logError = (err) => err && logger('atomic-lock-error', { error: err })
 
       const cacheKey = getKey.apply(context, args)

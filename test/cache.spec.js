@@ -10,7 +10,7 @@ describe('cache (promise)', function () {
     var cache = new Cache({ key: function (a, b, c) {
       return a + b + c
     } })
-    cached = cacheDecorator(cache)
+    cached = cacheDecorator({ cache })
   })
 
   it('must cache using different keys', function (done) {

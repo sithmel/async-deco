@@ -16,7 +16,7 @@ describe('atomic (promise)', function () {
     assert.equal(func.name, 'atomic(myfunc)')
   })
 
-  it('must limit to one function call', function (done) {
+  it.skip('must limit to one function call', function (done) {
     var numberRunning = 0
     var f0 = function (a) {
       numberRunning++

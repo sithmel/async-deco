@@ -8,7 +8,7 @@ describe('balance (promise)', function () {
     var counter = 0
     var counters = [0, 0, 0]
 
-    var balanceDecorator = balance(balancePolicies.roundRobin)
+    var balanceDecorator = balance({ policy: balancePolicies.roundRobin })
     var func = balanceDecorator([() => Promise.resolve(0), () => Promise.resolve(1), () => Promise.resolve(2)])
 
     for (var i = 0; i < 40; i++) {

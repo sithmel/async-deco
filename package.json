@@ -2,16 +2,25 @@
   "name": "async-deco",
   "version": "8.5.1",
   "description": "A collection of decorators for adding features to asynchronous functions",
-  "main": "index.js",
+  "main": "es5/index",
+  "module": "es5/index.mjs",
+  "jsnext:main": "es5/index.mjs",
   "scripts": {
-    "test": "mocha test/**/*.spec.js",
+    "test": "mocha test/*.spec.js test/**/*.spec.js",
     "watch": "npm run test -- -w",
     "lint": "eslint --fix --ext .js ./src ./test",
-    "precommit": "npm run lint",
-    "prepush": "npm run test"
+    "build": "npm run clean && npm run lint && npm run build:es5 && npm run build:es5-cjs && npm run build:es2015 && npm run build:es2015-cjs",
+    "build:es5": "cross-env BABEL_ENV=es5 babel --keep-file-extension -x \".mjs\" src -d es5",
+    "build:es5-cjs": "cross-env BABEL_ENV=es5-cjs babel -x \".mjs\" src -d es5",
+    "build:es2015": "mkdirp es2015 && copyfiles -f src/*.mjs es2015",
+    "build:es2015-cjs": "cross-env BABEL_ENV=es2015-cjs babel -x \".mjs\" src -d es2015",
+    "prepush": "npm run test",
+    "prepublishOnly": "npm run build",
+    "precommit": "npm run lint"
   },
   "keywords": [
-    "callback",
+    "promise",
+    "async",
     "decorator",
     "circuit breaker"
   ],

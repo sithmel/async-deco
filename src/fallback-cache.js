@@ -1,17 +1,16 @@
-var defaultLogger = require('./utils/default-logger')
-var getErrorCondition = require('./get-error-condition')
+var getLogger = require('./utils/get-logger')
 var funcRenamer = require('./utils/func-renamer')
 
-function getFallbackCacheDecorator (cache, opts = {}) {
+function getFallbackCacheDecorator (opts = {}) {
+  const cache = opts.cache
   const useStale = opts.useStale
   const noPush = opts.noPush
-  const isValidError = getErrorCondition(opts.error)
+  const logger = getLogger(opts.logger)
 
   return function fallbackCache (func) {
     const renamer = funcRenamer(`fallbackCache(${func.name || 'anonymous'})`)
     return renamer(function _fallbackCache (...args) {
       const context = this
-      const logger = defaultLogger.apply(context)
 
       return func.apply(context, args)
         .then((res) => {
@@ -23,9 +22,8 @@ function getFallbackCacheDecorator (cache, opts = {}) {
           }
           return res
         })
-        .catch((err) => {
-          if (!isValidError(err)) throw err
-          return new Promise((resolve, reject) => {
+        .catch((err) =>
+          new Promise((resolve, reject) => {
             cache.query(args, function (e, cacheQuery) {
               if (e) {
                 logger('fallback-cache-error', { err: err, cacheErr: e })
@@ -41,8 +39,7 @@ function getFallbackCacheDecorator (cache, opts = {}) {
                 reject(err)
               }
             })
-          })
-        })
+          }))
     })
   }
 }

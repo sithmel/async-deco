@@ -1,11 +1,13 @@
 TODO:
 
 import/export modern js
-move logger externally (add level)
-add prefixes to decorators
+throw with missing args
 modernise test
 add test cases
 memoize-cache and dependencies
+
+proxy
+map/transform decorator
 
 async-deco
 ==========

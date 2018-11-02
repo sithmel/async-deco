@@ -1,23 +1,18 @@
-var defaultLogger = require('./utils/default-logger')
-var getErrorCondition = require('./get-error-condition')
+var getLogger = require('./utils/get-logger')
 var funcRenamer = require('./utils/func-renamer')
 
-function getFallbackDecorator (fallbackFunction, opts = {}) {
-  const condition = getErrorCondition(opts.error)
-
+function getFallbackDecorator (opts = {}) {
+  const fallbackFunction = typeof opts.fallback === 'function' ? opts.fallback : () => opts.fallback
+  const logger = getLogger(opts.logger)
   return function fallback (func) {
     const renamer = funcRenamer(`fallback(${func.name || 'anonymous'})`)
     return renamer(function _fallback (...args) {
       const context = this
-      const logger = defaultLogger.apply(context)
 
       return func.apply(context, args)
         .catch((err) => {
-          if (condition(err)) {
-            logger('fallback', { actualResult: { err: err } })
-            return fallbackFunction.apply(context, args)
-          }
-          throw err
+          logger('fallback', { actualResult: { err: err } })
+          return fallbackFunction.apply(context, args)
         })
     })
   }

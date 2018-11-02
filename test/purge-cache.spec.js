@@ -18,9 +18,9 @@ describe('purge-cache (promise)', function () {
       return ['tag']
     }
     var cache = new Cache({ key: getKey, tags: getTags })
-    cached = cacheDecorator(cache)
-    purgeCache = purgeCacheDecorator(cache, { keys: getKeys })
-    purgeCacheByTags = purgeCacheDecorator(cache, { tags: getTags })
+    cached = cacheDecorator({ cache })
+    purgeCache = purgeCacheDecorator({ cache, keys: getKeys })
+    purgeCacheByTags = purgeCacheDecorator({ cache, tags: getTags })
   })
 
   it('must cache', function (done) {

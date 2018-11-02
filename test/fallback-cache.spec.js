@@ -8,7 +8,7 @@ describe('fallback-cache (promise)', function () {
 
   beforeEach(function () {
     var cache = new Cache()
-    cached = fallbackCacheDecorator(cache)
+    cached = fallbackCacheDecorator({ cache })
   })
 
   it('must fallback using a cached value', function (done) {
