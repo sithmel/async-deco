@@ -1,4 +1,4 @@
-var getLogger = require('./utils/get-logger')
+var addLogger = require('./add-logger')
 var LRUCache = require('little-ds-toolkit/lib/lru-cache')
 var funcRenamer = require('./utils/func-renamer')
 
@@ -9,12 +9,12 @@ function getMemoizeDecorator (opts = {}) {
   var defaultTTL = opts.ttl
   var maxLen = opts.len
   var cache = new LRUCache({ maxLen: maxLen, defaultTTL: defaultTTL })
-  const logger = getLogger(opts.logger)
 
   return function memoize (func) {
     const renamer = funcRenamer(`memoize(${func.name || 'anonymous'})`)
     return renamer(function _memoize (...args) {
       var context = this
+      const logger = addLogger.getLogger(context)
       var cacheKey = getKey.apply(context, args)
 
       if (cacheKey === null) {

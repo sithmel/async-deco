@@ -1,4 +1,4 @@
-var getLogger = require('./utils/get-logger')
+var addLogger = require('./add-logger')
 var keyGetter = require('memoize-cache-utils/key-getter')
 var Lock = require('./utils/lock')
 var FunctionBus = require('./utils/function-bus')
@@ -7,7 +7,6 @@ var funcRenamer = require('./utils/func-renamer')
 const returnDefault = () => '_default'
 
 function getDedupeDecorator (opts = {}) {
-  const logger = getLogger(opts.logger)
   const getKey = keyGetter(opts.getKey || returnDefault)
   const lockObj = opts.lock || new Lock()
   const functionBus = opts.functionBus || new FunctionBus()
@@ -17,6 +16,7 @@ function getDedupeDecorator (opts = {}) {
     const renamer = funcRenamer(`dedupe(${func.name || 'anonymous'})`)
     return renamer(function _dedupe (...args) {
       const context = this
+      const logger = addLogger.getLogger(context)
       const cacheKey = getKey.apply(context, args)
 
       if (cacheKey == null) {

@@ -1,13 +1,13 @@
-var getLogger = require('./utils/get-logger')
+var addLogger = require('./add-logger')
 var funcRenamer = require('./utils/func-renamer')
 
 function getCacheDecorator (opts = {}) {
   const cacheObj = opts.cache
-  const logger = getLogger(opts.logger)
   return function cache (func) {
     const renamer = funcRenamer(`cache(${func.name || 'anonymous'})`)
     return renamer(function _cache (...args) {
       const context = this
+      const logger = addLogger.getLogger(context)
 
       return new Promise((resolve, reject) => {
         cacheObj.query(args, function (err, cacheQuery) {

@@ -1,16 +1,16 @@
-var getLogger = require('./utils/get-logger')
+var addLogger = require('./add-logger')
 var funcRenamer = require('./utils/func-renamer')
 
 function getFallbackCacheDecorator (opts = {}) {
   const cache = opts.cache
   const useStale = opts.useStale
   const noPush = opts.noPush
-  const logger = getLogger(opts.logger)
 
   return function fallbackCache (func) {
     const renamer = funcRenamer(`fallbackCache(${func.name || 'anonymous'})`)
     return renamer(function _fallbackCache (...args) {
       const context = this
+      const logger = addLogger.getLogger(context)
 
       return func.apply(context, args)
         .then((res) => {

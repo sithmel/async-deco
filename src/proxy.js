@@ -1,13 +1,13 @@
-var getLogger = require('./utils/get-logger')
+var addLogger = require('./add-logger')
 var funcRenamer = require('./utils/func-renamer')
 
 function getProxyDecorator (opts = {}) {
   const guard = opts.guard
-  const logger = getLogger(opts.logger)
   return function proxy (func) {
     const renamer = funcRenamer(`proxy(${func.name || 'anonymous'})`)
     return renamer(function _proxy (...args) {
       var context = this
+      const logger = addLogger.getLogger(context)
 
       return guard.apply(context, args)
         .catch((err) => {

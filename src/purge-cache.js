@@ -1,10 +1,9 @@
-var getLogger = require('./utils/get-logger')
+var addLogger = require('./add-logger')
 var keysGetter = require('memoize-cache-utils/keys-getter')
 var funcRenamer = require('./utils/func-renamer')
 
 function getPurgeCacheDecorator (opts = {}) {
   const cache = opts.cache
-  const logger = getLogger(opts.logger)
   const getCacheKeys = keysGetter(opts.keys)
   const getTags = keysGetter(opts.tags)
 
@@ -12,6 +11,7 @@ function getPurgeCacheDecorator (opts = {}) {
     const renamer = funcRenamer(`purgeCache(${func.name || 'anonymous'})`)
     return renamer(function _purgeCache (...args) {
       var context = this
+      const logger = addLogger.getLogger(context)
       var keys = getCacheKeys.apply(context, args)
       var tags = getTags.apply(context, args)
 

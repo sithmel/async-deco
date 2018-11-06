@@ -1,4 +1,4 @@
-var getLogger = require('./utils/get-logger')
+var addLogger = require('./add-logger')
 var keyGetter = require('memoize-cache-utils/key-getter')
 var funcRenamer = require('./utils/func-renamer')
 const FunQueue = require('funqueue-promise')
@@ -7,8 +7,6 @@ const returnDefault = () => '_default'
 
 function getLimitDecorator (opts = {}) {
   const { concurrency = 1, queueSize, comparator } = opts
-  const logger = getLogger(opts.logger)
-
   const getKey = keyGetter(opts.getKey || returnDefault)
   const queues = {}
 
@@ -16,6 +14,7 @@ function getLimitDecorator (opts = {}) {
     const renamer = funcRenamer(`limit(${func.name || 'anonymous'})`)
     return renamer(function _limit (...args) {
       const context = this
+      const logger = addLogger.getLogger(context)
       const cacheKey = getKey.apply(context, args)
 
       if (cacheKey == null) {

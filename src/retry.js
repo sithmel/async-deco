@@ -1,11 +1,10 @@
-var getLogger = require('./utils/get-logger')
+var addLogger = require('./add-logger')
 var funcRenamer = require('./utils/func-renamer')
 
 const customSetTimeout = (func, interval) => interval ? setTimeout(func, interval) : func()
 
 function getRetryDecorator (opts = {}) {
   const times = opts.times || Infinity
-  const logger = getLogger(opts.logger)
   const interval = opts.interval || 0
   var intervalFunc = typeof interval === 'function'
     ? interval
@@ -14,8 +13,9 @@ function getRetryDecorator (opts = {}) {
   return function retry (func) {
     const renamer = funcRenamer(`retry(${func.name || 'anonymous'})`)
     return renamer(function _retry (...args) {
-      var counter = 0
       var context = this
+      const logger = addLogger.getLogger(context)
+      var counter = 0
 
       return new Promise((resolve, reject) => {
         (function retry () {
