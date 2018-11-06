@@ -1,5 +1,5 @@
 /* eslint-env node, mocha */
-var assert = require('chai').assert
+import { assert } from 'chai'
 var validatorDecorator = require('../src/validator')
 var or = require('occamsrazor-match/extra/or')
 

@@ -1,20 +1,20 @@
 /* eslint-env node, mocha */
-var assert = require('chai').assert
-var Cache = require('memoize-cache').CacheRAM
-var fallbackCacheDecorator = require('../src/fallback-cache')
+import { assert } from 'chai'
+import { CacheRAM } from 'memoize-cache'
+import fallbackCacheDecorator from '../src/fallback-cache'
 
-describe('fallback-cache (promise)', function () {
-  var cached
+describe('fallback-cache', () => {
+  let cached
 
-  beforeEach(function () {
-    var cache = new Cache()
+  beforeEach(() => {
+    var cache = new CacheRAM()
     cached = fallbackCacheDecorator({ cache })
   })
 
-  it('must fallback using a cached value', function (done) {
-    var counter = 0
-    var f = cached(function (a, b, c) {
-      return new Promise(function (resolve, reject) {
+  it('must fallback using a cached value', (done) => {
+    let counter = 0
+    const f = cached((a, b, c) => {
+      return new Promise((resolve, reject) => {
         counter++
         if (counter === 1) {
           resolve(a + b + c)
@@ -24,23 +24,23 @@ describe('fallback-cache (promise)', function () {
       })
     })
 
-    f(1, 2, 3).then(function (dep) {
+    f(1, 2, 3).then((dep) => {
       assert.equal(dep, 6)
-      f(1, 2, 3).then(function (dep) {
+      f(1, 2, 3).then((dep) => {
         assert.equal(dep, 6)
         done()
       })
     })
   })
 
-  it('can\'t fallback using a cached value', function (done) {
-    var f = cached(function (a, b, c) {
+  it('can\'t fallback using a cached value', (done) => {
+    const f = cached((a, b, c) => {
       return new Promise(function (resolve, reject) {
         reject(new Error('error'))
       })
     })
 
-    f(1, 2, 3).catch(function (err) {
+    f(1, 2, 3).catch((err) => {
       assert.equal(err.message, 'error')
       assert.instanceOf(err, Error)
       done()

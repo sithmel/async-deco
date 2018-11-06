@@ -1,27 +1,27 @@
 /* eslint-env node, mocha */
-var assert = require('chai').assert
-var Lock = require('../../src/utils/lock')
+import { assert } from 'chai'
+import Lock from '../../src/utils/lock'
 
-describe('lock', function () {
-  it('is a factory function', function () {
+describe('lock', () => {
+  it('is a factory function', () => {
     assert.typeOf(Lock, 'function')
     assert.typeOf(new Lock(), 'object')
   })
 
-  it('execute a function', function (done) {
-    var l = new Lock()
+  it('execute a function', (done) => {
+    const l = new Lock()
     l.lock('resource1', 10, function (err, lock) {
       assert.equal(err, null)
       done()
     })
   })
 
-  it('locks a resource', function (done) {
-    var l = new Lock()
-    var c = 0
+  it('locks a resource', (done) => {
+    const l = new Lock()
+    let c = 0
     l.lock('resource1', 100, function (err, lock) {
       assert.isFalse(!!err)
-      setTimeout(function () {
+      setTimeout(() => {
         c++
         assert.equal(c, 1)
         lock.unlock()
@@ -35,12 +35,12 @@ describe('lock', function () {
     })
   })
 
-  it('locks a resource (2)', function (done) {
-    var l = new Lock()
-    var c = 0
+  it('locks a resource (2)', (done) => {
+    const l = new Lock()
+    let c = 0
     l.lock('resource1', 100, function (err, lock) {
       assert.isFalse(!!err)
-      setTimeout(function () {
+      setTimeout(() => {
         c++
         assert.equal(c, 1)
         lock.unlock()
@@ -61,12 +61,12 @@ describe('lock', function () {
     })
   })
 
-  it('does not lock different resources', function (done) {
-    var l = new Lock()
-    var c = 0
+  it('does not lock different resources', (done) => {
+    const l = new Lock()
+    let c = 0
     l.lock('resource1', 100, function (err, lock) {
       assert.isFalse(!!err)
-      setTimeout(function () {
+      setTimeout(() => {
         c++
         assert.equal(c, 2)
         lock.unlock()
@@ -80,12 +80,12 @@ describe('lock', function () {
     })
   })
 
-  it('does expire', function (done) {
-    var l = new Lock()
-    var c = 0
+  it('does expire', (done) => {
+    const l = new Lock()
+    let c = 0
     l.lock('resource1', 10, function (err, lock) {
       assert.isFalse(!!err)
-      setTimeout(function () {
+      setTimeout(() => {
         c++
         assert.equal(c, 2)
         lock.unlock()

@@ -1,5 +1,5 @@
 /* eslint-env node, mocha */
-var assert = require('chai').assert
+import { assert } from 'chai'
 var timeout = require('../src/timeout')
 var TimeoutError = require('../src/errors/timeout-error')
 

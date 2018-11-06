@@ -1,37 +1,37 @@
 /* eslint-env node, mocha */
-var assert = require('chai').assert
-var atomicDecorator = require('../src/atomic')
-var redis = require('redis')
-var Redlock = require('redlock')
+import { assert } from 'chai'
+import atomicDecorator from '../src/atomic'
+import redis from 'redis'
+import Redlock from 'redlock'
 
-describe('atomic (promise)', function () {
-  var limitToOne
+describe('atomic', () => {
+  let limitToOne
 
-  beforeEach(function () {
+  beforeEach(() => {
     limitToOne = atomicDecorator()
   })
 
-  it('changes the name of the function', function () {
-    var func = limitToOne(function myfunc () {})
+  it('changes the name of the function', () => {
+    const func = limitToOne(function myfunc () {})
     assert.equal(func.name, 'atomic(myfunc)')
   })
 
-  it.skip('must limit to one function call', function (done) {
-    var numberRunning = 0
-    var f0 = function (a) {
+  it.skip('must limit to one function call', (done) => {
+    let numberRunning = 0
+    const f0 = function (a) {
       numberRunning++
-      return new Promise(function (resolve, reject) {
-        setTimeout(function () {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
           numberRunning--
           resolve(a)
         }, a)
       })
     }
 
-    var f = limitToOne(f0)
+    const f = limitToOne(f0)
 
-    var c = 0
-    var getResult = function (dep) {
+    let c = 0
+    const getResult = (dep) => {
       assert.equal(numberRunning, 0)
       c++
       if (c === 3) {
@@ -45,36 +45,36 @@ describe('atomic (promise)', function () {
   })
 })
 
-describe.skip('atomic using redis (promise)', function () {
+describe.skip('atomic using redis (promise)', () => {
   var limitToOne, client
 
-  beforeEach(function () {
+  beforeEach(() => {
     client = redis.createClient()
 
-    var redlock = new Redlock([client])
+    const redlock = new Redlock([client])
     limitToOne = atomicDecorator({ lock: redlock })
   })
 
-  afterEach(function () {
+  afterEach(() => {
     client.quit()
   })
 
-  it('must limit to one function call', function (done) {
-    var numberRunning = 0
-    var f0 = function (a) {
+  it('must limit to one function call', (done) => {
+    let numberRunning = 0
+    const f0 = function (a) {
       numberRunning++
-      return new Promise(function (resolve, reject) {
-        setTimeout(function () {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
           numberRunning--
           resolve(a)
         }, a)
       })
     }
 
-    var f = limitToOne(f0)
+    const f = limitToOne(f0)
 
-    var c = 0
-    var getResult = function (dep) {
+    let c = 0
+    const getResult = (dep) => {
       assert.equal(numberRunning, 0)
       c++
       if (c === 3) {

@@ -1,16 +1,16 @@
 /* eslint-env node, mocha */
-var assert = require('chai').assert
-var FunctionBus = require('../../src/utils/function-bus')
+import { assert } from 'chai'
+import FunctionBus from '../../src/utils/function-bus'
 
-describe('function bus', function () {
-  it('is a factory function', function () {
+describe('function bus', () => {
+  it('is a factory function', () => {
     assert.typeOf(FunctionBus, 'function')
     assert.typeOf(new FunctionBus(), 'object')
   })
 
-  it('pub sub', function (done) {
-    var bus = new FunctionBus()
-    var result = ''
+  it('pub sub', (done) => {
+    const bus = new FunctionBus()
+    let result = ''
     bus.queue('a', function (obj) {
       result += obj
     })

@@ -1,39 +1,39 @@
 /* eslint-env node, mocha */
-var assert = require('chai').assert
-var limitDecorator = require('../src/limit')
+import { assert } from 'chai'
+import limitDecorator from '../src/limit'
 
 function timePassedFrom () {
-  var t0 = Date.now()
+  const t0 = Date.now()
   return function (ms) {
-    var t1 = Date.now()
-    var delta = t1 - t0
+    const t1 = Date.now()
+    const delta = t1 - t0
     assert(delta < ms + 5, 'It took more than ' + ms + ' ms')
     assert(delta > ms - 5, 'It took less than ' + ms + ' ms')
   }
 }
 
-describe('limit (promise)', function () {
-  var limitToOne, limitToTwo, limitToThree
+describe('limit', () => {
+  let limitToOne, limitToTwo, limitToThree
 
-  beforeEach(function () {
+  beforeEach(() => {
     limitToOne = limitDecorator({ concurrency: 1 })
     limitToTwo = limitDecorator({ concurrency: 2 })
     limitToThree = limitDecorator({ concurrency: 3 })
   })
 
-  it('must limit to one function call', function (done) {
-    var assertTimePassed = timePassedFrom()
+  it('must limit to one function call', (done) => {
+    const assertTimePassed = timePassedFrom()
 
-    var f = limitToOne(function (a) {
-      return new Promise(function (resolve, reject) {
-        setTimeout(function () {
+    const f = limitToOne((a) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
           resolve(a)
         }, a)
       })
     })
 
-    var c = 0
-    var getResult = function (dep) {
+    let c = 0
+    const getResult = (dep) => {
       c++
       if (c === 1) {
         assertTimePassed(40)
@@ -53,12 +53,12 @@ describe('limit (promise)', function () {
     f(60).then(getResult)
   })
 
-  it('must limit to 2 function call', function (done) {
-    var assertTimePassed = timePassedFrom()
+  it('must limit to 2 function call', (done) => {
+    const assertTimePassed = timePassedFrom()
 
-    var f = limitToTwo(function (a) {
-      return new Promise(function (resolve, reject) {
-        setTimeout(function () {
+    const f = limitToTwo(function (a) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
           resolve(a)
         }, a)
       })
@@ -85,19 +85,19 @@ describe('limit (promise)', function () {
     f(60).then(getResult)
   })
 
-  it('must limit to 3 function call', function (done) {
-    var assertTimePassed = timePassedFrom()
+  it('must limit to 3 function call', (done) => {
+    const assertTimePassed = timePassedFrom()
 
-    var f = limitToThree(function (a) {
-      return new Promise(function (resolve, reject) {
-        setTimeout(function () {
+    const f = limitToThree((a) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
           resolve(a)
         }, a)
       })
     })
 
-    var c = 0
-    var getResult = function (dep) {
+    let c = 0
+    const getResult = (dep) => {
       c++
       if (c === 1) {
         assertTimePassed(20)

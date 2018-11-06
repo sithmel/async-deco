@@ -1,107 +1,107 @@
 /* eslint-env node, mocha */
-var assert = require('chai').assert
-var dedupeDecorator = require('../src/dedupe')
+import { assert } from 'chai'
+import dedupeDecorator from '../src/dedupe'
 
-describe('dedupe (promise)', function () {
-  var dedupe, dedupeKey
+describe('dedupe', () => {
+  let dedupe, dedupeKey
 
-  beforeEach(function () {
+  beforeEach(() => {
     dedupe = dedupeDecorator()
-    dedupeKey = dedupeDecorator({ getKey: function (n) { return n % 2 === 0 ? 'even' : 'odd' } })
+    dedupeKey = dedupeDecorator({ getKey: (n) => n % 2 === 0 ? 'even' : 'odd' })
   })
 
-  it('must dedupe function calls', function (done) {
-    var numberRuns = 0
-    var numberCBRuns = 0
+  it('must dedupe function calls', (done) => {
+    let numberRuns = 0
+    let numberCBRuns = 0
 
-    var f = dedupe(function (a) {
+    const f = dedupe((a) => {
       numberRuns++
-      return new Promise(function (resolve, reject) {
-        setTimeout(function () {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
           resolve(a)
         }, 0)
       })
     })
 
-    f('a').then(function (res) {
+    f('a').then((res) => {
       numberCBRuns++
       assert.equal(res, 'a')
     })
 
-    f('b').then(function (res) {
+    f('b').then((res) => {
       numberCBRuns++
       assert.equal(res, 'a')
     })
 
-    f('c').then(function (res) {
+    f('c').then((res) => {
       numberCBRuns++
       assert.equal(res, 'a')
     })
 
-    f('d').then(function (res) {
+    f('d').then((res) => {
       numberCBRuns++
       assert.equal(res, 'a')
     })
 
-    f('e').then(function (res) {
+    f('e').then((res) => {
       numberCBRuns++
       assert.equal(res, 'a')
     })
 
-    setTimeout(function () {
+    setTimeout(() => {
       assert.equal(numberRuns, 1)
       assert.equal(numberCBRuns, 5)
       done()
     }, 60)
   })
 
-  it('must dedupe a function using a key', function (done) {
-    var numberRuns = 0
-    var numberCBRuns = 0
+  it('must dedupe a function using a key', (done) => {
+    let numberRuns = 0
+    let numberCBRuns = 0
 
-    var f = dedupeKey(function (a) {
+    const f = dedupeKey((a) => {
       numberRuns++
-      return new Promise(function (resolve, reject) {
-        setTimeout(function () {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
           resolve(a)
         }, 0)
       })
     })
 
-    f(1).then(function (res) {
+    f(1).then((res) => {
       numberCBRuns++
       assert.equal(res, 1)
     })
 
-    f(2).then(function (res) {
+    f(2).then((res) => {
       numberCBRuns++
       assert.equal(res, 2)
     })
 
-    f(3).then(function (res) {
+    f(3).then((res) => {
       numberCBRuns++
       assert.equal(res, 1)
     })
 
-    f(4).then(function (res) {
+    f(4).then((res) => {
       numberCBRuns++
       assert.equal(res, 2)
     })
 
-    f(5).then(function (res) {
+    f(5).then((res) => {
       numberCBRuns++
       assert.equal(res, 1)
     })
 
-    setTimeout(function () {
+    setTimeout(() => {
       assert.equal(numberRuns, 2)
       assert.equal(numberCBRuns, 5)
       done()
     }, 60)
   })
 
-  it('changes the name of the function', function () {
-    var func = dedupe(function func () {})
+  it('changes the name of the function', () => {
+    const func = dedupe(function func () {})
     assert.equal(func.name, 'dedupe(func)')
   })
 })

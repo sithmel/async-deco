@@ -1,5 +1,5 @@
 /* eslint-env node, mocha */
-var assert = require('chai').assert
+import { assert } from 'chai'
 var Cache = require('memoize-cache').CacheRAM
 var cacheDecorator = require('../src/cache')
 var purgeCacheDecorator = require('../src/purge-cache')

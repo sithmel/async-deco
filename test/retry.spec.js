@@ -1,5 +1,5 @@
 /* eslint-env node, mocha */
-var assert = require('chai').assert
+import { assert } from 'chai'
 var retryDecorator = require('../src/retry')
 
 describe('retry (promise)', function () {

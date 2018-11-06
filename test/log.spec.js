@@ -1,27 +1,27 @@
 /* eslint-env node, mocha */
-var assert = require('chai').assert
-var addLogger = require('../src/add-logger')
-var logDecorator = require('../src/log')
+import { assert } from 'chai'
+import addLogger from '../src/add-logger'
+import logDecorator from '../src/log'
 
-describe('log (promise)', function () {
-  var logs
-  var log
-  var addLoggerDecorator
+describe('log', () => {
+  let logs
+  let log
+  let addLoggerDecorator
 
-  beforeEach(function () {
+  beforeEach(() => {
     logs = []
     addLoggerDecorator = addLogger((type, obj, ts, executionId) => logs.push({ type: type, obj: obj }))
     log = logDecorator()
   })
 
-  it('must log success', function (done) {
-    var f = addLoggerDecorator(log(function (a, b, c) {
-      return new Promise(function (resolve, reject) {
+  it('must log success', (done) => {
+    const f = addLoggerDecorator(log((a, b, c) => {
+      return new Promise((resolve, reject) => {
         resolve(a + b + c)
       })
     }))
 
-    f(1, 2, 3).then(function (dep) {
+    f(1, 2, 3).then((dep) => {
       assert.equal(dep, 6)
       assert.deepEqual(logs, [
         { type: 'log-start', obj: {} },
@@ -31,13 +31,13 @@ describe('log (promise)', function () {
     })
   })
 
-  it('must log error', function (done) {
-    var f = addLoggerDecorator(log(function (a, b, c) {
-      return new Promise(function (resolve, reject) {
+  it('must log error', (done) => {
+    const f = addLoggerDecorator(log((a, b, c) => {
+      return new Promise((resolve, reject) => {
         reject(new Error('error!'))
       })
     }))
-    f(1, 2, 3).catch(function (err) {
+    f(1, 2, 3).catch((err) => {
       assert.instanceOf(err, Error)
       assert.deepEqual(logs[0],
         { type: 'log-start', obj: {} })
