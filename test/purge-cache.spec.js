@@ -1,53 +1,47 @@
 /* eslint-env node, mocha */
 import { assert } from 'chai'
-var Cache = require('memoize-cache').CacheRAM
-var cacheDecorator = require('../src/cache')
-var purgeCacheDecorator = require('../src/purge-cache')
+import { CacheRAM } from 'memoize-cache'
+import cacheDecorator from '../src/cache'
+import purgeCacheDecorator from '../src/purge-cache'
 
-describe('purge-cache (promise)', function () {
-  var cached, purgeCache, purgeCacheByTags
+describe('purge-cache', () => {
+  let cached, purgeCache, purgeCacheByTags
 
-  beforeEach(function () {
-    var getKey = function (key) {
-      return key
-    }
-    var getKeys = function (key) {
-      return [key]
-    }
-    var getTags = function () {
-      return ['tag']
-    }
-    var cache = new Cache({ key: getKey, tags: getTags })
+  beforeEach(() => {
+    const getKey = (key) => key
+    const getKeys = (key) => [key]
+    const getTags = () => ['tag']
+    const cache = new CacheRAM({ key: getKey, tags: getTags })
     cached = cacheDecorator({ cache })
     purgeCache = purgeCacheDecorator({ cache, keys: getKeys })
     purgeCacheByTags = purgeCacheDecorator({ cache, tags: getTags })
   })
 
-  it('must cache', function (done) {
-    var f = cached(function (a, b, c) {
+  it('must cache', (done) => {
+    const f = cached((a, b, c) => {
       return Promise.resolve(Math.random())
     })
 
-    f(1, 2, 3).then(function (res1) {
-      f(1, 2, 3).then(function (res2) {
+    f(1, 2, 3).then((res1) => {
+      f(1, 2, 3).then((res2) => {
         assert.equal(res1, res2)
         done()
       })
     })
   })
 
-  it('must purge cache', function (done) {
-    var f = cached(function (a, b, c) {
+  it('must purge cache', (done) => {
+    const f = cached(function (a, b, c) {
       return Promise.resolve(Math.random())
     })
 
-    var purgeF = purgeCache(function (a) {
+    const purgeF = purgeCache(function (a) {
       return Promise.resolve()
     })
 
-    f(1, 2, 3).then(function (res1) {
-      purgeF(1).then(function () {
-        f(1, 2, 3).then(function (res2) {
+    f(1, 2, 3).then((res1) => {
+      purgeF(1).then(() => {
+        f(1, 2, 3).then((res2) => {
           assert.notEqual(res1, res2)
           done()
         })
@@ -55,18 +49,18 @@ describe('purge-cache (promise)', function () {
     })
   })
 
-  it('must not purge cache if error', function (done) {
-    var f = cached(function (a, b, c) {
+  it('must not purge cache if error', (done) => {
+    const f = cached(function (a, b, c) {
       return Promise.resolve(Math.random())
     })
 
-    var purgeF = purgeCache(function (a) {
+    const purgeF = purgeCache((a) => {
       return Promise.reject(new Error())
     })
 
-    f(1, 2, 3).then(function (res1) {
-      purgeF(1).catch(function () {
-        f(1, 2, 3).then(function (res2) {
+    f(1, 2, 3).then((res1) => {
+      purgeF(1).catch(() => {
+        f(1, 2, 3).then((res2) => {
           assert.equal(res1, res2)
           done()
         })
@@ -74,18 +68,18 @@ describe('purge-cache (promise)', function () {
     })
   })
 
-  it('must purge cache by tags', function (done) {
-    var f = cached(function (a, b, c) {
+  it('must purge cache by tags', (done) => {
+    const f = cached((a, b, c) => {
       return Promise.resolve(Math.random())
     })
 
-    var purgeF = purgeCacheByTags(function (a) {
+    const purgeF = purgeCacheByTags((a) => {
       return Promise.resolve()
     })
 
-    f(1, 2, 3).then(function (res1) {
-      purgeF(1).then(function () {
-        f(1, 2, 3).then(function (res2) {
+    f(1, 2, 3).then((res1) => {
+      purgeF(1).then(() => {
+        f(1, 2, 3).then((res2) => {
           assert.notEqual(res1, res2)
           done()
         })

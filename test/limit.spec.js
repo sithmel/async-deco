@@ -64,8 +64,8 @@ describe('limit', () => {
       })
     })
 
-    var c = 0
-    var getResult = function (dep) {
+    let c = 0
+    const getResult = function (dep) {
       c++
       if (c === 1) {
         assertTimePassed(20)

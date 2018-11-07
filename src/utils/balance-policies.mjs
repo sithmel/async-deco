@@ -7,6 +7,6 @@ export function random (c, loads) {
 }
 
 export function idlest (c, loads) {
-  var min = Math.min.apply(null, loads)
+  const min = Math.min(...loads)
   return loads.indexOf(min)
 }

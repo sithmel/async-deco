@@ -1,14 +1,14 @@
 /* eslint-env node, mocha */
 import { assert } from 'chai'
-var validatorDecorator = require('../src/validator')
-var or = require('occamsrazor-match/extra/or')
+import validatorDecorator from '../src/validator'
+import or from 'occamsrazor-match/extra/or'
 
-describe('validator (promise)', function () {
-  it('must pass validation', function (done) {
-    var validator = validatorDecorator(1, or([false, true]))
+describe('validator (promise)', () => {
+  it('must pass validation', (done) => {
+    const validator = validatorDecorator(1, or([false, true]))
 
-    var func = validator(function (number, bool) {
-      return new Promise(function (resolve, reject) {
+    const func = validator(function (number, bool) {
+      return new Promise((resolve, reject) => {
         resolve(number)
       })
     })
@@ -19,11 +19,11 @@ describe('validator (promise)', function () {
     })
   })
 
-  it('must pass validation (with extra arg)', function (done) {
-    var validator = validatorDecorator(1, or([false, true]))
+  it('must pass validation (with extra arg)', (done) => {
+    const validator = validatorDecorator(1, or([false, true]))
 
-    var func = validator(function (number, bool, extra) {
-      return new Promise(function (resolve, reject) {
+    const func = validator(function (number, bool, extra) {
+      return new Promise((resolve, reject) => {
         resolve(number)
       })
     })
@@ -34,11 +34,11 @@ describe('validator (promise)', function () {
     })
   })
 
-  it('must not pass validation', function (done) {
-    var validator = validatorDecorator(2, or([false, true]))
+  it('must not pass validation', (done) => {
+    const validator = validatorDecorator(2, or([false, true]))
 
-    var func = validator(function (number, bool) {
-      return new Promise(function (resolve, reject) {
+    const func = validator(function (number, bool) {
+      return new Promise((resolve, reject) => {
         resolve(number)
       })
     })

@@ -11,7 +11,7 @@ describe('fallback', () => {
 
   it('must pass', (done) => {
     const f = fallback((a, b, c) => {
-      return new Promise(function (resolve, reject) {
+      return new Promise((resolve, reject) => {
         resolve(a + b + c)
       })
     })
@@ -23,7 +23,7 @@ describe('fallback', () => {
 
   it('must fallback', (done) => {
     const f = fallback((a, b, c) => {
-      return new Promise(function (resolve, reject) {
+      return new Promise((resolve, reject) => {
         reject(new Error('error!'))
       })
     })

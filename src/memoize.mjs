@@ -15,7 +15,7 @@ export default function getMemoizeDecorator (opts = {}) {
     return renamer(function _memoize (...args) {
       const context = this
       const logger = getLogger(context)
-      var cacheKey = getKey.apply(context, args)
+      const cacheKey = getKey.apply(context, args)
 
       if (cacheKey === null) {
         return func.apply(context, args)

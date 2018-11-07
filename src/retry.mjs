@@ -6,7 +6,7 @@ const customSetTimeout = (func, interval) => interval ? setTimeout(func, interva
 export default function getRetryDecorator (opts = {}) {
   const times = opts.times || Infinity
   const interval = opts.interval || 0
-  var intervalFunc = typeof interval === 'function'
+  const intervalFunc = typeof interval === 'function'
     ? interval
     : () => interval
 
@@ -19,7 +19,7 @@ export default function getRetryDecorator (opts = {}) {
 
       return new Promise((resolve, reject) => {
         (function retry () {
-          var interval = counter ? intervalFunc(counter) : 0
+          const interval = counter ? intervalFunc(counter) : 0
           counter++
           customSetTimeout(() =>
             func.apply(context, args)

@@ -24,7 +24,7 @@ describe('cache', () => {
   })
 
   it('changes the name of the function', () => {
-    var func = cached(function func () {})
+    const func = cached(function func () {})
     assert.equal(func.name, 'cache(func)')
   })
 })

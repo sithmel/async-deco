@@ -8,8 +8,8 @@ describe('balance', () => {
     let counter = 0
     const counters = [0, 0, 0]
 
-    var balanceDecorator = balance({ policy: roundRobin })
-    var func = balanceDecorator([() => Promise.resolve(0), () => Promise.resolve(1), () => Promise.resolve(2)])
+    const balanceDecorator = balance({ policy: roundRobin })
+    const func = balanceDecorator([() => Promise.resolve(0), () => Promise.resolve(1), () => Promise.resolve(2)])
 
     for (let i = 0; i < 40; i++) {
       setTimeout(() => {

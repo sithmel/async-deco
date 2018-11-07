@@ -46,7 +46,7 @@ describe('atomic', () => {
 })
 
 describe.skip('atomic using redis (promise)', () => {
-  var limitToOne, client
+  let limitToOne, client
 
   beforeEach(() => {
     client = redis.createClient()

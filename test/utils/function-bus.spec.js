@@ -21,7 +21,7 @@ describe('function bus', () => {
       result += obj
     })
     bus.execute('a', null, 'test')
-    setTimeout(function () {
+    setTimeout(() => {
       assert.equal(result, 'testtest')
       done()
     }, 10)

@@ -7,7 +7,7 @@ describe('fallback-cache', () => {
   let cached
 
   beforeEach(() => {
-    var cache = new CacheRAM()
+    const cache = new CacheRAM()
     cached = fallbackCacheDecorator({ cache })
   })
 
@@ -35,7 +35,7 @@ describe('fallback-cache', () => {
 
   it('can\'t fallback using a cached value', (done) => {
     const f = cached((a, b, c) => {
-      return new Promise(function (resolve, reject) {
+      return new Promise((resolve, reject) => {
         reject(new Error('error'))
       })
     })

@@ -1,17 +1,17 @@
 /* eslint-env node, mocha */
 import { assert } from 'chai'
-var timeout = require('../src/timeout')
-var TimeoutError = require('../src/errors/timeout-error')
+import timeout from '../src/timeout'
+import TimeoutError from '../src/errors/timeout-error'
 
-describe('timeout (promise)', function () {
-  var timeout20
+describe('timeout', () => {
+  let timeout20
 
-  beforeEach(function () {
+  beforeEach(() => {
     timeout20 = timeout({ ms: 20 })
   })
 
-  it('must pass simple function', function (done) {
-    var func = timeout20(function () {
+  it('must pass simple function', (done) => {
+    const func = timeout20(() => {
       return Promise.resolve('done')
     })
 
@@ -22,10 +22,10 @@ describe('timeout (promise)', function () {
       })
   })
 
-  it('must pass simple function (async)', function (done) {
-    var func = timeout20(function () {
-      return new Promise(function (resolve, reject) {
-        setTimeout(function () {
+  it('must pass simple function (async)', (done) => {
+    const func = timeout20(() => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
           resolve('done')
         }, 10)
       })
@@ -38,10 +38,10 @@ describe('timeout (promise)', function () {
       })
   })
 
-  it('must pass simple function (async) with args', function (done) {
-    var func = timeout20(function (a, b) {
-      return new Promise(function (resolve, reject) {
-        setTimeout(function () {
+  it('must pass simple function (async) with args', (done) => {
+    const func = timeout20(function (a, b) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
           resolve(a + b)
         }, 10)
       })
@@ -54,10 +54,10 @@ describe('timeout (promise)', function () {
       })
   })
 
-  it('must throw simple function', function (done) {
-    var func = timeout20(function () {
-      return new Promise(function (resolve, reject) {
-        setTimeout(function () {
+  it('must throw simple function', (done) => {
+    const func = timeout20(() => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
           resolve(done)
         }, 25)
       })

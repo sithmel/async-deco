@@ -1,20 +1,20 @@
 /* eslint-env node, mocha */
 import { assert } from 'chai'
-var retryDecorator = require('../src/retry')
+import retryDecorator from '../src/retry'
 
-describe('retry (promise)', function () {
-  var retryTenTimes
-  var retryForever
+describe('retry', () => {
+  let retryTenTimes
+  let retryForever
 
-  beforeEach(function () {
+  beforeEach(() => {
     retryTenTimes = retryDecorator({ times: 10 })
     retryForever = retryDecorator()
   })
 
-  it('must pass simple function', function (done) {
-    var c = 0
-    var func = retryTenTimes(function () {
-      return new Promise(function (resolve, reject) {
+  it('must pass simple function', (done) => {
+    let c = 0
+    const func = retryTenTimes(() => {
+      return new Promise((resolve, reject) => {
         c++
         resolve('done')
       })
@@ -27,10 +27,10 @@ describe('retry (promise)', function () {
     })
   })
 
-  it('must throw always', function (done) {
-    var c = 0
-    var func = retryTenTimes(function () {
-      return new Promise(function (resolve, reject) {
+  it('must throw always', (done) => {
+    let c = 0
+    const func = retryTenTimes(() => {
+      return new Promise((resolve, reject) => {
         c++
         reject(new Error('error'))
       })
@@ -44,10 +44,10 @@ describe('retry (promise)', function () {
     })
   })
 
-  it('must throw and then success', function (done) {
-    var c = 0
-    var func = retryTenTimes(function () {
-      return new Promise(function (resolve, reject) {
+  it('must throw and then success', (done) => {
+    let c = 0
+    const func = retryTenTimes(() => {
+      return new Promise((resolve, reject) => {
         c++
         if (c === 5) {
           return resolve('done')
@@ -63,11 +63,11 @@ describe('retry (promise)', function () {
     })
   })
 
-  it('must retry forever', function (done) {
-    var c = 0
-    var func = retryForever(function () {
+  it('must retry forever', (done) => {
+    let c = 0
+    const func = retryForever(() => {
       c++
-      return new Promise(function (resolve, reject) {
+      return new Promise((resolve, reject) => {
         if (c < 100) {
           reject(new Error('error'))
         } else {
