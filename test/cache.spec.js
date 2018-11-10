@@ -7,7 +7,7 @@ describe('cache', () => {
   let cached
 
   beforeEach(() => {
-    const cache = new CacheRAM({ key: (a, b, c) => a + b + c })
+    const cache = new CacheRAM({ getKey: (a, b, c) => a + b + c })
     cached = cacheDecorator({ cache })
   })
 

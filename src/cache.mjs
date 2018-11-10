@@ -1,8 +1,9 @@
 import { getLogger } from './add-logger'
 import funcRenamer from './utils/func-renamer'
+import { CacheRAM } from 'memoize-cache'
 
 export default function getCacheDecorator (opts = {}) {
-  const cacheObj = opts.cache
+  const cacheObj = opts.cache || new CacheRAM(opts)
   return function cache (func) {
     const renamer = funcRenamer(`cache(${func.name || 'anonymous'})`)
     return renamer(function _cache (...args) {

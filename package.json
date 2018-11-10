@@ -6,8 +6,9 @@
   "module": "es5/index.mjs",
   "jsnext:main": "es5/index.mjs",
   "scripts": {
-    "test": "mocha test/*.spec.js test/**/*.spec.js",
+    "test": "cross-env BABEL_ENV=es2015-cjs mocha --require @babel/register",
     "watch": "npm run test -- -w",
+    "clean": "rimraf es5 es2015",
     "lint": "eslint --fix --ext .js ./src ./test",
     "build": "npm run clean && npm run lint && npm run build:es5 && npm run build:es5-cjs && npm run build:es2015 && npm run build:es2015-cjs",
     "build:es5": "cross-env BABEL_ENV=es5 babel --keep-file-extension -x \".mjs\" src -d es5",
@@ -28,7 +29,15 @@
   "author": "Maurizio Lupo <maurizio.lupo@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.5",
+    "@babel/plugin-transform-modules-commonjs": "^7.1.0",
+    "@babel/preset-env": "^7.1.5",
+    "@babel/register": "^7.0.0",
+    "babel-plugin-add-module-exports": "^1.0.0",
     "chai": "^4.2.0",
+    "copyfiles": "^2.1.0",
+    "cross-env": "^5.2.0",
     "eslint": "^5.7.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.14.0",
@@ -36,17 +45,15 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "husky": "^0.14.3",
-    "memoize-cache": "^5.0.1",
     "mocha": "^5.2.0",
-    "npm-release": "^1.0.0",
     "redis": "^2.8.0",
-    "redlock": "^3.1.2"
+    "redlock": "^3.1.2",
+    "rimraf": "^2.6.2"
   },
   "dependencies": {
+    "core-js": "^2.5.7",
     "dequeue": "^1.0.5",
     "funqueue-promise": "0.0.3",
-    "little-ds-toolkit": "^1.1.0",
-    "memoize-cache-utils": "^0.1.1",
-    "occamsrazor-match": "^4.1.0"
+    "memoize-cache": "^6.0.2"
   }
 }

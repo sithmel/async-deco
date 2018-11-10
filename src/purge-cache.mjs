@@ -1,11 +1,12 @@
 import { getLogger } from './add-logger'
-import keysGetter from 'memoize-cache-utils/keys-getter'
 import funcRenamer from './utils/func-renamer'
+
+const returnEmpty = () => []
 
 export default function getPurgeCacheDecorator (opts = {}) {
   const cache = opts.cache
-  const getCacheKeys = keysGetter(opts.keys)
-  const getTags = keysGetter(opts.tags)
+  const getCacheKeys = opts.getKeys || returnEmpty
+  const getTags = opts.getTags || returnEmpty
 
   return function purgeCache (func) {
     const renamer = funcRenamer(`purgeCache(${func.name || 'anonymous'})`)

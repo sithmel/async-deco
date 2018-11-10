@@ -1,13 +1,11 @@
 TODO:
 
-import/export modern js
 throw with missing args
-modernise test
 add test cases
-memoize-cache and dependencies
 
 proxy
 map/transform decorator
+documentation
 
 async-deco
 ==========

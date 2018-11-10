@@ -1,35 +1,35 @@
 export default class Lock {
   constructor () {
-    this.locked = {}
-    this.queues = {}
-    this.timers = {}
+    this.locked = new Map()
+    this.queues = new Map()
+    this.timers = new Map()
   }
 
   lock (resource, ttl, callback = () => {}) {
-    if (resource in this.locked) {
-      if (!(resource in this.queues)) {
-        this.queues[resource] = []
+    if (this.locked.has(resource)) {
+      if (!this.queues.has(resource)) {
+        this.queues.set(resource, [])
       }
-      this.queues[resource].push({ callback, ttl })
+      this.queues.get(resource).push({ callback, ttl })
     } else {
-      this.locked[resource] = true
-      this.timers[resource] = setTimeout(() => this.unlock(resource, () => {}), ttl)
+      this.locked.set(resource, true)
+      this.timers.set(resource, setTimeout(() => this.unlock(resource, () => {}), ttl))
 
       callback(null, { unlock: (cb) => this.unlock(resource, cb) })
     }
   }
 
   unlock (resource, callback = () => {}) {
-    delete this.locked[resource]
-    clearTimeout(this.timers[resource])
-    delete this.timers[resource]
+    this.locked.delete(resource)
+    clearTimeout(this.timers.get(resource))
+    this.timers.delete(resource)
 
-    const item = (this.queues[resource] || []).shift()
+    const item = (this.queues.get(resource) || []).shift()
     if (item) {
       Promise.resolve()
         .then(() => this.lock(resource, item.ttl, item.callback, callback))
     } else {
-      delete this.queues[resource]
+      this.queues.delete(resource)
       callback(null)
     }
   }

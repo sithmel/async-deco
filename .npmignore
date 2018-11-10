@@ -1,0 +1,7 @@
+/src
+/coverage
+.nvmrc
+.travis.yml
+.editorconfig
+.eslintignore
+.eslintrc.js

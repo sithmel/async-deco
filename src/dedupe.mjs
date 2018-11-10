@@ -1,5 +1,4 @@
 import { getLogger } from './add-logger'
-import keyGetter from 'memoize-cache-utils/key-getter'
 import Lock from './utils/lock'
 import FunctionBus from './utils/function-bus'
 import funcRenamer from './utils/func-renamer'
@@ -7,7 +6,7 @@ import funcRenamer from './utils/func-renamer'
 const returnDefault = () => '_default'
 
 export default function getDedupeDecorator (opts = {}) {
-  const getKey = keyGetter(opts.getKey || returnDefault)
+  const getKey = opts.getKey || returnDefault
   const lockObj = opts.lock || new Lock()
   const functionBus = opts.functionBus || new FunctionBus()
   const ttl = opts.ttl || 1000

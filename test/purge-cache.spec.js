@@ -11,10 +11,10 @@ describe('purge-cache', () => {
     const getKey = (key) => key
     const getKeys = (key) => [key]
     const getTags = () => ['tag']
-    const cache = new CacheRAM({ key: getKey, tags: getTags })
+    const cache = new CacheRAM({ getKey: getKey, getTags: getTags })
     cached = cacheDecorator({ cache })
-    purgeCache = purgeCacheDecorator({ cache, keys: getKeys })
-    purgeCacheByTags = purgeCacheDecorator({ cache, tags: getTags })
+    purgeCache = purgeCacheDecorator({ cache, getKeys })
+    purgeCacheByTags = purgeCacheDecorator({ cache, getTags })
   })
 
   it('must cache', (done) => {
