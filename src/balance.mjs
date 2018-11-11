@@ -5,6 +5,7 @@ import funcRenamer from './utils/func-renamer'
 export default function getBalanceDecorator (opts = {}) {
   const policy = opts.policy || idlest
   return function balance (funcs) {
+    if (!Array.isArray(funcs)) throw new Error('balance: It should take an array of functions as argument')
     const loads = funcs.map(function () { return 0 })
     const renamer = funcRenamer(`balance(${funcs.map((func) => func.name || 'anonymous').join(',')})`)
     let executionNumber = 0

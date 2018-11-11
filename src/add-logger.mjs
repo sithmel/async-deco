@@ -4,7 +4,9 @@ const generateId = () => Math.random().toString(36).slice(2)
 const logFunctions = new WeakMap()
 
 export default function addLogger (log) {
+  if (!log) throw new Error('addLogger: You must have a log function as argument')
   return function (func) {
+    if (typeof func !== 'function') throw new Error('addLogger: should decorate a function')
     const renamer = funcRenamer(func.name || 'anonymous')
 
     return renamer(function (...args) {

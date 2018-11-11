@@ -1,4 +1,4 @@
-export { default as addLogger } from './add-logger'
+export { default as addLogger, getLogger } from './add-logger'
 export { default as atomic } from './atomic'
 export { default as balance } from './balance'
 export { default as cache } from './cache'

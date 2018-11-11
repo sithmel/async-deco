@@ -10,6 +10,7 @@ export default function getLimitDecorator (opts = {}) {
   const queues = new Map()
 
   return function limit (func) {
+    if (typeof func !== 'function') throw new Error('limit: should decorate a function')
     const renamer = funcRenamer(`limit(${func.name || 'anonymous'})`)
     return renamer(function _limit (...args) {
       const context = this

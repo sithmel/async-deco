@@ -10,7 +10,9 @@ function throwOnTimeout (ms) {
 
 export default function getTimeoutDecorator (opts = {}) {
   const ms = opts.ms
+  if (!ms) throw new Error('timeout: the ms argument is mandatory')
   return function timeout (func) {
+    if (typeof func !== 'function') throw new Error('timeout: should decorate a function')
     const renamer = funcRenamer(`timeout(${func.name || 'anonymous'})`)
     return renamer(function _timeout (...args) {
       const context = this

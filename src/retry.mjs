@@ -11,6 +11,7 @@ export default function getRetryDecorator (opts = {}) {
     : () => interval
 
   return function retry (func) {
+    if (typeof func !== 'function') throw new Error('retry: should decorate a function')
     const renamer = funcRenamer(`retry(${func.name || 'anonymous'})`)
     return renamer(function _retry (...args) {
       const context = this

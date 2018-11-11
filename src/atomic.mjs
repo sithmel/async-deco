@@ -10,6 +10,7 @@ export default function getAtomicDecorator (opts = {}) {
   const ttl = opts.ttl || 1000
 
   return function atomic (func) {
+    if (typeof func !== 'function') throw new Error('atomic: should decorate a function')
     const renamer = funcRenamer(`atomic(${func.name || 'anonymous'})`)
     return renamer(function _atomic (...args) {
       const context = this

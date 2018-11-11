@@ -25,7 +25,7 @@ describe('log', () => {
       assert.equal(dep, 6)
       assert.deepEqual(logs, [
         { type: 'log-start', obj: {} },
-        { type: 'log-end', obj: { result: 6 } }
+        { type: 'log-end', obj: { res: 6 } }
       ])
       done()
     })

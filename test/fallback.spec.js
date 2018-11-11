@@ -6,7 +6,7 @@ describe('fallback', () => {
   let fallback
 
   beforeEach(() => {
-    fallback = fallbackDecorator({ fallback: (a, b, c) => Promise.resolve('giving up') })
+    fallback = fallbackDecorator({ func: (a, b, c) => Promise.resolve('giving up') })
   })
 
   it('must pass', (done) => {

@@ -1,18 +1,18 @@
 /* eslint-env node, mocha */
 import { assert } from 'chai'
-import proxyDecorator from '../src/proxy'
+import guardDecorator from '../src/guard'
 
-describe('proxy', () => {
+describe('guard', () => {
   let proxied
 
   beforeEach(() => {
-    const proxy = proxyDecorator({ guard: (number) => {
+    const guard = guardDecorator({ check: (number) => {
       if (number % 2 === 0) {
         return Promise.reject(new Error('Evens not allowed'))
       }
       return Promise.resolve(undefined)
     } })
-    proxied = proxy((number) => Promise.resolve(number * 2))
+    proxied = guard((number) => Promise.resolve(number * 2))
   })
 
   it('must pass', (done) => {

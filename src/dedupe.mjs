@@ -12,6 +12,7 @@ export default function getDedupeDecorator (opts = {}) {
   const ttl = opts.ttl || 1000
 
   return function dedupe (func) {
+    if (typeof func !== 'function') throw new Error('dedupe: should decorate a function')
     const renamer = funcRenamer(`dedupe(${func.name || 'anonymous'})`)
     return renamer(function _dedupe (...args) {
       const context = this
