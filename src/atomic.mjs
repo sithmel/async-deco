@@ -15,7 +15,7 @@ export default function getAtomicDecorator (opts = {}) {
     return renamer(function _atomic (...args) {
       const context = this
       const logger = getLogger(context)
-      const logError = (err) => err && logger('atomic-lock-error', { error: err })
+      const logError = (err) => err && logger('atomic-lock-error', { err })
 
       const cacheKey = getKey.apply(context, args)
 

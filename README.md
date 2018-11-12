@@ -163,7 +163,82 @@ const myNewFunction = decorator(myfunction);
 It enables the logging for the whole chain of decorators. Read the description in the [Logging  section](#logging).
 
 ## atomic
+The decorated function can't be called concurrently. Here's what happen, in order:
+* the "getKey" (passed in the option) is called against the arguments.
+* If the result is null the function gets called normally
+* if getKey is not defined the key is always **_default**
+* the resource called "key" gets locked
+* the decorated function is executed
+* the lock "key" is released when the function returns a result
+
+The default locking mechanism is very simple and works "in the same process". Its interface is compatible with node-redlock a distributed locking mechanism backed by redis.
+```js
+import { atomic } from 'async-deco';
+
+var atomicDecorator = atomic(options);
+```
+Options:
+* getKey [optional]: a function for calculate a key from the given arguments.
+* ttl [optional]: the maximum time to live for the lock. In ms. It defaults to 1000ms.
+* lock [optional]: an instance of the locking object. You can pass any object compatible with the Lock instance (node-redlock for example). If not passed simple in-process lock will be used.
+
+Here's how to use redlock with the decorator:
+```js
+import { atomic } from 'async-deco';
+import redis from 'redis';
+import Redlock from 'redlock';
+
+var client = redis.createClient();
+var redlock = new Redlock([client]);
+var atomicDecorator = atomic({ lock: redlock, ttl: 1000 });
+```
+#### logs
+| event             |    payload    |
+|-------------------|---------------|
+| atomic-lock-error |    { err }    |
+
+* err: the return returned by the lock
+
 ## balance
+This decorator allows to distribute the load between a group of functions.
+The functions should take the same arguments.
+```js
+import { balance } from 'async-deco';
+
+const balanceDecorator = balance();
+
+const func = balanceDecorator([...list of functions]);
+```
+You can initialise the decorator with different policies:
+```js
+import { balance, policyRoundRobin, policyRandom, policyIdlest } from 'async-deco';
+
+const balanceDecorator = balance(policyRoundRobin);
+```
+There are 3 policies available in the "balance-policies" package:
+
+* policyRoundRobin: it rotates the execution between the functions
+* policyRandom: it picks up a random function
+* policyIdlest (default): it tracks the load of each function and use the idlest
+
+You can also define your own policy:
+```js
+const mypolicy = (counter, loads, args) => {
+  // "counter" is the number of times I have called the function
+  // "loads" is an array with length equal to the number of functions.
+  //         it contains how many concurrent calls are currently running for that function
+  // "args" is an array containing the arguments of the current function call
+  // this function should return the index of the function I want to run
+});
+```
+#### logs
+| event             |    payload          |
+|-------------------|---------------------|
+|  balance-execute  | {loads, executing } |
+
+* loads: loads array
+* executing: number of the function to execute
+
 ## cache
 This decorator adds a caching layer to a function. It can use multiple caching engines. You can follow the respective README for their configuration:
 
@@ -237,6 +312,44 @@ Errors are not cached. If a function fails, it will not be cached.
 * tags: the tags used for this cached item
 
 ## dedupe
+It manages multiple concurrent calls to the same function, calling the decorated only once.
+It can use the "getKey" function and execute a function once for each key.
+```js
+import { dedupe } from 'async-deco';
+
+var dedupe = dedupeDecorator(options);
+```
+Options:
+* getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue. If the key is null, the function is executed normally.
+* functionBus [optional]: this object is used to group functions by key and run them. The default implementation is able to group functions belonging to the same process.
+* lock [optional]: this object is used to lock a function execution (by key).
+* ttl [optional]: the maximum time to live for the lock (in ms). Default to 1000ms.
+
+Using redis backed version of [functionBus](https://github.com/sithmel/function-bus-redis) and [lock](https://github.com/mike-marcacci/node-redlock) it is possible to implement a distributed version of the of the deduplication. Example:
+```js
+import { dedupe } from 'async-deco';
+import redis from 'redis';
+import Lock from 'redis-redlock';
+import FunctionBus from 'function-bus-redis';
+
+const lock = new Lock([redis.createClient()]);
+const functionBus = new FunctionBus({
+  pub: redis.createClient(),
+  sub:redis.createClient()
+});
+
+const dedupeDecorator = dedupe({
+  lock: lock,
+  functionBus: functionBus
+});
+```
+#### logs
+| event          |    payload    |
+|----------------|---------------|
+| dedupe-execute | { key, len }  |
+
+* key: cache key
+* len: number of invocations
 
 ## fallback
 If a function fails, it calls another one as fallback or use a value.
@@ -318,6 +431,32 @@ It takes 1 argument:
 * err: error returned by the guard function
 
 ## limit
+Limit the concurrency of a function. Every function call that excedees the limit will be queued. If the maximum queue size is reached, the function at the bottom of the queue will return an error.
+```js
+import { limit } from 'async-deco';
+
+const limitTwo = limitDecorator({ concurrency: 2 });
+```
+You can initialise the decorator with 1 argument:
+* concurrency: number of parallel execution [optional, default to 1]
+* queueSize: is the size of the queue. If the queue reaches this size the function at the bottom of the queue will return an "OverflowError" [optional, default Infinity]
+* getKey: a function that runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue. If it returns null or undefined, the limit will be ignored [optional]
+* a comparator function: this function is a comparator that can be used for [Array.prototype.sort](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort). It can be used to give priority to the functions that ends up in the queue. [optional, default first in first out]
+
+The comparator has this form:
+```js
+const comparator = (a, b) => {
+// a.func, b.func are the functions in the queue
+// a.args, b.args are arrays with the arguments
+})
+```
+#### logs
+| event        | payload |
+|--------------|---------|
+| limit-queue  | { key } |
+| limit-drop   | { key } |
+
+* key: the key for this item, as calculated by the getKey function
 
 ## log
 It logs when a function **start**, **end** and **fail**. It requires the addLogger decorator.
@@ -360,7 +499,52 @@ var myfunc =  addOuterLogs(cacheDecorator(addInnerLogs(myfunc)));
 In this example outer-log-start and outer-log-end (or outer-log-error) will be always called. The inner logs only in case of cache miss.
 
 ## onFulfilled
+It executes this function on the result once it is fulfilled.
+```js
+import { onFulfilled } from 'async-deco';
+
+onFulfilled((res) => ...)
+```
+This
+```js
+const multiplyBy2 = onFulfilled((res) => res * 2)
+const myNewFunc = multiplyBy2(myfunc)
+```
+is equivalent to:
+```js
+myfunc
+  .then((res) => res * 2)
+```
+But being wrapped in a decorator helps to abstract away the logic.
+
 ## onRejected
+It executes this function on the error, once is rejected.
+```js
+import { onRejected } from 'async-deco';
+
+onRejected((err) => ...)
+```
+This
+```js
+const removeReferenceErrors = onRejected((err) => {
+  if (err instanceof ReferenceError) {
+    return null
+  }
+  throw err
+});
+const myNewFunc = removeReferenceErrors(myfunc)
+```
+is equivalent to:
+```js
+myfunc
+  .catch((err) => {
+    if (err instanceof ReferenceError) {
+      return null
+    }
+    throw err
+  })
+```
+But being wrapped in a decorator helps to abstract away the logic.
 
 ## purgeCache
 When the decorated function succeed, it purges the corresponding cache entry/entries.
@@ -387,182 +571,46 @@ You should use at least one of getKeys of getTags.
 * tags: list of tags purged
 
 ## retry
+If a function fails, it retry it again
+```js
+import { retry } from 'async-deco';
+
+const retryTenTimes = retry({ times: 10, interval: 1000 });
+```
+You can initialise the decorator with 2 arguments:
+* times: number of retries [optional, it defaults to Infinity]
+* interval: how long to wait before running the function again. It can be a number of milliseconds or a function returning a number of milliseconds (the function takes the current attempt as argument) [optional, it defaults to 0]
+
+#### logs
+| event |    payload     |
+|-------|----------------|
+| retry | { times, err } |
+
+* times: the attempt number
+* the error returned by the function
+
 ## timeout
-
-
-
-
-
-
-Timeout
--------
 If a function takes to much, returns a timeout exception.
 ```js
-var timeoutDecorator = require('async-deco/callback/timeout');
+import { timeout } from 'async-deco';
 
-var timeout20 = timeoutDecorator(20);
-var myfunc = timeout20(function (..., cb) { .... });
+const timeoutOneSec = timeout({ ms: 1000 });
 ```
-This will wait 20 ms before returning a TimeoutError.
+This will wait one second before returning a TimeoutError.
 It takes 1 argument:
 * time in ms [mandatory]
 
-It logs "timeout" with { ms: ms passed since the last execution}
+#### logs
+| event   |    payload   |
+|---------|--------------|
+| timeout |    { ms }    |
 
-Retry
------
-If a function fails, it retry running it again
-```js
-var retryDecorator = require('async-deco/callback/retry');
-
-var retryTenTimes = retryDecorator(10, 0, Error);
-var myfunc = retryTenTimes(function (..., cb) { .... });
-```
-You can initialise the decorator with 2 arguments:
-* number of retries [optional, it defaults to Infinity]
-* interval for trying again (number of a function based on the number of times) [optional, it defaults to 0]
-* error instance for deciding to retry, or function taking error and result (if it returns true it'll trigger the retry) [optional, it falls back on any error by default]
-
-It logs "retry" with {times: number of attempts, actualResult: {err: original error, res: original result}}
-
-Limit
------
-Limit the concurrency of a function. Every function call that excedees the limit will be queued. If the queue size is reached the function call will return an error.
-```js
-var limitDecorator = require('async-deco/callback/limit');
-
-var limitToTwo = limitDecorator(2, getKey);
-var myfunc = limitToTwo(function (..., cb) { .... });
-```
-You can initialise the decorator with 1 argument:
-* number of parallel execution [default to 1]. It can also be an object: {limit: number, queueSize: number}.
-  * "limit" will be the number of parallel execution
-  * "queueSize" is the size of the queue (default to Infinity). If the queue reaches this size any further function call will return an error without calling the original function
-* a getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue. If it returns null or undefined, the limit will be ignored.
-* a getPriority function [optional]: it runs against the original arguments and returns a number that represent the priority of this function when queued (less == prioritary).
-
-It logs "limit-queue" when a function gets queued or "limit-drop" when a function gets rejected (queue full). It'll also log these data: { queueSize: number of function queued, key: cache key, parallel: number of functions currently running }
-
-Atomic
-------
-The decorated function can't be called concurrently. Here's what happen, in order:
-* the "getKey" (passed in the option) is called against the arguments.
-    * If the result is null the function call happens normally
-    * if getKey is not defined the key is _default (it doesn't take the arguments into consideration)
-    * if the result is a string, this will be used as key
-* the resource called "key" gets locked
-* the decorated function is executed
-* the lock "key" is released
-
-The default locking mechanism is very simple and works "in the same process". Its interface is compatible with node-redlock a distributed locking mechanism backed by redis.
-```js
-var atomicDecorator = require('async-deco/callback/atomic');
-
-var atomic = atomicDecorator(opts);
-var myfunc = atomic(function (..., cb) { .... });
-```
-Options:
-* getKey [optional]: a function for calculate a key from the given arguments.
-* ttl [optional]: the maximum time to live for the lock. In ms. It defaults to 1000ms.
-* lock [optional]: an instance of the locking object. You can pass any object compatible with the Lock instance (node-redlock for example).
-
-```js
-var atomicDecorator = require('async-deco/callback/atomic');
-var redis = require('redis');
-var Redlock = require('redlock');
-
-var client = redis.createClient();
-var redlock = new Redlock([client]);
-var atomic = atomicDecorator({ lock: redlock, ttl: 1000 });
-
-var atomicFunc = atomic(func);
-atomic(..., function (err, res) {
-  ...
-});
-```
-
-Dedupe
-------
-It executes the original function, while is waiting for the output it doesn't call the function anymore but instead it collects the callbacks.
-After getting the result, it dispatches the same to all callbacks.
-It may use the "getKey" function to group the callbacks into queues.
-```js
-var dedupeDecorator = require('async-deco/callback/dedupe');
-
-var dedupe = dedupeDecorator(options);
-var myfunc = dedupe(function (..., cb) { .... });
-```
-Options:
-* getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue.
-* functionBus [optional]: this object is used to group functions by key and run them. The default implementation is able to group functions belonging to the same process.
-* lock [optional]: this object is used to lock a function execution (by key).
-* ttl [optional]: the maximum time to live for the lock (in ms). Default to 1000ms.
-
-Using redis backed version of [functionBus](https://github.com/sithmel/function-bus-redis) and [lock](https://github.com/mike-marcacci/node-redlock) it is possible to implement a distributed version of the of the deduplication. Example:
-```js
-var dedupeDecorator = require('async-deco/callback/dedupe');
-var redis = require('redis');
-var Lock = require('redis-redlock');
-var FunctionBus = require('function-bus-redis');
-
-var lock = new Lock([redis.createClient()]);
-var functionBus = new FunctionBus({
-  pub: redis.createClient(),
-  sub:redis.createClient()
-});
-
-var dedupe = dedupeDecorator({
-  lock: lock,
-  functionBus: functionBus
-});
-
-var myfunc = dedupe(function (..., cb) { .... });
-```
-It logs "dedupe-execute" when a group of callbacks are called.
-{key: cache key, len: number of invocations}
+* ms: the timeout is ms
 
 
-Balance
--------
-This decorator allows to distribute the load between a group of functions.
-The functions should take the same arguments.
-```js
-var balance = require('async-deco/callback/balance');
 
-var balanceDecorator = balance();
 
-var func = balanceDecorator([...list of functions]);
-func(...args, function (err, res) {
-  // ...
-});
-```
-You can initialise the decorator with different policies:
-```js
-var balance = require('async-deco/callback/balance');
-var balancePolicies = require('async-deco/utils/balance-policies');
 
-var balanceDecorator = balance(balancePolicies.roundRobin);
-...
-```
-There are 3 policies available in the "balance-policies" package:
-
-* roundRobin: it rotates the execution between the functions
-* random: it picks up a random function
-* idlest (default): it tracks the load of each function and use the idlest
-
-You can also define your own policy:
-```js
-var balance = require('async-deco/callback/balance');
-
-var balanceDecorator = balance(function (counter, loads, args) {
-  // "counter" is the number of times I have called the function
-  // "loads" is an array with length equal to the number of functions
-  //         it contains how many calls are currently running for that function
-  // "args" is an array containing the arguments of the current function call
-  // this function should return the index of the function I want to run
-});
-...
-```
 
 
 Function bus
