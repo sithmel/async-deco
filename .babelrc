@@ -1,0 +1,29 @@
+{
+  "env": {
+    "es5": {
+      "presets": [
+        ["@babel/preset-env", {
+          "modules": false,
+          "useBuiltIns": "usage"
+        }]
+      ]
+    },
+    "es5-cjs": {
+      "plugins": [
+        "add-module-exports",
+        "@babel/plugin-transform-modules-commonjs"
+      ],
+      "presets": [
+        ["@babel/preset-env", {
+          "useBuiltIns": "usage"
+        }]
+      ]
+    },
+    "es2015-cjs": {
+      "plugins": [
+        "add-module-exports",
+        "@babel/plugin-transform-modules-commonjs"
+      ]
+    }
+  }
+}
