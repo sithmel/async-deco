@@ -25,7 +25,7 @@ Here is the list of the decorators:
 * [timeout](#timeout)
 
 ## Javascript support
-Every module is available in 2 ecmascript editions: ES5, ES2015 (native).
+Every module is available in 2 EcmaScript editions: ES5, ES2015 (native).
 
 The individual modules can be required either using named imports, or by importing the specific submodule you need. Using named imports will include the entire library and thus should only be done when bundle weight is not a concern (node) or when using a es2015+ module versions in combination with webpack3+ or rollup.
 
@@ -38,11 +38,11 @@ import { log } from 'async-deco');
 
 // es5
 const log = require('async-deco/es5/log');
-import log from 'async-deco/es5';
+import { log } from 'async-deco/es5';
 
 // es2015
 const log = require('async-deco/es2015/log');
-import log from 'async-deco/es2015';
+import { log } from 'async-deco/es2015';
 ```
 
 Note: **file names are all lowercase, dash separated. Module names are camelcase.**
@@ -119,9 +119,9 @@ The log function is called with the following arguments:
 * evt: the name of the event
 * payload: an object with additional information about this event
 * timestamp: the time stamp for this event (in ms)
-* id: this is an id that changes everytime the function is executed. You can use it to track the execution.
+* id: this is an id that changes everytime the function is executed. You can use it to track a specific execution
 
-Here's an example decorator that uses logging.
+To show how this work, here's an example of a decorator that uses logging:
 ```js
 import { getLogger } = from 'async-deco';
 
@@ -150,7 +150,7 @@ const timeout = timeoutDecorator({ ms: 20 })
 
 const myNewFunction = retry(timeout(myfunction));
 ```
-You can
+You can:
 ```js
 import { compose } from 'async-deco';
 
@@ -162,6 +162,8 @@ const decorator = compose(
 const myNewFunction = decorator(myfunction);
 ```
 **Note**: compose applies the decorators right to left!
+
+# The decorators:
 
 ## AddLogger
 It enables the logging for the whole chain of decorators. Read the description in the [Logging  section](#logging).
@@ -182,11 +184,11 @@ import { atomic } from 'async-deco';
 var atomicDecorator = atomic(options);
 ```
 Options:
-* getKey [optional]: a function for calculate a key from the given arguments.
-* ttl [optional]: the maximum time to live for the lock. In ms. It defaults to 1000ms.
-* lock [optional]: an instance of the locking object. You can pass any object compatible with the Lock instance (node-redlock for example). If not passed simple in-process lock will be used.
+* getKey [optional]: a function for calculate a key from the given arguments
+* ttl [optional]: the maximum time to live for the lock. In ms. It defaults to 1000ms
+* lock [optional]: an instance of the locking object. You can pass any object compatible with the Lock instance (node-redlock for example). If not passed simple in-process lock will be used
 
-Here's how to use redlock with the decorator:
+In node, you can use a distrubuted locking mechanism to ensure only an instance of a function is executed, across many process/services. Here's how using [redlock](https://github.com/mike-marcacci/node-redlock):
 ```js
 import { atomic } from 'async-deco';
 import redis from 'redis';
@@ -300,7 +302,7 @@ const cacheDecorator = cache({ cache: cacheRAM });
 ```
 
 #### errors
-Errors are not cached. If a function fails, it will not be cached.
+If a function fails, the error will not be cached.
 
 #### logs
 | event       |    payload    |
@@ -316,12 +318,12 @@ Errors are not cached. If a function fails, it will not be cached.
 * tags: the tags used for this cached item
 
 ## dedupe
-It manages multiple concurrent calls to the same function, calling the decorated only once.
+It manages multiple concurrent calls to the same function, calling the decorated function only once.
 It can use the "getKey" function and execute a function once for each key.
 ```js
 import { dedupe } from 'async-deco';
 
-var dedupe = dedupeDecorator(options);
+const dedupeDecorator = dedupe(options);
 ```
 Options:
 * getKey function [optional]: it runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue. If the key is null, the function is executed normally.
@@ -436,15 +438,15 @@ It takes 1 argument:
 * err: error returned by the guard function
 
 ## limit
-Limit the concurrency of a function. Every function call that excedees the limit will be queued. If the maximum queue size is reached, the function at the bottom of the queue will return an error.
+Limit the concurrency of a function. Every function call that excedees the limit will be queued. If the maximum queue size is reached, the function at the bottom of the queue will return an error (LimitError).
 ```js
-import { limit } from 'async-deco';
+import { limit, LimitError } from 'async-deco';
 
 const limitTwo = limitDecorator({ concurrency: 2 });
 ```
 You can initialise the decorator with 1 argument:
 * concurrency: number of parallel execution [optional, default to 1]
-* queueSize: is the size of the queue. If the queue reaches this size the function at the bottom of the queue will return an "OverflowError" [optional, default Infinity]
+* queueSize: is the size of the queue. If the queue reaches this size the function at the bottom of the queue will return an "LimitError" [optional, default Infinity]
 * getKey: a function that runs against the original arguments and returns the key used for creating different queues of execution. If it is missing there will be only one execution queue. If it returns null or undefined, the limit will be ignored [optional]
 * a comparator function: this function is a comparator that can be used for [Array.prototype.sort](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort). It can be used to give priority to the functions that ends up in the queue. [optional, default first in first out]
 
@@ -591,7 +593,7 @@ You can initialise the decorator with 2 arguments:
 ## timeout
 If a function takes to much, returns a timeout exception.
 ```js
-import { timeout } from 'async-deco';
+import { timeout, TimeoutError } from 'async-deco';
 
 const timeoutOneSec = timeout({ ms: 1000 });
 ```

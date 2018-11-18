@@ -1,6 +1,7 @@
 import { getLogger } from './add-logger'
 import funcRenamer from './utils/func-renamer'
 import FunQueue from './utils/funqueue'
+import LimitError from './errors/limit-error'
 
 const returnDefault = () => '_default'
 
@@ -26,7 +27,7 @@ export default function getLimitDecorator (opts = {}) {
       logger('limit-queue', { key: cacheKey })
       return queues.get(cacheKey).exec(func.bind(context), args)
         .catch(e => {
-          if (e instanceof FunQueue.OverflowError) {
+          if (e instanceof LimitError) {
             logger('limit-drop', { key: cacheKey })
           }
           throw e

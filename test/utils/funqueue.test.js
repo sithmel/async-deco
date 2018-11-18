@@ -1,7 +1,7 @@
 /* eslint-env node, mocha */
 import { assert } from 'chai'
 import FunQueue from '../../src/utils/funqueue'
-import OverflowError from '../../src/errors/overflow-error'
+import LimitError from '../../src/errors/limit-error'
 
 const echoFunc = (result, timeout) =>
   new Promise((resolve, reject) => {
@@ -68,7 +68,7 @@ describe('task queue', () => {
       try {
         await p3
       } catch (e) {
-        assert.instanceOf(e, OverflowError)
+        assert.instanceOf(e, LimitError)
       }
 
       await Promise.all([p1, p2])
@@ -121,7 +121,7 @@ describe('task queue', () => {
       try {
         await p2
       } catch (e) {
-        assert.instanceOf(e, OverflowError)
+        assert.instanceOf(e, LimitError)
       }
 
       await Promise.all([p1, p3])

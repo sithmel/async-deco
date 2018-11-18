@@ -1,5 +1,5 @@
 import queueFactory from './queues'
-import OverflowError from '../errors/overflow-error'
+import LimitError from '../errors/limit-error'
 
 export default class FunQueue {
   constructor (opts = {}) {
@@ -35,7 +35,7 @@ export default class FunQueue {
       if (this.queue.size() > this.queueSize) {
         const data = this.queue.pop()
         const rejectFunc = data.reject
-        return rejectFunc(new OverflowError('Queue full'))
+        return rejectFunc(new LimitError('Queue full'))
       }
       if (this.numberRunning < this.concurrency) this._execNext()
     })
