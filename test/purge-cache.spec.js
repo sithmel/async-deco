@@ -86,4 +86,9 @@ describe('purge-cache', () => {
       })
     })
   })
+
+  it('changes the name of the function', () => {
+    const func = purgeCache(function myfunc () {})
+    assert.equal(func.name, 'purgeCache(myfunc)')
+  })
 })

@@ -46,4 +46,9 @@ describe('log', () => {
       done()
     })
   })
+
+  it('changes the name of the function', () => {
+    const func = log(function myfunc () {})
+    assert.equal(func.name, 'log(myfunc)')
+  })
 })

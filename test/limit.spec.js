@@ -116,4 +116,9 @@ describe('limit', () => {
     f(20).then(getResult)
     f(60).then(getResult)
   })
+
+  it('changes the name of the function', () => {
+    const func = limitToOne(function myfunc () {})
+    assert.equal(func.name, 'limit(myfunc)')
+  })
 })

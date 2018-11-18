@@ -29,4 +29,10 @@ describe('guard', () => {
       done()
     })
   })
+
+  it('changes the name of the function', () => {
+    const guard = guardDecorator({ check: () => true })
+    const func = guard(function myfunc () {})
+    assert.equal(func.name, 'guard(myfunc)')
+  })
 })

@@ -82,4 +82,9 @@ describe('retry', () => {
       done()
     })
   })
+
+  it('changes the name of the function', () => {
+    const func = retryForever(function myfunc () {})
+    assert.equal(func.name, 'retry(myfunc)')
+  })
 })

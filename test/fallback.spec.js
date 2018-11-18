@@ -32,4 +32,9 @@ describe('fallback', () => {
       done()
     })
   })
+
+  it('changes the name of the function', () => {
+    const func = fallback(function myfunc () {})
+    assert.equal(func.name, 'fallback(myfunc)')
+  })
 })

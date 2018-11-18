@@ -69,4 +69,9 @@ describe('timeout', () => {
         done()
       })
   })
+
+  it('changes the name of the function', () => {
+    const func = timeout20(function myfunc () {})
+    assert.equal(func.name, 'timeout(myfunc)')
+  })
 })

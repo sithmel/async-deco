@@ -16,7 +16,7 @@ describe('atomic', () => {
     assert.equal(func.name, 'atomic(myfunc)')
   })
 
-  it.skip('must limit to one function call', (done) => {
+  it('must limit to one function call', (done) => {
     let numberRunning = 0
     const f0 = function (a) {
       numberRunning++
@@ -32,7 +32,7 @@ describe('atomic', () => {
 
     let c = 0
     const getResult = (dep) => {
-      assert.equal(numberRunning, 0)
+      assert.isAtMost(numberRunning, 1)
       c++
       if (c === 3) {
         done()
@@ -45,7 +45,7 @@ describe('atomic', () => {
   })
 })
 
-describe.skip('atomic using redis (promise)', () => {
+describe('atomic using redis (promise)', () => {
   let limitToOne, client
 
   beforeEach(() => {

@@ -8,19 +8,19 @@ They can be combined together using the "compose" function (included).
 
 Here is the list of the decorators:
 
-* [addLogger](#add-logger)
+* [addLogger](#addlogger)
 * [atomic](#atomic)
 * [balance](#balance)
 * [cache](#cache)
 * [dedupe](#dedupe)
 * [fallback](#fallback)
-* [fallbackCache](#fallback-cache)
+* [fallbackCache](#fallbackcache)
 * [guard](#guard)
 * [limit](#limit)
 * [log](#log)
-* [onFulfilled](#on-fulfilled)
-* [onRejected](#on-rejected)
-* [purgeCache](#purge-cache)
+* [onFulfilled](#onfulfilled)
+* [onRejected](#onrejected)
+* [purgeCache](#purgecache)
 * [retry](#retry)
 * [timeout](#timeout)
 
@@ -274,10 +274,12 @@ If you don't specify the "cache" object, cacheRAM will be used and argument will
 ```js
 import { cache } from 'async-deco'
 
-// the result of the function will be cached in RAM forever, no matter the arguments used
+// the result of the function will be cached in RAM forever,
+// no matter the arguments used
 const cacheDecorator = cache();
 
-// the getKey function will take the same arguments passed to the decorated function and will return the key used as cache key
+// the getKey function will take the same arguments passed
+// to the decorated function and will return the key used as cache key
 const cacheDecorator = cache({ getKey });
 ```
 Here's a list of all arguments:

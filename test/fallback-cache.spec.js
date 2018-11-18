@@ -46,4 +46,9 @@ describe('fallback-cache', () => {
       done()
     })
   })
+
+  it('changes the name of the function', () => {
+    const func = cached(function myfunc () {})
+    assert.equal(func.name, 'fallbackCache(myfunc)')
+  })
 })
