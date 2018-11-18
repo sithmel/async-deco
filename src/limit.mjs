@@ -1,6 +1,6 @@
 import { getLogger } from './add-logger'
 import funcRenamer from './utils/func-renamer'
-import FunQueue from 'funqueue-promise'
+import FunQueue from './utils/funqueue'
 
 const returnDefault = () => '_default'
 

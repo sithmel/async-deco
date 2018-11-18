@@ -6,7 +6,7 @@
   "module": "es5/index.mjs",
   "jsnext:main": "es5/index.mjs",
   "scripts": {
-    "test": "cross-env BABEL_ENV=es2015-cjs mocha --require @babel/register",
+    "test": "cross-env BABEL_ENV=es2015-cjs mocha test test/utils --require @babel/register",
     "watch": "npm run test -- -w",
     "clean": "rimraf es5 es2015",
     "lint": "eslint --fix --ext .js ./src ./test",
@@ -53,7 +53,6 @@
   "dependencies": {
     "core-js": "^2.5.7",
     "dequeue": "^1.0.5",
-    "funqueue-promise": "0.0.3",
     "memoize-cache": "^6.0.2"
   }
 }

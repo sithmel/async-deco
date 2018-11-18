@@ -14,6 +14,7 @@ export { default as timeout } from './timeout'
 
 export { default as LimitError } from './errors/limit-error'
 export { default as TimeoutError } from './errors/timeout-error'
+export { default as OverflowError } from './errors/overflow-error'
 
 export { roundRobin as policyRoundRobin, random as policyRandom, idlest as policyIdlest } from './utils/balance-policies'
 export { default as compose } from './utils/compose'
