@@ -18,6 +18,7 @@ Here is the list of the decorators:
 * [guard](#guard)
 * [limit](#limit)
 * [log](#log)
+* [memoize](#memoize)
 * [onFulfilled](#onfulfilled)
 * [onRejected](#onrejected)
 * [purgeCache](#purgecache)
@@ -290,6 +291,7 @@ Here's a list of all arguments:
 * serialize: it is an optional function that serialize the value stored (takes a value, returns a value). It can be used for pruning part of the object we don't want to save
 * deserialize: it is an optional function that deserialize the value stored (takes a value, returns a value).
 * getTags: a function that returns an array of tags. You can use that for purging a set of items from the cache (see the purgeCache decorator). To use this option you should pass the cache object rather than rely on the default (see the section below).
+* doCacheIf: a function that takes the result of the function and returns true if we want to cache the result. By default it always returns true.
 
 #### Use a specific cache engine
 If you define the cache engine externally you can share between multiple decorators (cache, purgeCache, fallbackCache). These are equivalent:
@@ -397,6 +399,7 @@ const fallbackDecorator = fallbackCache({ cache: cacheRAM });
 If you use this decorator together the the cache decorator you might want to use 2 additional options:
 * useStale: if true it will use "stale" cache items as valid [optional, defaults to false]
 * noPush: it true it won't put anything in the cache [optional, defaults to false]
+* doCacheIf: a function that takes the result of the function and returns true if we want to cache the result. By default it always returns true.
 
 For example:
 ```js
@@ -501,6 +504,23 @@ const myfunc =  logger(addOuterLogs(cacheDecorator(addInnerLogs(myfunc))));
 ```
 In this example outer-log-start and outer-log-end (or outer-log-error) will be always called. The inner logs only in case of cache miss.
 
+## memoize
+The decorated function is executed only when used with a new set of arguments. Then the results are cached and reused.
+The result is cached against the arguments. They are checked by reference (strict equality). Promise rejections are cached as well.
+
+The decorator uses a LRU cache algorithm to decide whether to get rid of a cached value. It also supports a time-to-live for cached values. But you have to consider stale cache entries are not removed until the size of the cache exceeds the length. This allows to keep the running time of the algorithm constant (O(1)) for any operation. The cache is local to the process. So multiple process will store multiple cache items.
+
+The decorator factory takes 2 arguments:
+* len: the number of items in the cache, default Infinity
+* ttl: time to live in ms (default Infinity)
+
+```js
+import { memoize } from 'async-deco';
+const memoizeDecorator = memoize({ len: 10, ttl: 10000 })
+memoizeDecorator(() => ...)
+```
+The decorator doesn't provide logging.
+
 ## onFulfilled
 It executes this function on the result once it is fulfilled.
 ```js
@@ -583,6 +603,7 @@ const retryTenTimes = retry({ times: 10, interval: 1000 });
 You can initialise the decorator with 2 arguments:
 * times: number of retries [optional, it defaults to Infinity]
 * interval: how long to wait before running the function again. It can be a number of milliseconds or a function returning a number of milliseconds (the function takes the current attempt as argument) [optional, it defaults to 0]
+* doRetryIf: a function that takes as argument the error returned by the decorated function. If it returns true, it will trigger the retry. By default it always returns true.
 
 #### logs
 | event |    payload     |

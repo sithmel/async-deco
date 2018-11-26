@@ -2,6 +2,7 @@ import { getLogger } from './add-logger'
 import funcRenamer from './utils/func-renamer'
 
 const customSetTimeout = (func, interval) => interval ? setTimeout(func, interval) : func()
+const always = () => true
 
 export default function getRetryDecorator (opts = {}) {
   const times = opts.times || Infinity
@@ -9,6 +10,7 @@ export default function getRetryDecorator (opts = {}) {
   const intervalFunc = typeof interval === 'function'
     ? interval
     : () => interval
+  const doRetryIf = opts.doRetryIf || always
 
   return function retry (func) {
     if (typeof func !== 'function') throw new Error('retry: should decorate a function')
@@ -26,11 +28,11 @@ export default function getRetryDecorator (opts = {}) {
             func.apply(context, args)
               .then(resolve)
               .catch((err) => {
-                if (counter < times) {
+                if (!doRetryIf(err) || counter >= times) {
+                  return reject(err)
+                } else {
                   logger('retry', { times: counter, err })
                   return retry()
-                } else {
-                  reject(err)
                 }
               })
           , interval)

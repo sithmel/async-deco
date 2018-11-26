@@ -2,10 +2,13 @@ import { getLogger } from './add-logger'
 import funcRenamer from './utils/func-renamer'
 import { CacheRAM } from 'memoize-cache'
 
+const always = () => true
+
 export default function getFallbackCacheDecorator (opts = {}) {
   const cache = opts.cache || new CacheRAM(opts)
   const useStale = !!opts.useStale
   const noPush = !!opts.noPush
+  const doCacheIf = opts.doCacheIf || always
 
   return function fallbackCache (func) {
     if (typeof func !== 'function') throw new Error('fallbackCache: should decorate a function')
@@ -16,7 +19,7 @@ export default function getFallbackCacheDecorator (opts = {}) {
 
       return func.apply(context, args)
         .then((res) => {
-          if (!noPush) {
+          if (!noPush && doCacheIf(res)) {
             const key = cache.push(args, res)
             if (key) {
               logger('fallback-cache-set', { key: key.key, tags: key.tags, args })

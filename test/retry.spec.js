@@ -5,8 +5,10 @@ import retryDecorator from '../src/retry'
 describe('retry', () => {
   let retryTenTimes
   let retryForever
+  let neverRetry
 
   beforeEach(() => {
+    neverRetry = retryDecorator({ times: 10, doRetryIf: (err) => !(err instanceof Error) })
     retryTenTimes = retryDecorator({ times: 10 })
     retryForever = retryDecorator()
   })
@@ -59,6 +61,25 @@ describe('retry', () => {
     func().then(function (res) {
       assert.equal(res, 'done')
       assert.equal(c, 5)
+      done()
+    })
+  })
+
+  it('must not retry', (done) => {
+    let c = 0
+    const func = neverRetry(() => {
+      return new Promise((resolve, reject) => {
+        c++
+        if (c === 5) {
+          return resolve('done')
+        }
+        reject(new Error('error'))
+      })
+    })
+
+    func().catch(function (err) {
+      assert.equal(err.message, 'error')
+      assert.equal(c, 1)
       done()
     })
   })

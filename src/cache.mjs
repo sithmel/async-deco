@@ -2,8 +2,12 @@ import { getLogger } from './add-logger'
 import funcRenamer from './utils/func-renamer'
 import { CacheRAM } from 'memoize-cache'
 
+const always = () => true
+
 export default function getCacheDecorator (opts = {}) {
   const cacheObj = opts.cache || new CacheRAM(opts)
+  const doCacheIf = opts.doCacheIf || always
+
   return function cache (func) {
     if (typeof func !== 'function') throw new Error('cache: should decorate a function')
     const renamer = funcRenamer(`cache(${func.name || 'anonymous'})`)
@@ -25,6 +29,10 @@ export default function getCacheDecorator (opts = {}) {
             logger('cache-miss', { key: cacheQuery.key, info: cacheQuery })
             func.apply(context, args)
               .then(res => {
+                if (!doCacheIf(res)) {
+                  resolve(res)
+                  return
+                }
                 const key = cacheObj.push(args, res)
                 if (key) {
                   logger('cache-set', { key: key.key, tags: key.tags })
