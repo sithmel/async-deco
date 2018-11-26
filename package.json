@@ -9,7 +9,7 @@
     "test": "cross-env BABEL_ENV=es2015-cjs mocha test test/utils --require @babel/register",
     "watch": "npm run test -- -w",
     "clean": "rimraf es5 es2015",
-    "lint": "eslint --fix --ext .js ./src ./test",
+    "lint": "eslint --fix --ext \".mjs,.js\" ./src ./test",
     "build": "npm run clean && npm run lint && npm run build:es5 && npm run build:es5-cjs && npm run build:es2015 && npm run build:es2015-cjs",
     "build:es5": "cross-env BABEL_ENV=es5 babel --keep-file-extension -x \".mjs\" src -d es5",
     "build:es5-cjs": "cross-env BABEL_ENV=es5-cjs babel -x \".mjs\" src -d es5",
