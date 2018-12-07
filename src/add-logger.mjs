@@ -2,6 +2,7 @@ import funcRenamer from './utils/func-renamer'
 
 const generateId = () => Math.random().toString(36).slice(2)
 const logFunctions = new WeakMap()
+const noop = () => {}
 
 export default function addLogger (log) {
   if (!log) throw new Error('addLogger: You must have a log function as argument')
@@ -24,5 +25,6 @@ export default function addLogger (log) {
 }
 
 export function getLogger (context) {
-  return logFunctions.get(context) || (() => {})
+  if (!context) return noop
+  return logFunctions.get(context) || noop
 }
