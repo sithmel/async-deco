@@ -1,6 +1,6 @@
 {
   "name": "async-deco",
-  "version": "9.1.4",
+  "version": "9.1.5",
   "description": "A collection of decorators for adding features to asynchronous functions",
   "main": "es5/index",
   "module": "es5/index.mjs",
